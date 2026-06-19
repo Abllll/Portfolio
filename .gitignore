@@ -1,0 +1,12 @@
+# Built outputs and resources
+/public/
+/resources/
+
+# Local binaries and backups
+/bin/
+/backup-static/
+
+# Lock files and system files
+.hugo_build.lock
+.DS_Store
+Thumbs.db

@@ -1,0 +1,221 @@
+baseURL: "https://username.github.io/"
+languageCode: "en-us"
+title: "Alex Morgan | Lead Full-Stack Engineer Portfolio"
+theme: hugo-profile
+
+# Language settings (English only for clean, minimal structure)
+defaultContentLanguage: "en"
+defaultContentLanguageInSubdir: false
+
+languages:
+  en:
+    languageName: "English"
+    weight: 1
+    contentDir: "content"
+
+outputs:
+  home:
+    - "HTML"
+    - "RSS"
+    - "JSON"
+  page:
+    - "HTML"
+    - "RSS"
+
+enableRobotsTXT: true
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
+params:
+  title: "Alex Morgan"
+  description: "Professional portfolio and resume of Alex Morgan, Lead Full-Stack Software Engineer."
+  favicon: "/fav.png"
+  
+  # Styling and Animation Configuration
+  useBootstrapCDN: true
+  animate: true
+  
+  theme:
+    defaultTheme: "dark" # Start in dark theme for a premium developer aesthetic
+
+  font:
+    fontSize: 1rem
+    fontWeight: 400
+    lineHeight: 1.6
+    textAlign: left
+
+  # Navigation Bar Configuration
+  navbar:
+    align: ms-auto # Right-align menus
+    brandName: "AlexM.dev"
+    disableSearch: true
+    stickyNavBar:
+      enable : true
+      showOnScrollUp : true
+    enableSeparator: false
+    menus:
+      disableAbout: false
+      disableExperience: false
+      disableEducation: false
+      disableProjects: false
+      disableAchievements: true # Disable achievements to keep site minimal
+      disableContact: false
+
+  # Hero Section
+  hero:
+    enable: true
+    intro: "Hi, my name is"
+    title: "Alex Morgan."
+    subtitle: "I build high-performance web systems."
+    content: "Lead Full-Stack Software Engineer specializing in scalable web systems, modern frontends (React/Next.js), resilient backends (Node.js/Python), and cloud architecture (AWS)."
+    image: /images/me.jpg
+    bottomImage:
+      enable: false
+    roundImage: true # circular frame matches original design
+    button:
+      enable: true
+      name: "Contact Me"
+      url: "#contact"
+      download: false
+      newPage: false
+    socialLinks:
+      fontAwesomeIcons:
+        - icon: fab fa-github
+          url: https://github.com
+        - icon: fab fa-linkedin
+          url: https://linkedin.com
+        - icon: fas fa-envelope
+          url: mailto:alex.morgan@example.com
+
+  # About Section
+  about:
+    enable: true
+    title: "About Me"
+    image: "/images/me.jpg"
+    content: |-
+      I am a software craftsman with over 7 years of professional experience turning complex business challenges into elegant, highly performant digital products. 
+      
+      My development philosophy centers around readability, maintainability, and clean code. I have a passion for designing cohesive component architectures, optimizing database throughput, and setting up CI/CD pipelines that give engineering teams the confidence to deploy multiple times a day.
+    skills:
+      enable: true
+      title: "Here are a few core technologies I've been working with recently:"
+      items:
+        - "TypeScript"
+        - "React / Next.js"
+        - "Node.js (NestJS)"
+        - "Python (FastAPI)"
+        - "PostgreSQL & Redis"
+        - "Docker & AWS"
+
+  # Experience Section
+  experience:
+    enable: true
+    title: "Professional Journey"
+    items:
+      - company: "Synergy Enterprise Solutions"
+        companyUrl: "https://example.com"
+        jobs:
+          - name: "Lead Full-Stack Engineer"
+            date: "2023 - Present"
+            content: |
+              Leading frontend architecture redesigns and backend optimizations for a high-volume SaaS analytics platform. Leading a team of 6 engineers.
+              - Led migration of legacy Webpack to Next.js App Router, improving load speed by 1.8s.
+              - Designed real-time analytics dashboards using GraphQL and HTML Canvas, handling 10k events/sec.
+              - Introduced AWS CDK, reducing infrastructure deployment setup times from days to minutes.
+      - company: "Nova Technologies Inc."
+        companyUrl: "https://example.com"
+        jobs:
+          - name: "Senior Software Developer"
+            date: "2020 - 2023"
+            content: |
+              Architected core backend APIs and transaction pipelines for digital commerce engines. Integrated multiple global gateway APIs.
+              - Re-engineered catalog search using ElasticSearch, dropping query latency from 850ms to 45ms.
+              - Designed multi-gateway payment flows capturing over $14M in annual revenues.
+              - Containerized entire microservices system using Docker, streamlining localized developer sandboxes.
+
+  # Education Section
+  education:
+    enable: true
+    title: "Education & Credentials"
+    index: false
+    items:
+      - title: "Bachelor of Science in Computer Science"
+        school:
+          name: "University of California, Berkeley"
+          url: "https://berkeley.edu"
+        date: "2014 - 2018"
+        GPA: "Honors Graduate"
+        content: |-
+          Specialized in Distributed Systems, Software Engineering, and Database Architecture.
+      - title: "AWS Solutions Architect - Professional"
+        school:
+          name: "Amazon Web Services"
+          url: "https://aws.amazon.com"
+        date: "Issued 2024"
+        GPA: "Verification ID: AWS-SAP-9817"
+        content: |-
+          Validated expertise in designing highly available, cost-effective, and secure enterprise deployments.
+
+  # Projects Section
+  projects:
+    enable: true
+    title: "Featured Works"
+    items:
+      - title: "Nexus Analytics Platform"
+        content: "A real-time data streaming dashboard designed for visualizing enterprise telemetry, containing custom charting and layout tools."
+        image: /images/projects/profile.png # Fallback or dynamic theme path
+        badges:
+          - "React"
+          - "TypeScript"
+          - "Web Workers"
+        links:
+          - icon: fab fa-github
+            url: https://github.com
+      - title: "Sentinel Identity Gateway"
+        content: "A robust OAuth2/OIDC proxy container deployed as a cluster sidecar, handling unified user authorization."
+        image: /images/projects/profile.png
+        badges:
+          - "Go"
+          - "Kubernetes"
+          - "OAuth2"
+        links:
+          - icon: fab fa-github
+            url: https://github.com
+      - title: "Flow Payment Core"
+        content: "A transactional API microservice featuring distributed locking, schema-validation, and multi-gateway integrations."
+        image: /images/projects/profile.png
+        badges:
+          - "Node.js"
+          - "PostgreSQL"
+          - "Redis"
+        links:
+          - icon: fab fa-github
+            url: https://github.com
+
+  # Contact Section
+  contact:
+    enable: true
+    title: "Get In Touch"
+    content: "I'm currently open to lead engineering roles, consulting engagements, or interesting greenfield open-source collaborations. Drop a message to connect!"
+    btnName: Email Me
+    btnLink: mailto:alex.morgan@example.com
+
+  # Footer Settings
+  footer:
+    recentPosts:
+      path: "blogs"
+      count: 0
+      title: "Recent Posts"
+      enable: false # Disable blog feed in footer to preserve clean layout
+    socialNetworks:
+      github: https://github.com
+      linkedin: https://linkedin.com
+
+  # Accessibility & Scroll Indicators
+  singlePages:
+    socialShare: false
+    scrollprogress:
+      enable: true
