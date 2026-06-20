@@ -5,6 +5,7 @@
 # Local binaries and backups
 /bin/
 /backup-static/
+/backup-content-old/
 
 # Lock files and system files
 .hugo_build.lock
