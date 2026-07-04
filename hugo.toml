@@ -1,9 +1,8 @@
 baseURL = 'https://abllll.github.io/Portfolio/'
 languageCode = 'en-us'
-title = 'Alex Morgan | AI / UIUX Designer Portfolio'
+title = 'Amber Li — Design Engineering'
 theme = "hugo-minimal-black"
 
-# Enable search index generation and web app manifest
 [outputs]
   home = ["HTML", "RSS", "JSON", "WebAppManifest"]
 
@@ -15,273 +14,100 @@ theme = "hugo-minimal-black"
   notAlternative = true
 
 [params]
-  brand = "AlexDesign.dev"
-  description = "Professional portfolio and resume of Alex Morgan, AI and UIUX Designer."
+  brand = "Amber Li"
+  description = "Design engineering portfolio of Amber Li — systems thinking across engineering, spatial design, and AI."
 
-  # Favicon - Place your favicon files in /static/ directory
-  # Supported formats: .ico, .png, .svg
   favicon = "icons/favicon.svg"
   appleTouchIcon = "apple-touch-icon.png"
 
-  # Logo (optional)
-  logo = "images/logo.png"
+  projectsIntro = "Case studies across product, spatial, and systems work — same process, different medium."
 
-  # Project and blog intro text
-  projectsIntro = "Selected projects to display list." # Can be empty
-  blogIntro = "" # Can be empty
-
-  # Web App Manifest Configuration (PWA support)
   [params.manifest]
-    themeColor = "#a855f7"
-    backgroundColor = "#000000"
-    categories = ["blog", "portfolio", "developer"]
+    themeColor = "#B0C375"
+    backgroundColor = "#F4EFE8"
+    categories = ["portfolio", "design"]
 
-    # Custom icon configuration (optional)
-    # If not specified, defaults to /icons/android-chrome-*.png
-    # [[params.manifest.icons]]
-    #   src = "/icons/android-chrome-192x192.png"
-    #   sizes = "192x192"
-    #   type = "image/png"
-    #   purpose = "any maskable"
-
-  # Theme Configuration
   [params.theme]
-    defaultTheme = "dark"  # Options: "light", "dark", "system"
+    defaultTheme = "light"
 
-  # Home Page Configuration
   [params.home]
-    sections = ["hero", "now", "tech-marquee", "projects", "posts"]
-    showNowSection = true
+    sections = ["hero", "projects", "perspective"]
     showFeaturedProjects = true
-    showLatestPosts = true
-    featuredProjectsLimit = 3
-    latestPostsLimit = 3
+    featuredProjectsLimit = 4
     projectsTitle = "Selected Work"
-    projectsSubtitle = ""
-    blogTitle = "Latest Writing"
-    blogSubtitle = ""
-    techMarqueeLabel = "Experienced In"
+    projectsSubtitle = "A few projects, picked for fit rather than volume."
 
-    # Technology Stack Display
-    [[params.home.tech]]
-      label = "Figma"
-      icon = "devicon-figma-plain"
-
-    [[params.home.tech]]
-      label = "React"
-      icon = "devicon-react-original"
-
-    [[params.home.tech]]
-      label = "Tailwind CSS"
-      icon = "devicon-tailwindcss-original"  
-
-    [[params.home.tech]]
-      label = "HTML5"
-      icon = "devicon-html5-plain"    
-
-    [[params.home.tech]]
-      label = "CSS3"
-      icon = "devicon-css3-plain"
-
-    [[params.home.tech]]
-      label = "Webflow"
-      icon = "devicon-webflow-original"
-
-    [[params.home.techReverse]]
-      label = "Next.js"
-      icon = "devicon-nextjs-plain"
-
-    [[params.home.techReverse]]
-      label = "Git"
-      icon = "devicon-git-plain"
-
-    [[params.home.techReverse]]
-      label = "Hugo"
-      icon = "devicon-hugo-plain"
-
-    [[params.home.techReverse]]
-      label = "Python"
-      icon = "devicon-python-plain"  
-
-    [[params.home.techReverse]]
-      label = "JavaScript"
-      icon = "devicon-javascript-plain"   
-
-    [[params.home.techReverse]]
-      label = "Photoshop"
-      icon = "devicon-photoshop-plain" 
-
-    [[params.home.techReverse]]
-      label = "Illustrator"
-      icon = "devicon-illustrator-plain"       
-
-  # About Page Alternative Layout Configuration - Optional
-  [params.about.alt]
-    # Stats displayed in the profile card sidebar
-    [[params.about.alt.stats]]
-      value = "5+"
-      label = "Years Coding"
-
-    [[params.about.alt.stats]]
-      value = "20+"
-      label = "Projects"
-
-    [[params.about.alt.stats]]
-      value = "∞"
-      label = "Hours Spent"
-
-    # Skills/Tech Stack badges with icons
-    [[params.about.alt.skills]]
-      label = "JavaScript"
-      icon = "devicon-javascript-plain"
-
-    [[params.about.alt.skills]]
-      label = "Python"
-      icon = "devicon-python-plain"
-
-    [[params.about.alt.skills]]
-      label = "React"
-      icon = "devicon-react-original"
-
-    [[params.about.alt.skills]]
-      label = "Docker"
-      icon = "devicon-docker-plain"
-
-    [[params.about.alt.skills]]
-      label = "PostgreSQL"
-      icon = "devicon-postgresql-plain"
-
-    [[params.about.alt.skills]]
-      label = "AWS"
-      icon = "devicon-amazonwebservices-plain"
-
-  # Hero Section Configuration
   [params.hero]
-    badge = "AI / UIUX Designer"
-    title = "Hi, I'm Alex Morgan."
-    role = "I design intelligent, human-centric interfaces."
-    summary = "AI & UIUX Designer specializing in cognitive walk-throughs, human-AI interaction patterns, accessible design systems, and rapid prototyping for intelligent applications."
-    # avatar = "images/avatar.jpg"  # Optional: 400x400px recommended
-    location = "San Francisco, CA"
-    focus = "Currently focused on designing next-generation interfaces for generative AI applications and optimizing user workflows."
+    badge = "Design Engineering"
+    title = "Hi, I'm Amber Li."
+    role = "I work at the meeting point of engineering, spatial design, and systems thinking."
+    summary = "My path runs through sustainable engineering, manufacturing, workplace design, illustration, and community building — not a pivot, but a convergence. Design engineering is where all of it meets."
+    location = "Singapore"
+    focus = "Currently exploring how AI and automation extend the same systems-thinking instincts I've always worked with — a new graft, not a new tree."
     available = true
-    availableLabel = "Available for work"
-
-    nowLabel = "Quick Facts"
-    nowIntro = "Right now I'm mainly:"
-    now = [
-      "Designing cognitive walkthroughs and layout paradigms for generative AI applications",
-      "Iterating on high-fidelity design systems with seamless accessibility and micro-interactions",
-      "Prototyping responsive web interfaces and spatial computing interactions"
-    ]
+    availableLabel = "Open to design engineering roles"
 
     [params.hero.primary]
-      label = "View Projects"
-      href = "/projects/"
+      label = "See the work"
+      href = "/work/"
 
     [params.hero.secondary]
-      label = "Read the Blog"
-      href = "/blog/"
+      label = "More about how I think"
+      href = "/about/"
 
-  # Icon Libraries
   [params.icons]
     useFontAwesome = true
-    useDevicon = true
-
-  # Social Links
-  [[params.social]]
-    label = "GitLab"
-    url = "https://gitlab.com/jimchr12"
-    icon = "fa-brands fa-gitlab"
+    useDevicon = false
 
   [[params.social]]
     label = "LinkedIn"
-    url = "https://www.linkedin.com/in/jimchristopoulos-542512221/"
+    url = "https://www.linkedin.com/in/REPLACE-WITH-AMBER-LINKEDIN-HANDLE/"
     icon = "fa-brands fa-linkedin-in"
 
   [[params.social]]
     label = "Email"
-    url = "mailto:you@example.com"
+    url = "mailto:REPLACE-WITH-AMBER-EMAIL@example.com"
     icon = "fa-regular fa-envelope"
 
-  # Analytics Configuration
-  [params.analytics]
-    # Google Analytics (GA4)
-    # googleAnalytics = "G-XXXXXXXXXX"
-
-    # Plausible Analytics (privacy-friendly)
-    # [params.analytics.plausible]
-    #   enabled = true
-    #   domain = "yourdomain.com"
-    #   scriptUrl = "https://plausible.io/js/script.js"
-
-    # Umami Analytics (self-hosted option)
-    # [params.analytics.umami]
-    #   enabled = true
-    #   scriptUrl = "https://analytics.yourdomain.com/script.js"
-    #   websiteId = "your-website-id"
-
-    # Fathom Analytics
-    # [params.analytics.fathom]
-    #   enabled = true
-    #   scriptUrl = "https://cdn.usefathom.com/script.js"
-    #   siteId = "YOUR-SITE-ID"
-
-# Navigation Menu
 [menu]
   [[menu.main]]
-    name = "Home"
-    pageRef = "/"
-    url = "/"
+    name = "Work"
+    pageRef = "work"
+    url = "/work/"
     weight = 1
-    identifier = "home"
-    [menu.main.params]
-      icon = "fa-solid fa-house"
+    identifier = "work"
+
+  [[menu.main]]
+    name = "Experiments"
+    pageRef = "experiments"
+    url = "/experiments/"
+    weight = 2
+    identifier = "experiments"
 
   [[menu.main]]
     name = "About"
     pageRef = "about"
     url = "/about/"
-    weight = 2
-    identifier = "about"
-    [menu.main.params]
-      icon = "fa-regular fa-user"
-
-  [[menu.main]]
-    name = "About Alt"
-    pageRef = "about-alternative"
-    url = "/about-alternative/"
-    weight = 2
-    identifier = "about-alternative"
-    [menu.main.params]
-      icon = "fa-solid fa-user"
-
-  [[menu.main]]
-    name = "Projects"
-    pageRef = "projects"
-    url = "/projects/"
     weight = 3
-    identifier = "projects"
-    [menu.main.params]
-      icon = "fa-regular fa-folder-open"
+    identifier = "about"
 
   [[menu.main]]
-    name = "Blog"
-    pageRef = "blog"
-    url = "/blog/"
+    name = "Resume"
+    url = "/about/#resume"
     weight = 4
-    identifier = "blog"
-    [menu.main.params]
-      icon = "fa-regular fa-note-sticky"
+    identifier = "resume"
 
-# Markup Configuration
+  [[menu.main]]
+    name = "LinkedIn"
+    url = "https://www.linkedin.com/in/REPLACE-WITH-AMBER-LINKEDIN-HANDLE/"
+    weight = 5
+    identifier = "linkedin-nav"
+
 [markup]
-  # Table of Contents
   [markup.tableOfContents]
     startLevel = 2
     endLevel = 4
 
-  # Goldmark Renderer (Markdown)
   [markup.goldmark.renderer]
     unsafe = true
 
@@ -305,7 +131,6 @@ theme = "hugo-minimal-black"
     [markup.goldmark.extensions.extras.mark]
       enable = true
 
-  # Syntax Highlighting
   [markup.highlight]
     codeFences = true
     guessSyntax = true
@@ -315,12 +140,10 @@ theme = "hugo-minimal-black"
     style = "monokai"
     tabWidth = 2
 
-# Taxonomies
 [taxonomies]
   tag = "tags"
   category = "categories"
 
-# Privacy Configuration
 [privacy]
   [privacy.youtube]
     privacyEnhanced = true
