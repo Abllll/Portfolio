@@ -1,0 +1,106 @@
+/* ==========================================================================
+   HOME HERO — "SCATTERED DESK" COLLAGE
+   Placeholder cutout objects around the center hero text, inspired by a
+   reference portfolio's desk-collage hero. Objects are generic icon-based
+   stand-ins (Font Awesome, already loaded sitewide) — swap each
+   .hero-collage__item's icon/position for a real photo cutout later.
+   ========================================================================== */
+
+.hero-collage {
+  position: relative;
+  min-height: 22rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.hero-collage__center {
+  position: relative;
+  z-index: 2;
+  max-width: 34rem;
+  text-align: center;
+}
+
+.hero-collage__name {
+  font-family: var(--font-script, cursive);
+  font-size: 3rem;
+  line-height: 1.1;
+  color: var(--color-text);
+}
+
+.hero-collage__role {
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.hero-collage__tagline {
+  margin-top: 0.15rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.hero-collage__oneliner {
+  margin-top: 1.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.hero-collage__item {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 20px -6px rgba(67, 53, 49, 0.25);
+  color: var(--color-walnut);
+  font-size: 1.25rem;
+}
+
+.hero-collage__item--pencil {
+  top: 8%;
+  left: 6%;
+  transform: rotate(-8deg);
+}
+
+.hero-collage__item--notebook {
+  top: 55%;
+  left: 3%;
+  transform: rotate(6deg);
+}
+
+.hero-collage__item--film {
+  top: 82%;
+  left: 14%;
+  transform: rotate(-5deg);
+}
+
+.hero-collage__item--folder {
+  top: 10%;
+  right: 6%;
+  transform: rotate(7deg);
+}
+
+.hero-collage__item--player {
+  top: 58%;
+  right: 4%;
+  transform: rotate(-6deg);
+}
+
+@media (max-width: 768px) {
+  .hero-collage__item {
+    display: none;
+  }
+}

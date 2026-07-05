@@ -8,9 +8,9 @@
         {{ end }}
       </header>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="work-row-list">
         {{ range $i, $page := .Pages.ByDate.Reverse }}
-          {{ partial "components/project-card.html" (dict "Page" $page "Root" $ "Index" (add $i 1)) }}
+          {{ partial "components/work-row.html" (dict "Page" $page "Index" (add $i 1)) }}
         {{ else }}
           <p class="text-xs text-muted">
             No projects yet. Add some under <code>content/work</code>.

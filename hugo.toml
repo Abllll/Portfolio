@@ -38,14 +38,10 @@ theme = "hugo-minimal-black"
     projectsSubtitle = "A few projects, picked for fit rather than volume."
 
   [params.hero]
+    title = "Amber Li"
     badge = "Design Engineering"
-    title = "Hi, I'm Amber Li."
-    role = "I work at the meeting point of engineering, spatial design, and systems thinking."
-    summary = "My path runs through sustainable engineering, manufacturing, workplace design, illustration, and community building — not a pivot, but a convergence. Design engineering is where all of it meets."
-    location = "Singapore"
-    focus = "Currently exploring how AI and automation extend the same systems-thinking instincts I've always worked with — a new graft, not a new tree."
-    available = true
-    availableLabel = "Open to design engineering roles"
+    tagline = "Roots & Branches"
+    summary = "a systems-thinking approach to engineering, spatial design, and the tools that connect them."
 
     [params.hero.primary]
       label = "See the work"

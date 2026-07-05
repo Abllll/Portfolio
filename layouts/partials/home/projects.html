@@ -20,9 +20,9 @@
     {{ end }}
     {{ $list := first $limit $featured }}
 
-    <div class="grid gap-4 md:grid-cols-2">
-      {{ range $list }}
-        {{ partial "components/project-card.html" (dict "Page" . "Root" $) }}
+    <div class="work-row-list">
+      {{ range $i, $page := $list }}
+        {{ partial "components/work-row.html" (dict "Page" $page "Index" (add $i 1)) }}
       {{ else }}
         <p class="text-xs text-muted">
           No projects yet. Add some under <code>content/work</code>.

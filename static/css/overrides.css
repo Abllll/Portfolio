@@ -20,6 +20,8 @@ html[data-theme="dark"] {
 
   --font-serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
   --font-sans: Helvetica, Arial, sans-serif;
+  --font-script: 'Segoe Script', 'Bradley Hand', cursive;
+  --font-mono: ui-monospace, Menlo, Consolas, monospace;
 }
 
 body {
@@ -29,8 +31,7 @@ body {
 h1, h2, h3,
 .heading-page,
 .heading-section,
-.about-title,
-.card-index {
+.about-title {
   font-family: var(--font-serif);
 }
 
@@ -63,10 +64,48 @@ h1, h2, h3,
   background-size: 160px 160px;
 }
 
-/* Work list numbering — spec §3: "Featured Projects (numbered 01, 02, 03…)" */
-.card-index {
-  display: inline-block;
-  margin-right: 0.4rem;
+/* Work list — linear-row style, replacing the card grid */
+.work-row-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.work-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.work-row:first-child {
+  border-top: 1px solid var(--color-border);
+}
+
+.work-row__index {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.work-row__title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+.work-row__description {
+  flex: 1;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-row__year {
+  font-family: var(--font-mono, monospace);
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }

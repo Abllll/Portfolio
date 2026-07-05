@@ -1,0 +1,14 @@
+{{/* props: Page (work page), Index (optional 1-based int) */}}
+{{- $p := .Page -}}
+{{- $index := .Index -}}
+
+<a href="{{ $p.RelPermalink }}" class="work-row group">
+  <span class="work-row__index">
+    {{ with $index }}{{ printf "%02d" . }}{{ else }}—{{ end }}
+  </span>
+  <span class="work-row__title group-hover:text-accent">{{ $p.Title }}</span>
+  {{ with $p.Params.description }}
+    <span class="work-row__description">{{ . }}</span>
+  {{ end }}
+  <span class="work-row__year">{{ $p.Date.Format "2006" }}</span>
+</a>
