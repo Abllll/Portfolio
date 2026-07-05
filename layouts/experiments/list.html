@@ -1,0 +1,21 @@
+{{ define "main" }}
+  <section class="layout-page">
+    <div class="page-int section-stack">
+      <header class="space-y-2">
+        <h1 class="heading-page text-2xl sm:text-3xl">{{ .Title }}</h1>
+        {{ with .Params.intro }}
+          <p class="max-w-xl text-sm text-muted">{{ . }}</p>
+        {{ end }}
+      </header>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {{ range .Params.categories }}
+          <div class="card card-pad card-hover">
+            <h3 class="heading-section">{{ .name }}</h3>
+            <p class="mt-2 text-xs text-muted">{{ .caption }}</p>
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </section>
+{{ end }}
