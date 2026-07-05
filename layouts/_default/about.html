@@ -1,0 +1,54 @@
+{{ define "main" }}
+  <section class="layout-page">
+    <article class="about-page">
+      <header class="about-hero">
+        <div class="about-hero-content">
+          <h1 class="about-title">{{ .Title }}</h1>
+          {{ with .Params.subtitle }}
+            <p class="about-subtitle">{{ . }}</p>
+          {{ end }}
+        </div>
+      </header>
+
+      <div class="about-content">
+        <div class="card card-pad markdown-body">
+          {{ .Content }}
+        </div>
+      </div>
+
+      <div class="about-content" id="capability-map">
+        <div class="card card-pad">
+          <h2 class="heading-section mb-4">Capability Map</h2>
+          {{ partial "capability-map.html" . }}
+        </div>
+      </div>
+
+      <div class="about-content" id="resume">
+        <div class="card card-pad markdown-body">
+          <h2>Resume</h2>
+          <p>I don't have one canonical public resume posted here yet — I tailor mine per role. Reach out below and I'll send the right version.</p>
+        </div>
+      </div>
+
+      {{ with .Site.Params.social }}
+        <div class="about-social" id="contact">
+          <h3 class="about-social-title">Contact</h3>
+          <div class="about-social-links">
+            {{ range . }}
+              <a
+                href="{{ .url }}"
+                class="about-social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="{{ .label }}"
+              >
+                <i class="{{ .icon }}"></i>
+                <span>{{ .label }}</span>
+              </a>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </article>
+  </section>
+{{ end }}

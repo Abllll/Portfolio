@@ -1,0 +1,124 @@
+.capability-map {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  aspect-ratio: 640 / 420;
+  font-family: var(--font-sans, Helvetica, Arial, sans-serif);
+}
+
+.capability-map__tree {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cm-trunk {
+  fill: var(--color-walnut, #8D5F48);
+}
+
+.cm-canopy {
+  fill: var(--color-text, #433531);
+}
+
+.cm-root {
+  fill: none;
+  stroke: var(--color-walnut, #8D5F48);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.cm-connector {
+  fill: none;
+  stroke: var(--color-denim, #495A78);
+  stroke-width: 1.4;
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+
+.cm-connector--graft {
+  stroke-dasharray: 3 3;
+}
+
+.cm-canopy-label {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 13px;
+  fill: var(--color-text, #433531);
+  letter-spacing: 0.04em;
+}
+
+.cm-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  outline: none;
+}
+
+.cm-node--right {
+  flex-direction: row;
+}
+
+.cm-node--left {
+  flex-direction: row-reverse;
+}
+
+.cm-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-text-muted, #A19AA6);
+  transition: transform 0.35s ease, background-color 0.35s ease;
+  flex-shrink: 0;
+}
+
+.cm-node-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.cm-node--left .cm-node-text {
+  transform: translateX(-6px);
+  text-align: right;
+}
+
+.cm-node-label {
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 0.8rem;
+  color: var(--color-text, #433531);
+}
+
+.cm-node-caption {
+  font-size: 0.65rem;
+  color: var(--color-lavender, #D9D1EA);
+  margin-top: 0.1rem;
+}
+
+.cm-node:hover .cm-dot,
+.cm-node:focus .cm-dot,
+.cm-node.is-active .cm-dot {
+  background: var(--color-accent, #B0C375);
+  transform: scale(1.7);
+}
+
+.cm-node:hover .cm-node-text,
+.cm-node:focus .cm-node-text,
+.cm-node.is-active .cm-node-text {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 640px) {
+  .cm-node-caption {
+    display: none;
+  }
+}

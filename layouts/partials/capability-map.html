@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="{{ "css/capability-map.css" | relURL }}">
+
+<div class="capability-map" role="img" aria-label="Interactive diagram of Amber's disciplines as a tree: roots in engineering, branches in materials, spatial design, illustration, and community, converging in a canopy of design engineering, with a graft of automation and AI joining the trunk lower down.">
+  <svg class="capability-map__tree" viewBox="0 0 640 420" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <!-- roots -->
+    <path d="M300,390 C280,400 265,408 248,414" class="cm-root" />
+    <path d="M300,390 C300,402 300,410 300,417" class="cm-root" />
+    <path d="M300,390 C318,400 333,408 350,414" class="cm-root" />
+
+    <!-- trunk -->
+    <path d="M292,390 C294,320 296,220 299,150 L303,150 C306,220 308,320 310,390 Z" class="cm-trunk" />
+
+    <!-- canopy -->
+    <path d="M255,140 C232,112 258,80 293,90 C316,68 358,90 347,120 C373,130 362,166 332,171 C337,197 300,208 283,187 C259,203 228,187 239,161 C218,153 224,129 255,140 Z" class="cm-canopy" />
+
+    <!-- branch connectors (always dusty denim, per spec) -->
+    <path d="M238,118 C195,110 165,100 143,95" class="cm-connector" data-node="materials" />
+    <path d="M253,88 C230,60 210,42 192,30" class="cm-connector" data-node="spatial" />
+    <path d="M345,92 C368,68 390,48 411,35" class="cm-connector" data-node="illustration" />
+    <path d="M362,122 C400,113 432,105 461,100" class="cm-connector" data-node="community" />
+
+    <!-- root connector -->
+    <path d="M296,388 C275,395 258,400 246,405" class="cm-connector" data-node="engineering" />
+
+    <!-- graft connector — joins the trunk lower down, not the canopy -->
+    <path d="M307,262 C345,270 385,280 420,290" class="cm-connector cm-connector--graft" data-node="automation" />
+
+    <!-- canopy convergence label (always visible, not a hover node) -->
+    <text x="300" y="52" class="cm-canopy-label" text-anchor="middle">Design Engineering</text>
+  </svg>
+
+  <div class="cm-node cm-node--left" style="top: 96.4%; left: 38.4%;" tabindex="0" data-node="engineering">
+    <span class="cm-dot"></span>
+    <span class="cm-node-text">
+      <span class="cm-node-label">Engineering</span>
+      <span class="cm-node-caption">roots — technical reasoning, sustainable urban design</span>
+    </span>
+  </div>
+
+  <div class="cm-node cm-node--left" style="top: 22.6%; left: 22.3%;" tabindex="0" data-node="materials">
+    <span class="cm-dot"></span>
+    <span class="cm-node-text">
+      <span class="cm-node-label">Materials</span>
+      <span class="cm-node-caption">manufacturing &amp; commercial awareness</span>
+    </span>
+  </div>
+
+  <div class="cm-node cm-node--left" style="top: 7.1%; left: 30%;" tabindex="0" data-node="spatial">
+    <span class="cm-dot"></span>
+    <span class="cm-node-text">
+      <span class="cm-node-label">Spatial Design</span>
+      <span class="cm-node-caption">complexity, coordination, construction</span>
+    </span>
+  </div>
+
+  <div class="cm-node cm-node--right" style="top: 8.3%; left: 64.2%;" tabindex="0" data-node="illustration">
+    <span class="cm-dot"></span>
+    <span class="cm-node-text">
+      <span class="cm-node-label">Illustration</span>
+      <span class="cm-node-caption">visual storytelling, personal IP</span>
+    </span>
+  </div>
+
+  <div class="cm-node cm-node--right" style="top: 23.8%; left: 72%;" tabindex="0" data-node="community">
+    <span class="cm-dot"></span>
+    <span class="cm-node-text">
+      <span class="cm-node-label">Community</span>
+      <span class="cm-node-caption">facilitation, iteration on real feedback</span>
+    </span>
+  </div>
+
+  <div class="cm-node cm-node--right cm-node--graft" style="top: 69%; left: 65.6%;" tabindex="0" data-node="automation">
+    <span class="cm-dot"></span>
+    <span class="cm-node-text">
+      <span class="cm-node-label">Automation</span>
+      <span class="cm-node-caption">a new graft, same roots</span>
+    </span>
+  </div>
+</div>
+
+<script src="{{ "js/capability-map.js" | relURL }}" defer></script>
