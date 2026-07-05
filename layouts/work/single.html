@@ -1,0 +1,35 @@
+{{ define "main" }}
+  <section class="layout-page section-stack">
+    <article class="article-layout">
+      <div class="article-main space-y-6">
+        <header class="space-y-3">
+          {{ with .Params.subtitle }}
+            <p class="eyebrow text-accent">{{ . }}</p>
+          {{ end }}
+          <h1 class="heading-page text-2xl sm:text-3xl">{{ .Title }}</h1>
+          {{ with .Params.description }}
+            <p class="max-w-2xl text-sm text-muted">{{ . }}</p>
+          {{ end }}
+
+          <div class="flex flex-wrap gap-x-6 gap-y-1 text-[0.75rem] text-muted">
+            {{ with .Params.role }}<span><strong class="text-text">Role</strong> — {{ . }}</span>{{ end }}
+            {{ with .Params.timeline }}<span><strong class="text-text">Timeline</strong> — {{ . }}</span>{{ end }}
+            {{ with .Params.team }}<span><strong class="text-text">Team</strong> — {{ . }}</span>{{ end }}
+          </div>
+
+          {{ with .Params.tags }}
+            <div class="card-tag-row">
+              {{ range . }}<span class="card-tag-pill">{{ . }}</span>{{ end }}
+            </div>
+          {{ end }}
+        </header>
+
+        <div class="card card-pad">
+          <div class="markdown-body">
+            {{ .Content }}
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+{{ end }}
