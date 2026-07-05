@@ -32,7 +32,7 @@
 
 .cm-connector {
   fill: none;
-  stroke: var(--color-denim, #495A78);
+  stroke: var(--color-denim, #2F5FA8);
   stroke-width: 1.4;
   opacity: 0.55;
   transition: opacity 0.3s ease;
@@ -106,7 +106,7 @@
 .cm-node:hover .cm-dot,
 .cm-node:focus .cm-dot,
 .cm-node.is-active .cm-dot {
-  background: var(--color-accent, #B0C375);
+  background: var(--color-accent, #A83831);
   transform: scale(1.7);
 }
 

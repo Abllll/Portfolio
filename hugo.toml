@@ -23,7 +23,7 @@ theme = "hugo-minimal-black"
   projectsIntro = "Case studies across product, spatial, and systems work — same process, different medium."
 
   [params.manifest]
-    themeColor = "#B0C375"
+    themeColor = "#A83831"
     backgroundColor = "#F4EFE8"
     categories = ["portfolio", "design"]
 
