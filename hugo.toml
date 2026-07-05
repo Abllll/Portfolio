@@ -67,6 +67,12 @@ theme = "hugo-minimal-black"
 
 [menu]
   [[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 0
+    identifier = "home"
+
+  [[menu.main]]
     name = "Work"
     pageRef = "work"
     url = "/work/"
