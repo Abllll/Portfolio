@@ -57,12 +57,12 @@ theme = "hugo-minimal-black"
 
   [[params.social]]
     label = "LinkedIn"
-    url = "https://www.linkedin.com/in/REPLACE-WITH-AMBER-LINKEDIN-HANDLE/"
+    url = "https://www.linkedin.com/in/xiaoyan-amber-li-01095bb7/"
     icon = "fa-brands fa-linkedin-in"
 
   [[params.social]]
     label = "Email"
-    url = "mailto:REPLACE-WITH-AMBER-EMAIL@example.com"
+    url = "mailto:xiaoyanabl@gmail.com"
     icon = "fa-regular fa-envelope"
 
 [menu]
@@ -101,7 +101,7 @@ theme = "hugo-minimal-black"
 
   [[menu.main]]
     name = "LinkedIn"
-    url = "https://www.linkedin.com/in/REPLACE-WITH-AMBER-LINKEDIN-HANDLE/"
+    url = "https://www.linkedin.com/in/xiaoyan-amber-li-01095bb7/"
     weight = 5
     identifier = "linkedin-nav"
 
