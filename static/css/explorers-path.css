@@ -1,0 +1,199 @@
+/* ==========================================================================
+   THE EXPLORER'S PATH — interactive homepage journey
+   Loaded only on the homepage (see layouts/partials/head.html). Reuses the
+   site's existing color tokens from overrides.css — no new palette.
+   ========================================================================== */
+
+.ep-viewport {
+  position: relative;
+  width: 100%;
+  height: min(70vh, 720px);
+  min-height: 420px;
+  overflow: hidden;
+  border-radius: 1rem;
+  outline: none;
+  background: var(--color-surface);
+}
+
+.ep-world {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+
+.ep-chapter {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.ep-chapter--placeholder {
+  background: linear-gradient(160deg, var(--color-walnut) 0%, var(--color-denim) 100%);
+  opacity: 0.85;
+}
+
+.ep-chapter-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  color: var(--color-surface);
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.ep-chapter-label em {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-style: normal;
+  display: block;
+  margin-top: 0.35rem;
+  opacity: 0.75;
+}
+
+.ep-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ep-hotspot-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
+  opacity: 0.25;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ep-hotspot-icon {
+  position: relative;
+  color: var(--color-accent);
+  font-size: 1.1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ep-hotspot.is-near .ep-hotspot-glow,
+.ep-hotspot:hover .ep-hotspot-glow,
+.ep-hotspot:focus .ep-hotspot-glow {
+  opacity: 0.8;
+  transform: scale(1.3);
+}
+
+.ep-hotspot.is-near .ep-hotspot-icon,
+.ep-hotspot:hover .ep-hotspot-icon,
+.ep-hotspot:focus .ep-hotspot-icon {
+  opacity: 1;
+}
+
+.ep-explorer {
+  position: absolute;
+  left: 50%;
+  top: 68%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-walnut);
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 0 2px var(--color-walnut);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.ep-panel {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  background: rgba(67, 53, 49, 0.45);
+  padding: 1rem;
+}
+
+.ep-panel[hidden] {
+  display: none;
+}
+
+.ep-panel-inner {
+  position: relative;
+  max-width: 32rem;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.ep-panel-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.ep-panel-entry[hidden] {
+  display: none;
+}
+
+.ep-panel-kicker {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.ep-panel-heading {
+  font-family: var(--font-serif);
+  margin-bottom: 0.5rem;
+}
+
+.ep-fallback {
+  margin-top: 2rem;
+}
+
+.ep-fallback-chapter {
+  font-family: var(--font-serif);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.ep-fallback-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ep-fallback-item {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem;
+}
+
+.ep-fallback-item summary {
+  cursor: pointer;
+  font-weight: 600;
+}
