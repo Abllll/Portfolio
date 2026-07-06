@@ -1,41 +1,28 @@
 {{- $data := .Site.Data.explorers_path -}}
-<section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated journey — use the left and right arrow keys, or click, to explore">
-  <div class="ep-world" id="ep-world">
-    {{- range $data.chapters }}
-    {{- $isPlaceholder := eq .art "placeholder" }}
-    <div class="ep-chapter {{ if $isPlaceholder }}ep-chapter--placeholder{{ else }}ep-chapter--art{{ end }}"
-         data-chapter-id="{{ .id }}"
-         {{ if not $isPlaceholder }}style="background-image: url('{{ printf "images/explorers-path/%s" .art | relURL }}');"{{ end }}>
-      {{- if $isPlaceholder }}
-      <span class="ep-chapter-label">{{ .title }} <em>— artwork in progress</em></span>
-      {{- end }}
-      {{- range .hotspots }}
-      <button type="button"
-              class="ep-hotspot"
-              id="hotspot-{{ .id }}"
-              data-hotspot-id="{{ .id }}"
-              style="left: {{ .xPercent }}%; top: {{ .yPercent }}%;"
-              aria-label="{{ .title }} — {{ .teaser }}"
-              aria-controls="panel-{{ .id }}">
-        <span class="ep-hotspot-glow" aria-hidden="true"></span>
-        <span class="ep-hotspot-icon" aria-hidden="true">&#10022;</span>
-      </button>
-      {{- end }}
-    </div>
+<section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated journey — move your cursor over the trees to find hidden content, click to open it">
+  <div class="ep-scene" id="ep-scene" style="background-image: url('{{ printf "images/explorers-path/%s" $data.background | relURL }}');">
+    {{- range $data.hotspots }}
+    <button type="button"
+            class="ep-hotspot"
+            id="hotspot-{{ .id }}"
+            data-hotspot-id="{{ .id }}"
+            style="left: {{ .xPercent }}%; top: {{ .yPercent }}%;"
+            aria-label="{{ .title }} — {{ .teaser }}"
+            aria-controls="panel-{{ .id }}">
+      <span class="ep-hotspot-glow" aria-hidden="true"></span>
+      <span class="ep-hotspot-icon" aria-hidden="true">&#10022;</span>
+    </button>
     {{- end }}
   </div>
-  <div class="ep-explorer" id="ep-explorer" aria-hidden="true"></div>
 </section>
 
 <div class="ep-panel" id="ep-panel" hidden role="dialog" aria-modal="true">
   <div class="ep-panel-inner card card-pad">
     <button type="button" class="ep-panel-close" id="ep-panel-close" aria-label="Close">&times;</button>
     <div class="ep-panel-content" id="ep-panel-content">
-      {{- range $data.chapters }}
-      {{- $chapterTitle := .title }}
-      {{- range .hotspots }}
+      {{- range $data.hotspots }}
       <div class="ep-panel-entry" id="panel-{{ .id }}" hidden data-panel-id="{{ .id }}">
-        <p class="ep-panel-kicker">{{ $chapterTitle }}</p>
+        <p class="ep-panel-kicker">{{ .chapter }}</p>
         <h2 id="ep-panel-title-{{ .id }}" class="ep-panel-heading">{{ .title }}</h2>
         {{- if eq .type "case-study" }}
         <p>{{ .teaser }}</p>
@@ -44,7 +31,6 @@
         <p>{{ .body }}</p>
         {{- end }}
       </div>
-      {{- end }}
       {{- end }}
     </div>
   </div>
@@ -56,12 +42,10 @@
 <section class="ep-fallback">
   <div class="page-int section-stack">
     <h2 class="heading-section">Prefer a plain list?</h2>
-    {{- range $data.chapters }}
-    <h3 class="ep-fallback-chapter">{{ .title }}</h3>
     <div class="ep-fallback-items">
-      {{- range .hotspots }}
+      {{- range $data.hotspots }}
       <details class="ep-fallback-item">
-        <summary>{{ .title }}</summary>
+        <summary>{{ .chapter }} — {{ .title }}</summary>
         {{- if eq .type "case-study" }}
         <p>{{ .teaser }}</p>
         <a href="{{ .workRef | relURL }}">View the case study →</a>
@@ -71,6 +55,5 @@
       </details>
       {{- end }}
     </div>
-    {{- end }}
   </div>
 </section>

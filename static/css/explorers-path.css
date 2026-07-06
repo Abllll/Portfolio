@@ -7,56 +7,20 @@
 .ep-viewport {
   position: relative;
   width: 100%;
-  height: min(70vh, 720px);
-  min-height: 420px;
+  height: 100vh;
   overflow: hidden;
-  border-radius: 1rem;
   outline: none;
   background: var(--color-surface);
 }
 
-.ep-world {
-  display: flex;
-  height: 100%;
-  will-change: transform;
-}
-
-.ep-chapter {
-  position: relative;
-  flex: 0 0 100%;
-  height: 100%;
+.ep-scene {
+  position: absolute;
+  inset: -4%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
-
-.ep-chapter--placeholder {
-  background: linear-gradient(160deg, var(--color-walnut) 0%, var(--color-denim) 100%);
-  opacity: 0.85;
-}
-
-.ep-chapter-label {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  text-align: center;
-  color: var(--color-surface);
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  opacity: 0.9;
-  pointer-events: none;
-}
-
-.ep-chapter-label em {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-style: normal;
-  display: block;
-  margin-top: 0.35rem;
-  opacity: 0.75;
+  will-change: transform;
+  transition: transform 0.15s ease-out;
 }
 
 .ep-hotspot {
@@ -104,10 +68,10 @@
   opacity: 1;
 }
 
-.ep-explorer {
+.ep-cursor-marker {
   position: absolute;
-  left: 50%;
-  top: 68%;
+  top: 0;
+  left: 0;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -117,6 +81,12 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ep-cursor-marker.is-visible {
+  opacity: 0.9;
 }
 
 .ep-panel {
@@ -173,12 +143,6 @@
 
 .ep-fallback {
   margin-top: 2rem;
-}
-
-.ep-fallback-chapter {
-  font-family: var(--font-serif);
-  margin-top: 1.25rem;
-  margin-bottom: 0.5rem;
 }
 
 .ep-fallback-items {

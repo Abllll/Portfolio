@@ -1,62 +1,55 @@
-chapters:
-  - id: roots
-    title: "Roots"
-    art: placeholder
-    hotspots:
-      - id: roots-note-1
-        type: note
-        title: "Why sustainable urban design"
-        teaser: "Architecture and engineering, one new field."
-        body: "I started in sustainable urban design because it combined architecture and engineering — a field new enough that nobody had fully defined what it should look like yet. That was the appeal: real technical reasoning, in service of something that mattered."
-        xPercent: 50
-        yPercent: 55
+background: chapter-2-bg.jpg
+hotspots:
+  - id: roots-note-1
+    chapter: "Roots"
+    type: note
+    title: "Why sustainable urban design"
+    teaser: "Architecture and engineering, one new field."
+    body: "I started in sustainable urban design because it combined architecture and engineering — a field new enough that nobody had fully defined what it should look like yet. That was the appeal: real technical reasoning, in service of something that mattered."
+    xPercent: 18
+    yPercent: 70
 
-  - id: spark
-    title: "The Spark"
-    art: chapter-2-bg.jpg
-    hotspots:
-      - id: spark-note-1
-        type: note
-        title: "My aunt's colored pencils"
-        teaser: "Where the aesthetic sense actually comes from."
-        body: "Long before design was a career idea, I watched my aunt — an architect — always carrying colored pencils, rendering by hand. That's the real origin of whatever eye I have now, not a design-school module."
-        xPercent: 40
-        yPercent: 55
-      - id: spark-meme-1
-        type: meme
-        title: "Same energy, different decade"
-        teaser: "Placeholder — real caption pending."
-        body: "Placeholder hotspot. The real meme image and caption need Amber's own authorship — personal-growth reflections have to be in her actual voice, not a drafted stand-in. This entry marks where it goes."
-        xPercent: 65
-        yPercent: 40
+  - id: spark-note-1
+    chapter: "The Spark"
+    type: note
+    title: "My aunt's colored pencils"
+    teaser: "Where the aesthetic sense actually comes from."
+    body: "Long before design was a career idea, I watched my aunt — an architect — always carrying colored pencils, rendering by hand. That's the real origin of whatever eye I have now, not a design-school module."
+    xPercent: 38
+    yPercent: 42
 
-  - id: id-years
-    title: "The ID Years"
-    art: placeholder
-    hotspots:
-      - id: id-years-note-1
-        type: note
-        title: "Solo, and a few small teams"
-        teaser: "Learning the craft, and its limits."
-        body: "A few years in as a working designer — solo projects, and leading a few small ones — I loved the craft, but kept noticing how far behind the industry's tools and pace were from what I actually believed in."
-        xPercent: 50
-        yPercent: 55
+  - id: spark-meme-1
+    chapter: "The Spark"
+    type: meme
+    title: "Same energy, different decade"
+    teaser: "Placeholder — real caption pending."
+    body: "Placeholder hotspot. The real meme image and caption need Amber's own authorship — personal-growth reflections have to be in her actual voice, not a drafted stand-in. This entry marks where it goes."
+    xPercent: 58
+    yPercent: 30
 
-  - id: now
-    title: "Now"
-    art: placeholder
-    hotspots:
-      - id: now-case-study-1
-        type: case-study
-        title: "Bonheur"
-        teaser: "A personal emotional memory cabinet — the first real Work entry."
-        workRef: "/work/bonheur/"
-        xPercent: 35
-        yPercent: 55
-      - id: now-note-1
-        type: note
-        title: "The graft, not a pivot"
-        teaser: "Same roots, new tool."
-        body: "Technology is a new graft onto roots that were already there — sustainability, systems thinking, an eye for how things should feel — not a different tree."
-        xPercent: 65
-        yPercent: 50
+  - id: id-years-note-1
+    chapter: "The ID Years"
+    type: note
+    title: "Solo, and a few small teams"
+    teaser: "Learning the craft, and its limits."
+    body: "A few years in as a working designer — solo projects, and leading a few small ones — I loved the craft, but kept noticing how far behind the industry's tools and pace were from what I actually believed in."
+    xPercent: 72
+    yPercent: 55
+
+  - id: now-case-study-1
+    chapter: "Now"
+    type: case-study
+    title: "Bonheur"
+    teaser: "A personal emotional memory cabinet — the first real Work entry."
+    workRef: "/work/bonheur/"
+    xPercent: 25
+    yPercent: 20
+
+  - id: now-note-1
+    chapter: "Now"
+    type: note
+    title: "The graft, not a pivot"
+    teaser: "Same roots, new tool."
+    body: "Technology is a new graft onto roots that were already there — sustainability, systems thinking, an eye for how things should feel — not a different tree."
+    xPercent: 85
+    yPercent: 78

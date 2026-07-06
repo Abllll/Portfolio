@@ -2,79 +2,64 @@
   "use strict";
 
   var viewport = document.getElementById("ep-viewport");
-  var world = document.getElementById("ep-world");
-  if (!viewport || !world) return;
+  var scene = document.getElementById("ep-scene");
+  if (!viewport || !scene) return;
 
-  var chapters = Array.prototype.slice.call(world.querySelectorAll(".ep-chapter"));
-  var hotspots = Array.prototype.slice.call(world.querySelectorAll(".ep-hotspot"));
+  var hotspots = Array.prototype.slice.call(viewport.querySelectorAll(".ep-hotspot"));
   var panel = document.getElementById("ep-panel");
   var panelContent = document.getElementById("ep-panel-content");
   var panelClose = document.getElementById("ep-panel-close");
   var footstepAudio = document.getElementById("ep-audio-footstep");
   var discoveryAudio = document.getElementById("ep-audio-discovery");
 
-  var NUM_CHAPTERS = chapters.length;
-  var STEP_PX = 8;
   var PROXIMITY_PX = 70;
+  var EASE = 0.12;
 
-  var position = 0; // px, 0 .. (worldWidth - viewportWidth)
-  var viewportWidth = viewport.clientWidth;
-  var worldWidth = viewportWidth * NUM_CHAPTERS;
-  var heldKeys = { left: false, right: false };
-  var rafId = null;
+  var cursorMarker = document.createElement("div");
+  cursorMarker.className = "ep-cursor-marker";
+  cursorMarker.setAttribute("aria-hidden", "true");
+  viewport.appendChild(cursorMarker);
+
+  var targetX = null;
+  var targetY = null;
+  var markerX = 0;
+  var markerY = 0;
   var visited = {};
   var lastFocusedHotspot = null;
+  var footstepIdleTimer = null;
 
-  function layoutWorld() {
-    viewportWidth = viewport.clientWidth;
-    worldWidth = viewportWidth * NUM_CHAPTERS;
-    world.style.width = worldWidth + "px";
-    chapters.forEach(function (chapter) {
-      chapter.style.width = viewportWidth + "px";
-    });
-    position = Math.min(position, worldWidth - viewportWidth);
-    applyPosition();
-  }
-
-  function applyPosition() {
-    world.style.transform = "translateX(-" + position + "px)";
-    updateProximity();
-  }
-
-  function hotspotWorldX(hotspot) {
-    var chapter = hotspot.closest(".ep-chapter");
-    var chapterIndex = chapters.indexOf(chapter);
-    var xPercent = parseFloat(hotspot.style.left) || 0;
-    return chapterIndex * viewportWidth + (xPercent / 100) * viewportWidth;
+  function hotspotPosition(hotspot) {
+    var rect = viewport.getBoundingClientRect();
+    return {
+      x: (parseFloat(hotspot.style.left) / 100) * rect.width,
+      y: (parseFloat(hotspot.style.top) / 100) * rect.height,
+    };
   }
 
   function updateProximity() {
-    var explorerWorldX = position + viewportWidth / 2;
     hotspots.forEach(function (hotspot) {
-      var dx = Math.abs(hotspotWorldX(hotspot) - explorerWorldX);
-      hotspot.classList.toggle("is-near", dx < PROXIMITY_PX);
+      var pos = hotspotPosition(hotspot);
+      var dx = markerX - pos.x;
+      var dy = markerY - pos.y;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      hotspot.classList.toggle("is-near", distance < PROXIMITY_PX);
     });
   }
 
-  function step() {
-    var delta = 0;
-    if (heldKeys.left) delta -= STEP_PX;
-    if (heldKeys.right) delta += STEP_PX;
-    if (delta !== 0) {
-      position = Math.max(0, Math.min(worldWidth - viewportWidth, position + delta));
-      applyPosition();
-      playFootstep();
-      rafId = requestAnimationFrame(step);
-    } else {
-      stopFootstep();
-      rafId = null;
-    }
-  }
+  function tick() {
+    if (targetX !== null) {
+      markerX += (targetX - markerX) * EASE;
+      markerY += (targetY - markerY) * EASE;
+      cursorMarker.style.transform = "translate(" + markerX + "px, " + markerY + "px)";
 
-  function startMoving() {
-    if (rafId === null) {
-      rafId = requestAnimationFrame(step);
+      var rect = viewport.getBoundingClientRect();
+      var relX = markerX / rect.width - 0.5; // -0.5 .. 0.5
+      var relY = markerY / rect.height - 0.5;
+      scene.style.transform = "translate(" + -relX * 24 + "px, " + -relY * 24 + "px)";
+
+      updateProximity();
     }
+    requestAnimationFrame(tick);
   }
 
   function playFootstep() {
@@ -82,6 +67,8 @@
       footstepAudio.currentTime = 0;
       footstepAudio.play().catch(function () {});
     }
+    if (footstepIdleTimer) clearTimeout(footstepIdleTimer);
+    footstepIdleTimer = setTimeout(stopFootstep, 200);
   }
 
   function stopFootstep() {
@@ -90,6 +77,19 @@
       footstepAudio.currentTime = 0;
     }
   }
+
+  viewport.addEventListener("mousemove", function (event) {
+    var rect = viewport.getBoundingClientRect();
+    targetX = event.clientX - rect.left;
+    targetY = event.clientY - rect.top;
+    cursorMarker.classList.add("is-visible");
+    playFootstep();
+  });
+
+  viewport.addEventListener("mouseleave", function () {
+    cursorMarker.classList.remove("is-visible");
+    stopFootstep();
+  });
 
   function openPanel(hotspotId) {
     var entry = document.getElementById("panel-" + hotspotId);
@@ -134,40 +134,10 @@
   }
 
   document.addEventListener("keydown", function (event) {
-    if (panel && !panel.hidden) {
-      if (event.key === "Escape") closePanel();
-      return;
-    }
-    if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
-      heldKeys.left = true;
-      startMoving();
-    } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
-      heldKeys.right = true;
-      startMoving();
+    if (panel && !panel.hidden && event.key === "Escape") {
+      closePanel();
     }
   });
 
-  document.addEventListener("keyup", function (event) {
-    if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
-      heldKeys.left = false;
-    } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
-      heldKeys.right = false;
-    }
-  });
-
-  viewport.addEventListener("click", function (event) {
-    if (event.target.closest(".ep-hotspot")) return;
-    var rect = viewport.getBoundingClientRect();
-    var clickX = event.clientX - rect.left;
-    heldKeys.left = clickX < viewportWidth / 2;
-    heldKeys.right = clickX >= viewportWidth / 2;
-    startMoving();
-    setTimeout(function () {
-      heldKeys.left = false;
-      heldKeys.right = false;
-    }, 400);
-  });
-
-  window.addEventListener("resize", layoutWorld);
-  layoutWorld();
+  requestAnimationFrame(tick);
 })();
