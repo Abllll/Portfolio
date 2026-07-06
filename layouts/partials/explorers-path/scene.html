@@ -1,6 +1,7 @@
 {{- $data := .Site.Data.explorers_path -}}
 <section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated journey — move your cursor over the trees to find hidden content, click to open it">
-  <div class="ep-scene" id="ep-scene" style="background-image: url('{{ printf "images/explorers-path/%s" $data.background | relURL }}');">
+  <div class="ep-scene-layer ep-scene-layer--far" id="ep-scene-far" style="background-image: url('{{ printf "images/explorers-path/%s" $data.backgroundFar | relURL }}');"></div>
+  <div class="ep-scene-layer ep-scene-layer--near" id="ep-scene-near" style="background-image: url('{{ printf "images/explorers-path/%s" $data.background | relURL }}');">
     {{- range $data.hotspots }}
     <button type="button"
             class="ep-hotspot"

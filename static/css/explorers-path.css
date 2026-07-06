@@ -13,14 +13,23 @@
   background: var(--color-surface);
 }
 
-.ep-scene {
+.ep-scene-layer {
   position: absolute;
-  inset: -4%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   will-change: transform;
   transition: transform 0.15s ease-out;
+}
+
+.ep-scene-layer--far {
+  inset: -9%;
+  z-index: 1;
+}
+
+.ep-scene-layer--near {
+  inset: -4%;
+  z-index: 2;
 }
 
 .ep-hotspot {
@@ -72,21 +81,25 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--color-walnut);
-  border: 2px solid var(--color-surface);
-  box-shadow: 0 0 0 2px var(--color-walnut);
-  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 40px;
+  margin-left: -14px;
+  margin-top: -34px;
   pointer-events: none;
   z-index: 5;
   opacity: 0;
+  filter: drop-shadow(0 2px 3px rgba(67, 53, 49, 0.35));
   transition: opacity 0.3s ease;
 }
 
 .ep-cursor-marker.is-visible {
-  opacity: 0.9;
+  opacity: 0.95;
+}
+
+.ep-cursor-marker svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .ep-panel {

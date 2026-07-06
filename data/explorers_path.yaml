@@ -1,4 +1,5 @@
 background: chapter-2-bg.jpg
+backgroundFar: chapter-2-bg-far.jpg
 hotspots:
   - id: roots-note-1
     chapter: "Roots"
