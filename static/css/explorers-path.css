@@ -1,7 +1,13 @@
 /* ==========================================================================
-   THE EXPLORER'S PATH — interactive homepage journey
+   THE EXPLORER'S PATH — layered depth-parallax diorama
    Loaded only on the homepage (see layouts/partials/head.html). Reuses the
    site's existing color tokens from overrides.css — no new palette.
+
+   Structure: each .ep-layer-wrap is JS-transformed for mouse parallax
+   (static/js/explorers-path.js reads data-factor). Idle motion (sway /
+   drift / twinkle) is applied to the *child* img, never the wrapper —
+   animating transform on both the wrapper (JS) and itself (CSS) would
+   fight over the same property on the same node.
    ========================================================================== */
 
 .ep-viewport {
@@ -13,23 +19,64 @@
   background: var(--color-surface);
 }
 
-.ep-scene-layer {
+.ep-layer-wrap {
   position: absolute;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  inset: -8%;
   will-change: transform;
-  transition: transform 0.15s ease-out;
 }
 
-.ep-scene-layer--far {
-  inset: -9%;
-  z-index: 1;
+.ep-layer-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  user-select: none;
 }
 
-.ep-scene-layer--near {
-  inset: -4%;
-  z-index: 2;
+/* The hotspot layer isn't a full-bleed image — its children are
+   percentage-positioned buttons, so it must NOT share the image layers'
+   oversize margin or their percentages would land in the wrong spot. */
+#ep-hotspot-layer {
+  inset: 0;
+}
+
+.ep-idle-sway img {
+  animation: ep-sway 10s ease-in-out infinite;
+}
+
+.ep-idle-drift img {
+  animation: ep-drift 8s ease-in-out infinite;
+}
+
+.ep-idle-sparkle img {
+  animation: ep-twinkle 3.6s ease-in-out infinite;
+}
+
+@keyframes ep-sway {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  50% { transform: rotate(0.4deg) translateX(2px); }
+}
+
+@keyframes ep-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(3px, 5px); }
+}
+
+@keyframes ep-twinkle {
+  0%, 100% { opacity: 0.78; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-layer-wrap {
+    transition: none !important;
+  }
+  .ep-idle-sway img,
+  .ep-idle-drift img,
+  .ep-idle-sparkle img {
+    animation: none;
+  }
 }
 
 .ep-hotspot {
@@ -75,31 +122,6 @@
 .ep-hotspot:hover .ep-hotspot-icon,
 .ep-hotspot:focus .ep-hotspot-icon {
   opacity: 1;
-}
-
-.ep-cursor-marker {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 28px;
-  height: 40px;
-  margin-left: -14px;
-  margin-top: -34px;
-  pointer-events: none;
-  z-index: 5;
-  opacity: 0;
-  filter: drop-shadow(0 2px 3px rgba(67, 53, 49, 0.35));
-  transition: opacity 0.3s ease;
-}
-
-.ep-cursor-marker.is-visible {
-  opacity: 0.95;
-}
-
-.ep-cursor-marker svg {
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 
 .ep-panel {

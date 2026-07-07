@@ -2,43 +2,22 @@
   "use strict";
 
   var viewport = document.getElementById("ep-viewport");
-  var sceneNear = document.getElementById("ep-scene-near");
-  var sceneFar = document.getElementById("ep-scene-far");
-  if (!viewport || !sceneNear) return;
+  if (!viewport) return;
 
+  var layers = Array.prototype.slice.call(viewport.querySelectorAll("[data-factor]"));
   var hotspots = Array.prototype.slice.call(viewport.querySelectorAll(".ep-hotspot"));
   var panel = document.getElementById("ep-panel");
   var panelContent = document.getElementById("ep-panel-content");
   var panelClose = document.getElementById("ep-panel-close");
-  var footstepAudio = document.getElementById("ep-audio-footstep");
   var discoveryAudio = document.getElementById("ep-audio-discovery");
 
   var PROXIMITY_PX = 70;
-  var EASE = 0.12;
+  var EASE = 0.08;
 
-  // Placeholder explorer sprite: a small drawn figure, standing in for
-  // Amber's real hand-illustrated sprite until she exports it as its own
-  // layer. Swap the innerHTML for a real <img> once that art exists.
-  var cursorMarker = document.createElement("div");
-  cursorMarker.className = "ep-cursor-marker";
-  cursorMarker.setAttribute("aria-hidden", "true");
-  cursorMarker.innerHTML =
-    '<svg viewBox="0 0 28 40" xmlns="http://www.w3.org/2000/svg">' +
-    '<ellipse cx="14" cy="37" rx="8" ry="2.5" fill="rgba(67,53,49,0.28)" />' +
-    '<path d="M14 10 C9 10 7 15 8 22 L6 34 L11 34 L12.5 24 L14 24 L15.5 34 L20 34 L18 22 ' +
-    'C19 15 19 10 14 10 Z" fill="var(--color-walnut)" />' +
-    '<circle cx="14" cy="6" r="5" fill="var(--color-walnut)" />' +
-    '<circle cx="17.5" cy="16" r="3" fill="var(--color-accent)" />' +
-    "</svg>";
-  viewport.appendChild(cursorMarker);
-
-  var targetX = null;
-  var targetY = null;
-  var markerX = 0;
-  var markerY = 0;
+  var target = { x: 0, y: 0 };
+  var current = { x: 0, y: 0 };
   var visited = {};
   var lastFocusedHotspot = null;
-  var footstepIdleTimer = null;
 
   function hotspotPosition(hotspot) {
     var rect = viewport.getBoundingClientRect();
@@ -48,66 +27,42 @@
     };
   }
 
-  function updateProximity() {
+  function updateProximity(pointerX, pointerY) {
     hotspots.forEach(function (hotspot) {
       var pos = hotspotPosition(hotspot);
-      var dx = markerX - pos.x;
-      var dy = markerY - pos.y;
+      var dx = pointerX - pos.x;
+      var dy = pointerY - pos.y;
       var distance = Math.sqrt(dx * dx + dy * dy);
       hotspot.classList.toggle("is-near", distance < PROXIMITY_PX);
     });
   }
 
   function tick() {
-    if (targetX !== null) {
-      markerX += (targetX - markerX) * EASE;
-      markerY += (targetY - markerY) * EASE;
-      cursorMarker.style.transform = "translate(" + markerX + "px, " + markerY + "px)";
+    current.x += (target.x - current.x) * EASE;
+    current.y += (target.y - current.y) * EASE;
 
-      var rect = viewport.getBoundingClientRect();
-      var relX = markerX / rect.width - 0.5; // -0.5 .. 0.5
-      var relY = markerY / rect.height - 0.5;
+    layers.forEach(function (layer) {
+      var factor = parseFloat(layer.getAttribute("data-factor")) || 0;
+      var dx = -current.x * factor;
+      var dy = -current.y * factor;
+      layer.style.transform = "translate(" + dx + "px," + dy + "px)";
+    });
 
-      // Two-layer parallax: the far (blurred/zoomed) layer reads as more
-      // distant, so it shifts less than the near (sharp) layer — the
-      // difference in travel distance is what sells the depth.
-      sceneNear.style.transform = "translate(" + -relX * 26 + "px, " + -relY * 26 + "px)";
-      if (sceneFar) {
-        sceneFar.style.transform = "translate(" + -relX * 10 + "px, " + -relY * 10 + "px)";
-      }
+    var rect = viewport.getBoundingClientRect();
+    updateProximity((current.x + 0.5) * rect.width, (current.y + 0.5) * rect.height);
 
-      updateProximity();
-    }
     requestAnimationFrame(tick);
-  }
-
-  function playFootstep() {
-    if (footstepAudio && footstepAudio.paused) {
-      footstepAudio.currentTime = 0;
-      footstepAudio.play().catch(function () {});
-    }
-    if (footstepIdleTimer) clearTimeout(footstepIdleTimer);
-    footstepIdleTimer = setTimeout(stopFootstep, 200);
-  }
-
-  function stopFootstep() {
-    if (footstepAudio && !footstepAudio.paused) {
-      footstepAudio.pause();
-      footstepAudio.currentTime = 0;
-    }
   }
 
   viewport.addEventListener("mousemove", function (event) {
     var rect = viewport.getBoundingClientRect();
-    targetX = event.clientX - rect.left;
-    targetY = event.clientY - rect.top;
-    cursorMarker.classList.add("is-visible");
-    playFootstep();
+    target.x = (event.clientX - rect.left) / rect.width - 0.5;
+    target.y = (event.clientY - rect.top) / rect.height - 0.5;
   });
 
   viewport.addEventListener("mouseleave", function () {
-    cursorMarker.classList.remove("is-visible");
-    stopFootstep();
+    target.x = 0;
+    target.y = 0;
   });
 
   function openPanel(hotspotId) {

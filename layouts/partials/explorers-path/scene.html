@@ -1,7 +1,11 @@
 {{- $data := .Site.Data.explorers_path -}}
-<section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated journey — move your cursor over the trees to find hidden content, click to open it">
-  <div class="ep-scene-layer ep-scene-layer--far" id="ep-scene-far" style="background-image: url('{{ printf "images/explorers-path/%s" $data.backgroundFar | relURL }}');"></div>
-  <div class="ep-scene-layer ep-scene-layer--near" id="ep-scene-near" style="background-image: url('{{ printf "images/explorers-path/%s" $data.background | relURL }}');">
+<section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated scene — move your cursor to look around, click a glowing point to open it">
+  {{- range $data.layers }}
+  <div class="ep-layer-wrap{{ if ne .idle "none" }} ep-idle-{{ .idle }}{{ end }}" data-factor="{{ .weight }}">
+    <img src="{{ printf "images/explorers-path/%s" .file | relURL }}" alt="" aria-hidden="true">
+  </div>
+  {{- end }}
+  <div class="ep-layer-wrap" id="ep-hotspot-layer" data-factor="4">
     {{- range $data.hotspots }}
     <button type="button"
             class="ep-hotspot"
@@ -37,7 +41,6 @@
   </div>
 </div>
 
-<audio id="ep-audio-footstep" src="{{ "audio/explorers-path/footstep.wav" | relURL }}" preload="auto" loop></audio>
 <audio id="ep-audio-discovery" src="{{ "audio/explorers-path/discovery.wav" | relURL }}" preload="auto"></audio>
 
 <section class="ep-fallback">

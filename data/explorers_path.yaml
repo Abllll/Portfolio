@@ -1,5 +1,41 @@
-background: chapter-2-bg.jpg
-backgroundFar: chapter-2-bg-far.jpg
+layers:
+  - id: wash
+    file: wash.webp
+    weight: 6
+    idle: none
+  - id: trunks
+    file: trunks.webp
+    weight: 14
+    idle: none
+  - id: foliage-a
+    file: foliage-a.webp
+    weight: 22
+    idle: sway
+  - id: path
+    file: path.webp
+    weight: 4
+    idle: none
+  - id: glow
+    file: glow.webp
+    weight: 4
+    idle: none
+  - id: girl
+    file: girl.webp
+    weight: 4
+    idle: none
+  - id: foliage-b
+    file: foliage-b.webp
+    weight: 38
+    idle: sway
+  - id: dust
+    file: dust.webp
+    weight: 30
+    idle: drift
+  - id: sparkle
+    file: sparkle.webp
+    weight: 46
+    idle: sparkle
+
 hotspots:
   - id: roots-note-1
     chapter: "Roots"

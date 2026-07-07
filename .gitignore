@@ -7,6 +7,10 @@
 /backup-static/
 /backup-content-old/
 
+# Raw illustration source exports (camera-resolution Procreate layers) —
+# processed/optimized versions live in static/images/explorers-path/
+/layer/
+
 # Lock files and system files
 .hugo_build.lock
 .DS_Store
