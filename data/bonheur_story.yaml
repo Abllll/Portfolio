@@ -1,0 +1,43 @@
+beats:
+  - id: spark
+    number: 1
+    title: "Spark"
+    body: "Bonheur — bon + heur, a good hour. A life is just an accumulation of them. This is a practice of noticing the ones that already happened, before they disappear."
+    motif: drifting
+    media: null
+
+  - id: ache
+    number: 2
+    title: "The Ache"
+    body: "We remember the bad hour instantly and let the good one slip by unclaimed — negativity bias, not a flaw of memory but a habit of attention. Most of what actually moved you today is already gone by tonight."
+    motif: fading
+    media: null
+
+  - id: turn
+    number: 3
+    title: "The Turn"
+    body: "So: catch it before it fades. A photo, a word for what it was — a breeze, a small win, someone's laugh. Bonheur cuts the moment out of its own photo and keeps it as a spark — a little sticker of the thing itself."
+    motif: caught
+    media: null
+
+  - id: jar
+    number: 4
+    title: "The Jar"
+    body: "Every day gets its own jar. Drop a spark in and it glows — brighter with every good hour you caught that day. Up to three a day; some days the jar stays dim, and that's allowed to just be true."
+    motif: jar-fill
+    media: null
+
+  - id: star-cloud
+    number: 5
+    title: "The Star Cloud"
+    body: "Zoom out to a year, and every spark you've kept becomes a point of light. The ones that repeat — the same person, the same small ritual, the same word — drift together into their own cluster, orbiting a sun at the center. Not a mood board. A map of what actually moves you, drawn by you without meaning to."
+    motif: cloud
+    media: null
+
+  - id: keeping
+    number: 6
+    title: "The Keeping"
+    body: "No streaks. No feed. No score to keep. Just the good hours, kept — however many there turn out to be."
+    motif: settled
+    media: null
+    video: null

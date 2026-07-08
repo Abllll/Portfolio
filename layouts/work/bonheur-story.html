@@ -1,0 +1,47 @@
+{{/* layouts/work/bonheur-story.html */}}
+{{ define "main" }}
+  <section class="layout-page bs-page">
+    <div class="bs-motif" id="bs-motif" data-motif="{{ (index .Site.Data.bonheur_story.beats 0).motif }}" aria-hidden="true">
+      <div class="bs-spark"></div>
+      <div class="bs-jar"></div>
+      <div class="bs-cluster"></div>
+    </div>
+
+    <header class="bs-beat bs-beat-header page-int">
+      <div class="bs-beat-inner">
+        {{ with .Params.subtitle }}
+          <p class="eyebrow text-accent">{{ . }}</p>
+        {{ end }}
+        <h1 class="heading-page text-2xl sm:text-3xl">{{ .Title }}</h1>
+      </div>
+    </header>
+
+    {{ range .Site.Data.bonheur_story.beats }}
+    <section class="bs-beat" data-beat-id="{{ .id }}" data-motif="{{ .motif }}">
+      <div class="bs-beat-inner">
+        <p class="bs-beat-number">{{ printf "%02d" .number }}</p>
+        <h2 class="heading-section">{{ .title }}</h2>
+        <p>{{ .body }}</p>
+
+        <div class="bs-beat-media">
+          {{ if .media }}
+            <img src="{{ .media | relURL }}" alt="{{ .title }}">
+          {{ else }}
+            <div class="bs-media-placeholder">Artwork pending — {{ .title }}</div>
+          {{ end }}
+
+          {{ if isset . "video" }}
+            {{ if .video }}
+              <video src="{{ .video | relURL }}" controls muted loop></video>
+            {{ else }}
+              <div class="bs-media-placeholder">Walkthrough video pending — {{ .title }}</div>
+            {{ end }}
+          {{ end }}
+        </div>
+      </div>
+    </section>
+    {{ end }}
+  </section>
+
+  <script src="{{ "js/bonheur-story.js" | relURL }}" defer></script>
+{{ end }}
