@@ -1,0 +1,58 @@
+/* ==========================================================================
+   PAGE TRANSITIONS — soft cross-document crossfade between pages
+   Loaded globally (see layouts/partials/head.html) — not homepage-only.
+   Uses the native View Transitions API (`@view-transition`), which
+   supporting browsers apply automatically to every same-origin
+   navigation (including the "View the case study →" link out of the
+   Explorer's Path panel, and the footer nav). Unsupported browsers
+   ignore the whole rule and navigate instantly, same as before — no JS,
+   no fallback code needed.
+   ========================================================================== */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-old(root) {
+  animation-name: ep-page-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: ep-page-fade-in;
+}
+
+@keyframes ep-page-fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes ep-page-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
