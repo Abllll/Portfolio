@@ -25,17 +25,69 @@
   var LOOK_EASE = 0.08;
   var GIRL_LOOK_FACTOR = 4; // she still rides the ground plane's subtle mouse parallax
 
-  // Girl's own walk state — real translation, not a world-zoom illusion.
-  var MOVE_RANGE_X = 110; // px either side of her drawn spot
-  var MOVE_RANGE_Y_FWD = 130; // px "forward" (up-screen, further up the path)
-  var MOVE_RANGE_Y_BACK = 70; // px "back" (down-screen, toward the viewer)
-  var ACCEL = 0.09;
-  var FRICTION = 0.85;
-  var MAX_SPEED = 3.2; // px per frame
+  // The path's own centerline, extracted from the real path artwork
+  // (layer/IMG_6583.PNG) — percent-of-canvas coordinates on the shared
+  // canvas every layer uses, ordered near (index 0, toward the viewer)
+  // to far (last index, deeper into the forest). She's only ever placed
+  // somewhere on this line — never free-roaming off the path.
+  var PATH = [
+    { x: 41.92, y: 99.76 }, { x: 44.17, y: 96.17 }, { x: 44.81, y: 92.47 },
+    { x: 47.43, y: 89.44 }, { x: 50.76, y: 86.33 }, { x: 52.78, y: 82.86 },
+    { x: 54.27, y: 79.02 }, { x: 53.6, y: 75.03 }, { x: 50.9, y: 71.58 },
+    { x: 46.9, y: 68.88 }, { x: 42.85, y: 66.23 }, { x: 40.39, y: 62.69 },
+    { x: 40.79, y: 58.71 }, { x: 42.35, y: 55.13 }, { x: 45.4, y: 52.82 },
+    { x: 48.97, y: 50.06 }, { x: 52.97, y: 47.38 }, { x: 57.41, y: 45.16 },
+    { x: 61.76, y: 42.82 }, { x: 65.86, y: 40.24 }, { x: 70.33, y: 38.01 },
+    { x: 74.7, y: 35.71 }, { x: 79.21, y: 33.54 }, { x: 83.85, y: 31.57 },
+    { x: 88.43, y: 29.45 }, { x: 92.33, y: 26.75 }, { x: 96.11, y: 23.96 },
+    { x: 99.06, y: 20.72 },
+  ];
+  // Where she's actually drawn (girl.webp's own figure, same canvas) —
+  // the reference point every translate is measured from, since the
+  // layer renders her there "for free" with no transform at all.
+  var NATURAL_X_PCT = 57.53;
+  var NATURAL_Y_PCT = 47.23;
+  var START_PROGRESS = 17; // closest PATH index to her drawn spot
+
+  // .ep-viewport's aspect-ratio matches the canvas exactly, and the girl's
+  // own layer (unlike the background layers) has no oversize margin — see
+  // #ep-layer-girl in explorers-path.css — so canvas percent maps straight
+  // to viewport percent with no scale-and-offset math needed.
+  function canvasPctToScreen(xPct, yPct, rect) {
+    return {
+      x: (xPct / 100) * rect.width,
+      y: (yPct / 100) * rect.height,
+    };
+  }
+
+  function samplePath(progress) {
+    var clamped = Math.max(0, Math.min(PATH.length - 1, progress));
+    var i0 = Math.floor(clamped);
+    var i1 = Math.min(PATH.length - 1, i0 + 1);
+    var frac = clamped - i0;
+    var p0 = PATH[i0];
+    var p1 = PATH[i1];
+    return { x: p0.x + (p1.x - p0.x) * frac, y: p0.y + (p1.y - p0.y) * frac };
+  }
+
+  // Girl's own walk state — she moves along PATH only. "progress" is a
+  // float index into PATH (0 = nearest the viewer, PATH.length-1 =
+  // furthest into the forest); "lateral" is a small bounded wobble
+  // perpendicular to the path so A/D still does something without ever
+  // sending her off the drawn trail.
+  var MAX_PROGRESS_SPEED = 0.09; // PATH indices per frame
+  var PROGRESS_ACCEL = 0.09; // fraction of max speed gained per frame while held
+  var PROGRESS_FRICTION = 0.85;
+  var MAX_LATERAL_SPEED = 0.05;
+  var LATERAL_ACCEL = 0.09;
+  var LATERAL_FRICTION = 0.85;
+  var LATERAL_RANGE_PX = 16; // how far off the centerline A/D can wobble
   var FORWARD_SCALE_BOOST = 0.16; // walking "into the distance" shrinks her a touch
 
-  var girlPos = { x: 0, y: 0 };
-  var girlVel = { x: 0, y: 0 };
+  var progress = START_PROGRESS;
+  var progressVel = 0;
+  var lateral = 0; // -1..1
+  var lateralVel = 0;
 
   // Mouse look (fine, continuous, background only)
   var mouseTarget = { x: 0, y: 0 };
@@ -87,6 +139,8 @@
   }
 
   function tick() {
+    var rect = viewport.getBoundingClientRect();
+
     mouseCurrent.x += (mouseTarget.x - mouseCurrent.x) * LOOK_EASE;
     mouseCurrent.y += (mouseTarget.y - mouseCurrent.y) * LOOK_EASE;
 
@@ -98,28 +152,27 @@
       layer.style.transform = "translate(" + dx + "px," + dy + "px)";
     });
 
-    // Girl: real WASD-driven walking, accelerate/decelerate with friction.
-    var ax = 0;
-    var ay = 0;
-    if (keys.left) ax -= 1;
-    if (keys.right) ax += 1;
-    if (keys.forward) ay -= 1;
-    if (keys.backward) ay += 1;
+    // Girl: walk along PATH only. W/S move her forward/back along the
+    // centerline (accelerate/decay with friction, same feel as before);
+    // A/D are a small perpendicular wobble, not free lateral roaming —
+    // she never leaves the drawn trail.
+    var wantProgress = 0;
+    if (keys.forward) wantProgress += 1;
+    if (keys.backward) wantProgress -= 1;
+    progressVel += wantProgress * MAX_PROGRESS_SPEED * PROGRESS_ACCEL;
+    progressVel *= PROGRESS_FRICTION;
+    progressVel = Math.max(-MAX_PROGRESS_SPEED, Math.min(MAX_PROGRESS_SPEED, progressVel));
+    progress = Math.max(0, Math.min(PATH.length - 1, progress + progressVel));
 
-    if (ax !== 0 || ay !== 0) {
-      var len = Math.sqrt(ax * ax + ay * ay);
-      girlVel.x += (ax / len) * MAX_SPEED * ACCEL;
-      girlVel.y += (ay / len) * MAX_SPEED * ACCEL;
-    }
-    girlVel.x *= FRICTION;
-    girlVel.y *= FRICTION;
-    girlVel.x = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, girlVel.x));
-    girlVel.y = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, girlVel.y));
+    var wantLateral = 0;
+    if (keys.left) wantLateral -= 1;
+    if (keys.right) wantLateral += 1;
+    lateralVel += wantLateral * MAX_LATERAL_SPEED * LATERAL_ACCEL;
+    lateralVel *= LATERAL_FRICTION;
+    lateralVel = Math.max(-MAX_LATERAL_SPEED, Math.min(MAX_LATERAL_SPEED, lateralVel));
+    lateral = Math.max(-1, Math.min(1, lateral + lateralVel));
 
-    girlPos.x = Math.max(-MOVE_RANGE_X, Math.min(MOVE_RANGE_X, girlPos.x + girlVel.x));
-    girlPos.y = Math.max(-MOVE_RANGE_Y_FWD, Math.min(MOVE_RANGE_Y_BACK, girlPos.y + girlVel.y));
-
-    var isMoving = Math.abs(girlVel.x) > 0.05 || Math.abs(girlVel.y) > 0.05;
+    var isMoving = Math.abs(progressVel) > 0.002 || Math.abs(lateralVel) > 0.002;
     var bob = 0;
     if (isMoving) {
       walkPhase += WALK_BOB_SPEED;
@@ -130,25 +183,40 @@
     var lookDx = -mouseCurrent.x * GIRL_LOOK_FACTOR;
     var lookDy = -mouseCurrent.y * GIRL_LOOK_FACTOR;
 
-    // Walking further "forward" (negative y = further up the path) reads as
-    // walking into the distance, so she shrinks a touch; stepping back
-    // (positive y, toward the viewer) grows her back up slightly.
-    var scale = 1;
-    if (girlPos.y < 0) {
-      scale = 1 - (-girlPos.y / MOVE_RANGE_Y_FWD) * FORWARD_SCALE_BOOST;
-    } else if (girlPos.y > 0) {
-      scale = 1 + (girlPos.y / MOVE_RANGE_Y_BACK) * (FORWARD_SCALE_BOOST * 0.5);
-    }
+    var naturalScreen = canvasPctToScreen(NATURAL_X_PCT, NATURAL_Y_PCT, rect);
+    var pathPoint = samplePath(progress);
+    var pathScreen = canvasPctToScreen(pathPoint.x, pathPoint.y, rect);
 
-    var totalX = girlPos.x + lookDx;
-    var totalY = girlPos.y + lookDy + bob + jump;
+    // Tangent direction of the path near `progress`, so the lateral
+    // wobble sits perpendicular to wherever the trail is curving, not
+    // always flat left/right.
+    var ahead = samplePath(Math.min(PATH.length - 1, progress + 0.6));
+    var behind = samplePath(Math.max(0, progress - 0.6));
+    var aheadScreen = canvasPctToScreen(ahead.x, ahead.y, rect);
+    var behindScreen = canvasPctToScreen(behind.x, behind.y, rect);
+    var tdx = aheadScreen.x - behindScreen.x;
+    var tdy = aheadScreen.y - behindScreen.y;
+    var tlen = Math.sqrt(tdx * tdx + tdy * tdy) || 1;
+    var perpX = -tdy / tlen;
+    var perpY = tdx / tlen;
+
+    var pathOffsetX = pathScreen.x - naturalScreen.x + perpX * lateral * LATERAL_RANGE_PX;
+    var pathOffsetY = pathScreen.y - naturalScreen.y + perpY * lateral * LATERAL_RANGE_PX;
+
+    // Further into the forest (higher progress) reads as walking into
+    // the distance, so she shrinks a touch; walking back toward index 0
+    // (nearest the viewer) grows her back up.
+    var depthFrac = (progress - START_PROGRESS) / (PATH.length - 1);
+    var scale = 1 - depthFrac * FORWARD_SCALE_BOOST;
+
+    var totalX = pathOffsetX + lookDx;
+    var totalY = pathOffsetY + lookDy + bob + jump;
 
     girlLayer.style.transform =
       "translate(" + totalX + "px," + totalY + "px) scale(" + scale + ")";
 
-    var rect = viewport.getBoundingClientRect();
-    var girlScreenX = rect.width / 2 + totalX;
-    var girlScreenY = rect.height / 2 + totalY;
+    var girlScreenX = naturalScreen.x + totalX;
+    var girlScreenY = naturalScreen.y + totalY;
     updateProximity(girlScreenX, girlScreenY);
 
     requestAnimationFrame(tick);

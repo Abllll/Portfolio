@@ -45,6 +45,14 @@
   inset: 0;
 }
 
+/* The girl walks the length of the drawn path, which reaches close to
+   the canvas edges — the background layers' -8% oversize margin (there
+   so small mouse-look parallax never reveals a gap) would clip her
+   destination off-screen. Her layer needs the full, uncropped canvas. */
+#ep-layer-girl {
+  inset: 0;
+}
+
 .ep-idle-sway img {
   animation: ep-sway 10s ease-in-out infinite;
 }
