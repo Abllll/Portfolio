@@ -124,6 +124,56 @@
   opacity: 1;
 }
 
+.ep-controls-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 2rem;
+  background: rgba(20, 18, 14, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.ep-controls-hint.is-dismissed {
+  opacity: 0;
+}
+
+.ep-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.3rem;
+  background: rgba(255, 255, 255, 0.15);
+  font-weight: 700;
+}
+
+.ep-key-wide {
+  min-width: 3.2rem;
+  margin-left: 0.2rem;
+}
+
+.ep-controls-sep {
+  opacity: 0.7;
+  margin: 0 0.1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-controls-hint {
+    transition: none;
+  }
+}
+
 .ep-panel {
   display: flex;
   position: fixed;

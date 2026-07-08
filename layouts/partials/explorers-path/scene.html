@@ -1,5 +1,5 @@
 {{- $data := .Site.Data.explorers_path -}}
-<section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated scene — move your cursor to look around, click a glowing point to open it">
+<section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated scene — move your cursor to look around, hold W to walk in, S to step back, A/D to turn, spacebar to jump, click a glowing point to open it">
   {{- range $data.layers }}
   <div class="ep-layer-wrap{{ if ne .idle "none" }} ep-idle-{{ .idle }}{{ end }}" data-factor="{{ .weight }}">
     <img src="{{ printf "images/explorers-path/%s" .file | relURL }}" alt="" aria-hidden="true">
@@ -18,6 +18,11 @@
       <span class="ep-hotspot-icon" aria-hidden="true">&#10022;</span>
     </button>
     {{- end }}
+  </div>
+  <div class="ep-controls-hint" id="ep-controls-hint" aria-hidden="true">
+    <span class="ep-key">W</span><span class="ep-key">A</span><span class="ep-key">S</span><span class="ep-key">D</span>
+    <span class="ep-key ep-key-wide">SPACE</span>
+    <span class="ep-controls-sep">+</span> mouse to look
   </div>
 </section>
 
@@ -41,6 +46,7 @@
   </div>
 </div>
 
+<audio id="ep-audio-footstep" src="{{ "audio/explorers-path/footstep.wav" | relURL }}" preload="auto" loop></audio>
 <audio id="ep-audio-discovery" src="{{ "audio/explorers-path/discovery.wav" | relURL }}" preload="auto"></audio>
 
 <section class="ep-fallback">
