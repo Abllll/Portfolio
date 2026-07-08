@@ -15,7 +15,7 @@
             aria-label="{{ .title }} — {{ .teaser }}"
             aria-controls="panel-{{ .id }}">
       <span class="ep-hotspot-glow" aria-hidden="true"></span>
-      <span class="ep-hotspot-icon" aria-hidden="true">&#10022;</span>
+      <span class="ep-hotspot-icon" aria-hidden="true">{{ (default "&#10022;" .icon) | safeHTML }}</span>
     </button>
     {{- end }}
   </div>
