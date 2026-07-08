@@ -78,7 +78,7 @@ hotspots:
     type: case-study
     title: "Bonheur"
     teaser: "A personal emotional memory cabinet — the first real Work entry."
-    workRef: "/work/bonheur/"
+    workRef: "work/bonheur/"
     xPercent: 25
     yPercent: 20
 
