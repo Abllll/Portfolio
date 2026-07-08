@@ -45,6 +45,9 @@
 {{ if .IsHome }}
 <link rel="stylesheet" href="{{ "css/explorers-path.css" | relURL }}">
 {{ end }}
+{{ if eq .Layout "bonheur-story" }}
+<link rel="stylesheet" href="{{ "css/bonheur-story.css" | relURL }}">
+{{ end }}
 
 {{ if .Site.Params.icons.useFontAwesome }}
   <link

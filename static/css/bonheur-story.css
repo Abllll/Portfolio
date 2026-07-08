@@ -1,0 +1,181 @@
+/* static/css/bonheur-story.css
+   BONHEUR STORY PAGE — scrollytelling case study.
+   Loaded only on this page (see layouts/partials/head.html). All rules are
+   scoped under bs- prefixed classes so nothing here leaks onto other pages. */
+
+.bs-page {
+  position: relative;
+}
+
+.bs-motif {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bs-spark {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
+  box-shadow: 0 0 24px 8px rgba(244, 200, 105, 0.55);
+  transition: transform 0.6s ease, opacity 0.6s ease, box-shadow 0.6s ease;
+}
+
+.bs-motif[data-motif="drifting"] .bs-spark {
+  animation: bs-drift 6s ease-in-out infinite;
+}
+
+.bs-motif[data-motif="fading"] .bs-spark {
+  animation: bs-flicker 2.2s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+.bs-motif[data-motif="caught"] .bs-spark {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 2px rgba(244, 200, 105, 0.8), 0 0 24px 8px rgba(244, 200, 105, 0.55);
+}
+
+.bs-motif[data-motif="caught"] .bs-spark::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border: 1px dashed rgba(244, 200, 105, 0.7);
+  border-radius: 50%;
+}
+
+.bs-jar {
+  position: absolute;
+  width: 96px;
+  height: 128px;
+  border: 2px solid rgba(244, 200, 105, 0.5);
+  border-radius: 12px 12px 28px 28px;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.6s ease;
+}
+
+.bs-jar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55%;
+  background: linear-gradient(to top, rgba(244, 200, 105, 0.55), transparent);
+}
+
+.bs-motif[data-motif="jar-fill"] .bs-jar {
+  opacity: 1;
+}
+
+.bs-cluster {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.bs-cluster::before,
+.bs-cluster::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f4c869;
+  box-shadow: 0 0 10px 3px rgba(244, 200, 105, 0.6);
+  animation: bs-orbit 8s linear infinite;
+}
+
+.bs-cluster::after {
+  animation-duration: 11s;
+  animation-direction: reverse;
+}
+
+.bs-motif[data-motif="cloud"] .bs-cluster {
+  opacity: 1;
+}
+
+.bs-motif[data-motif="settled"] .bs-spark {
+  animation: none;
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes bs-drift {
+  0%, 100% { transform: translateX(-12px); }
+  50% { transform: translateX(12px); }
+}
+
+@keyframes bs-flicker {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes bs-orbit {
+  from { transform: rotate(0deg) translateX(90px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(90px) rotate(-360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-spark,
+  .bs-cluster::before,
+  .bs-cluster::after {
+    animation: none !important;
+  }
+}
+
+.bs-beat {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 3rem 1.5rem;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.bs-beat.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bs-beat-inner {
+  max-width: 34rem;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+}
+
+.bs-beat-number {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.bs-beat-media {
+  margin-top: 1.5rem;
+}
+
+.bs-media-placeholder {
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
