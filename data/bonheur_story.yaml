@@ -8,10 +8,7 @@ beats:
 
   - id: ache
     number: 2
-    title: "The Ache"
-    body: "We remember the bad hour instantly and let the good one slip by unclaimed — negativity bias, not a flaw of memory but a habit of attention. Most of what actually moved you today is already gone by tonight."
     motif: fading
-    media: null
 
   - id: turn
     number: 3

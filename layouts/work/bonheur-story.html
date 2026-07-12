@@ -27,6 +27,13 @@
     </section>
 
     {{ range .Site.Data.bonheur_story.beats }}
+    {{ if eq .id "ache" }}
+    <section class="bs-beat bs-ache" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-ache">
+      <div class="bs-ache-stage">
+        <p class="bs-ache-text">We often let the good moments slip away unnoticed. Our minds are wired with a negativity bias, so what captures our attention isn't always what truly mattered. What moved us most is often forgotten first.</p>
+      </div>
+    </section>
+    {{ else }}
     <section class="bs-beat" data-beat-id="{{ .id }}" data-motif="{{ .motif }}">
       <div class="bs-beat-inner">
         <p class="bs-beat-number">{{ printf "%02d" .number }}</p>
@@ -50,6 +57,7 @@
         </div>
       </div>
     </section>
+    {{ end }}
     {{ end }}
   </section>
 
