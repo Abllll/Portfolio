@@ -28,3 +28,35 @@
     observer.observe(beat);
   });
 })();
+
+// Drives --bs-intro-progress (0-1) from how far the user has scrolled
+// through #bs-intro. All visual behavior lives in bonheur-story.css as
+// calc()/clamp() expressions reading this one property -- this script only
+// computes and writes the number.
+(function () {
+  "use strict";
+
+  var intro = document.getElementById("bs-intro");
+  if (!intro) return;
+
+  var ticking = false;
+
+  function updateProgress() {
+    ticking = false;
+    var rect = intro.getBoundingClientRect();
+    var scrollableDistance = rect.height - window.innerHeight;
+    var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
+    progress = Math.min(1, Math.max(0, progress));
+    document.documentElement.style.setProperty("--bs-intro-progress", progress.toFixed(4));
+  }
+
+  function onScrollOrResize() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(updateProgress);
+  }
+
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize);
+  updateProgress();
+})();
