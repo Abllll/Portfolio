@@ -39,6 +39,9 @@
   var intro = document.getElementById("bs-intro");
   if (!intro) return;
 
+  var tagline = document.querySelector(".bs-intro-tagline");
+  var taglineFlickered = false;
+
   var ticking = false;
 
   function updateProgress() {
@@ -48,6 +51,11 @@
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
     document.documentElement.style.setProperty("--bs-intro-progress", progress.toFixed(4));
+
+    if (!taglineFlickered && tagline && progress >= 0.4) {
+      taglineFlickered = true;
+      tagline.classList.add("bs-intro-tagline--flicker");
+    }
   }
 
   function onScrollOrResize() {
