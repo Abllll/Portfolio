@@ -448,17 +448,20 @@
   background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
   box-shadow: 0 0 14px 5px rgba(244, 200, 105, 0.5);
   pointer-events: none;
-  animation: bs-flicker 2.4s ease-in-out infinite;
-  animation-delay: var(--bs-star-delay, 0s);
   transform: translate(
     calc(-50% + var(--bs-star-wobble-x, 0px)),
     calc(-50% + var(--bs-star-wobble-y, 0px))
   );
   /* 0 -> 1 over a 0.08-wide ramp starting at this star's own random
-     threshold -- staggers each star's fade-in/out independently. */
+     threshold -- staggers each star's fade-in/out independently.
+     --bs-star-twinkle is a per-frame noise value (same technique as the
+     wobble) folded in as a multiplier -- a real @keyframes animation on
+     opacity here would completely override this envelope instead of
+     layering with it, since animated properties win over the cascaded
+     value for as long as they're running. */
   --bs-star-fade-in: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-in, 0)) / 0.08), 1);
   --bs-star-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-out, 1)) / 0.08), 1);
-  opacity: calc(var(--bs-star-fade-in) * (1 - var(--bs-star-fade-out)));
+  opacity: calc(var(--bs-star-fade-in) * (1 - var(--bs-star-fade-out)) * var(--bs-star-twinkle, 1));
 }
 
 .bs-ache-ink {

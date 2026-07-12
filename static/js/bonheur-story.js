@@ -320,7 +320,6 @@
     star.style.setProperty("--bs-star-y", y.toFixed(2) + "%");
     star.style.setProperty("--bs-star-in", inThreshold.toFixed(3));
     star.style.setProperty("--bs-star-out", outThreshold.toFixed(3));
-    star.style.setProperty("--bs-star-delay", (-Math.random() * 2.4).toFixed(2) + "s");
     stage.appendChild(star);
     stars.push({ el: star, x: x, y: y, seed: 100 + i * 37.7 });
   }
@@ -350,8 +349,10 @@
       stars.forEach(function (s) {
         var nx = simplex2(t, s.seed);
         var ny = simplex2(t + 100, s.seed);
+        var twinkle = 0.7 + simplex2(t * 2, s.seed + 50) * 0.3;
         s.el.style.setProperty("--bs-star-wobble-x", (nx * 10).toFixed(2) + "px");
         s.el.style.setProperty("--bs-star-wobble-y", (ny * 10).toFixed(2) + "px");
+        s.el.style.setProperty("--bs-star-twinkle", Math.max(0.3, twinkle).toFixed(3));
       });
       inks.forEach(function (b) {
         var nx = simplex2(t, b.seed);
