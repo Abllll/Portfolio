@@ -240,6 +240,10 @@
      words and the backdrop layers, which is why it lives here rather than
      on .bs-intro-word directly. */
   --bs-exit: clamp(0, calc((var(--bs-intro-progress, 0) - 0.75) / 0.2), 1);
+  /* A parabola: 0 at enter=0, peaks at 1 when enter=0.5, back to 0 at
+     enter=1 -- bows each word's path during travel without disturbing its
+     off-screen start or its exact center arrival. */
+  --bs-arc: calc(4 * var(--bs-enter) * (1 - var(--bs-enter)));
 }
 
 .bs-intro-word {
@@ -260,19 +264,24 @@
 .bs-intro-word--bon {
   /* Starts fully off-screen past the left edge, tilted counter-clockwise;
      slides in horizontally and untwists to upright by the time it reaches
-     center. */
+     center. Bows upward mid-travel (--bs-arc) and carries a small
+     continuous noise-driven wobble (--bs-word-wobble-*, written by
+     bonheur-story.js, same technique as the spark/mist drift) that fades
+     out as it arrives, so the entrance reads as floating in rather than
+     sliding on rails. */
   transform: translate(
-    calc(-100% + (1 - var(--bs-enter)) * -60vw + var(--bs-exit) * -50vw),
-    -50%
+    calc(-100% + (1 - var(--bs-enter)) * -60vw + var(--bs-exit) * -50vw + var(--bs-word-wobble-x, 0px) * (1 - var(--bs-enter))),
+    calc(-50% + var(--bs-arc) * -50px + var(--bs-word-wobble-y, 0px) * (1 - var(--bs-enter)))
   ) rotate(calc((1 - var(--bs-enter)) * -14deg));
 }
 
 .bs-intro-word--heur {
   /* Mirrors Bon from the right edge, tilted clockwise, untwisting the
-     same way as it arrives. */
+     same way as it arrives -- bows downward mid-travel (opposite of Bon)
+     with its own independent wobble. */
   transform: translate(
-    calc((1 - var(--bs-enter)) * 60vw + var(--bs-exit) * 50vw),
-    -50%
+    calc((1 - var(--bs-enter)) * 60vw + var(--bs-exit) * 50vw + var(--bs-word-wobble-x, 0px) * (1 - var(--bs-enter))),
+    calc(-50% + var(--bs-arc) * 50px + var(--bs-word-wobble-y, 0px) * (1 - var(--bs-enter)))
   ) rotate(calc((1 - var(--bs-enter)) * 14deg));
 }
 

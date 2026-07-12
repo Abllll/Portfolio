@@ -85,6 +85,9 @@
   var blobs = document.querySelectorAll(".bs-intro-mist");
   if (!intro || !blobs.length) return;
 
+  var bonWord = document.querySelector(".bs-intro-word--bon");
+  var heurWord = document.querySelector(".bs-intro-word--heur");
+
   var GRAD2 = [
     [1, 1], [-1, 1], [1, -1], [-1, -1],
     [1, 0], [-1, 0], [1, 0], [-1, 0],
@@ -171,6 +174,14 @@
         blobs[i].style.setProperty("--bs-mist-x", (nx * 24).toFixed(2) + "px");
         blobs[i].style.setProperty("--bs-mist-y", (ny * 24).toFixed(2) + "px");
         blobs[i].style.setProperty("--bs-mist-breathe", Math.max(0.06, breathe).toFixed(3));
+      }
+      if (bonWord) {
+        bonWord.style.setProperty("--bs-word-wobble-x", (simplex2(t, 200.1) * 5).toFixed(2) + "px");
+        bonWord.style.setProperty("--bs-word-wobble-y", (simplex2(t, 300.7) * 5).toFixed(2) + "px");
+      }
+      if (heurWord) {
+        heurWord.style.setProperty("--bs-word-wobble-x", (simplex2(t, 400.3) * 5).toFixed(2) + "px");
+        heurWord.style.setProperty("--bs-word-wobble-y", (simplex2(t, 500.9) * 5).toFixed(2) + "px");
       }
     }
     window.requestAnimationFrame(frame);
