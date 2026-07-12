@@ -259,14 +259,14 @@
 
 .bs-intro-word--bon {
   transform: translate(
-    calc(-100% + (1 - var(--bs-enter)) * -50vw + var(--bs-exit) * -50vw),
+    calc(-100% + (1 - var(--bs-enter)) * -43vw + var(--bs-exit) * -50vw),
     calc(-50% + (1 - var(--bs-enter)) * 42vh)
   );
 }
 
 .bs-intro-word--heur {
   transform: translate(
-    calc((1 - var(--bs-enter)) * 50vw + var(--bs-exit) * 50vw),
+    calc((1 - var(--bs-enter)) * 43vw + var(--bs-exit) * 50vw),
     calc(-50% + (1 - var(--bs-enter)) * 42vh)
   );
 }
