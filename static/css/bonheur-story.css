@@ -313,7 +313,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #3a3458;
   animation: bs-flicker 2.2s ease-in-out infinite;
 }
 
@@ -321,8 +321,8 @@
   display: block;
   width: 22px;
   height: 22px;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
+  border-right: 2px solid #3a3458;
+  border-bottom: 2px solid #3a3458;
   transform: rotate(45deg);
   animation: bs-flicker 2.2s ease-in-out infinite;
 }
