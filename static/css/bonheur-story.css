@@ -236,10 +236,6 @@
   overflow: hidden;
   /* 0 -> 1 across the first 30% of scroll (the approach) */
   --bs-enter: clamp(0, calc(var(--bs-intro-progress, 0) / 0.30), 1);
-  /* quadratic ease-in of --bs-enter (slow start, fast finish) -- used on
-     one axis per word (and linear --bs-enter on the other) so each word's
-     path curves in rather than traveling a straight line to center. */
-  --bs-enter-ease: calc(var(--bs-enter) * var(--bs-enter));
   /* 0 -> 1 across the last 20% of scroll (the recede) -- shared by the
      words and the backdrop layers, which is why it lives here rather than
      on .bs-intro-word directly. */
@@ -262,23 +258,22 @@
 }
 
 .bs-intro-word--bon {
-  /* shallow ~30deg approach: steady horizontal glide (linear), a shorter,
-     eased vertical drop -- X magnitude unchanged from the one-letter-reveal
-     tuning, only the path's curve/angle changes. */
+  /* Starts fully off-screen past the left edge, tilted counter-clockwise;
+     slides in horizontally and untwists to upright by the time it reaches
+     center. */
   transform: translate(
-    calc(-100% + (1 - var(--bs-enter)) * -43vw + var(--bs-exit) * -50vw),
-    calc(-50% + (1 - var(--bs-enter-ease)) * 30vh)
-  );
+    calc(-100% + (1 - var(--bs-enter)) * -60vw + var(--bs-exit) * -50vw),
+    -50%
+  ) rotate(calc((1 - var(--bs-enter)) * -14deg));
 }
 
 .bs-intro-word--heur {
-  /* steep ~60deg approach: eased horizontal glide, a longer, steady
-     (linear) vertical rise from further below -- capped so it still peeks
-     one full letter on-screen at rest, matching Bon's one-letter reveal. */
+  /* Mirrors Bon from the right edge, tilted clockwise, untwisting the
+     same way as it arrives. */
   transform: translate(
-    calc((1 - var(--bs-enter-ease)) * 43vw + var(--bs-exit) * 50vw),
-    calc(-50% + (1 - var(--bs-enter)) * 38vh)
-  );
+    calc((1 - var(--bs-enter)) * 60vw + var(--bs-exit) * 50vw),
+    -50%
+  ) rotate(calc((1 - var(--bs-enter)) * 14deg));
 }
 
 /* SCROLL-DOWN CUE
