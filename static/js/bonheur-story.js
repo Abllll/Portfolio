@@ -307,15 +307,21 @@
     return 70 * (n0 + n1 + n2);
   }
 
-  var STAR_COUNT = 13;
+  var STAR_COUNT = 20;
   var stars = [];
   for (var i = 0; i < STAR_COUNT; i += 1) {
     var star = document.createElement("div");
     star.className = "bs-ache-star";
     var x = Math.random() * 90 + 5;
     var y = Math.random() * 80 + 10;
-    var inThreshold = Math.random() * 0.20;
-    var outThreshold = 0.55 + Math.random() * 0.35;
+    // Spread "in" thresholds across a wide 0.00-0.35 window so the 20
+    // stars visibly float in one after another rather than clustering
+    // into view all at once. "out" is derived from each star's own "in"
+    // (always at least 0.15 later, and never before 0.45) so a star can
+    // never start fading out before it's even finished appearing.
+    var inThreshold = Math.random() * 0.35;
+    var minOut = Math.max(0.45, inThreshold + 0.15);
+    var outThreshold = minOut + Math.random() * (0.75 - minOut);
     star.style.setProperty("--bs-star-x", x.toFixed(2) + "%");
     star.style.setProperty("--bs-star-y", y.toFixed(2) + "%");
     star.style.setProperty("--bs-star-in", inThreshold.toFixed(3));

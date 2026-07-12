@@ -187,8 +187,6 @@
 .bs-beat-inner {
   max-width: 34rem;
   margin: 0 auto;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 12px;
   padding: 1.5rem 1.75rem;
 }
 
@@ -475,9 +473,13 @@
   background: #0a0816;
   filter: blur(70px);
   pointer-events: none;
-  /* 0 -> 1 across the last 35% of scroll -- grows from nothing to full
-     size, merging with the other blobs to cover the screen. */
-  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.55) / 0.35), 1);
+  /* Grows 0.45-0.75, holds, then fades back to fully transparent 0.90-1.0
+     -- without this fade-out, --bs-ache-progress (which clamps at 1
+     forever once you scroll past this beat, same as --bs-intro-progress)
+     would leave the blob permanently covering the page. */
+  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.45) / 0.30), 1);
+  --bs-ink-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.90) / 0.10), 1);
+  opacity: calc(1 - var(--bs-ink-fade-out));
   transform: translate(
     calc(-50% + var(--bs-ink-wobble-x, 0px)),
     calc(-50% + var(--bs-ink-wobble-y, 0px))
@@ -498,7 +500,10 @@
   line-height: 1.7;
   color: #f4f0ff;
   pointer-events: none;
-  /* 0 -> 1 across progress 0.75-0.90, holding through 1.0 -- appears once
-     the screen is substantially dark. */
-  opacity: clamp(0, calc((var(--bs-ache-progress, 0) - 0.75) / 0.15), 1);
+  /* Fades in 0.60-0.75, holds while the screen is dark, fades back out
+     0.90-1.0 -- same reasoning as the ink blob above: needs an explicit
+     exit or it stays visible forever past this beat. */
+  --bs-ache-text-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.60) / 0.15), 1);
+  --bs-ache-text-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.90) / 0.10), 1);
+  opacity: calc(var(--bs-ache-text-in) * (1 - var(--bs-ache-text-out)));
 }
