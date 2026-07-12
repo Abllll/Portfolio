@@ -26,6 +26,7 @@
   border-radius: 50%;
   background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
   box-shadow: 0 0 24px 8px rgba(244, 200, 105, 0.55);
+  opacity: clamp(0, calc((var(--bs-intro-progress, 0) - 0.45) / 0.1), 1);
   transition: transform 0.6s ease, opacity 0.6s ease, box-shadow 0.6s ease;
 }
 
@@ -139,6 +140,14 @@
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
+
+  .bs-intro-word {
+    display: none !important;
+  }
+
+  .bs-spark {
+    opacity: 1 !important;
+  }
 }
 
 .bs-beat {
@@ -196,4 +205,53 @@
   text-align: center;
   font-size: 0.8rem;
   opacity: 0.6;
+}
+
+/* BON/HEUR INTRO SEQUENCE
+   Driven entirely by --bs-intro-progress (0-1), written by the scroll/rAF
+   handler in bonheur-story.js. Everything below is plain CSS reading that
+   one variable -- no other JS touches these elements. */
+
+.bs-intro {
+  position: relative;
+  height: 220vh;
+}
+
+.bs-intro-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.bs-intro-word {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: clamp(3rem, 11vw, 8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  /* 0 -> 1 across the first 45% of scroll (the approach) */
+  --bs-enter: clamp(0, calc(var(--bs-intro-progress, 0) / 0.45), 1);
+  /* 0 -> 1 across the last 30% of scroll (the recede) */
+  --bs-exit: clamp(0, calc((var(--bs-intro-progress, 0) - 0.55) / 0.3), 1);
+  opacity: calc(1 - var(--bs-exit));
+  color: color-mix(in srgb, var(--color-text), #f4c869 calc(var(--bs-enter) * 100%));
+}
+
+.bs-intro-word--bon {
+  transform: translate(
+    calc(-100% + (1 - var(--bs-enter)) * -38vw + var(--bs-exit) * -50vw),
+    calc(-50% + (1 - var(--bs-enter)) * 42vh)
+  );
+}
+
+.bs-intro-word--heur {
+  transform: translate(
+    calc((1 - var(--bs-enter)) * 38vw + var(--bs-exit) * 50vw),
+    calc(-50% + (1 - var(--bs-enter)) * 42vh)
+  );
 }
