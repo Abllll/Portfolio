@@ -26,7 +26,7 @@
   border-radius: 50%;
   background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
   box-shadow: 0 0 24px 8px rgba(244, 200, 105, 0.55);
-  opacity: clamp(0, calc((var(--bs-intro-progress, 0) - 0.45) / 0.1), 1);
+  opacity: clamp(0, calc((var(--bs-intro-progress, 0) - 0.65) / 0.1), 1);
   transition: transform 0.6s ease, box-shadow 0.6s ease;
 }
 
@@ -148,6 +148,18 @@
   .bs-spark {
     opacity: 1 !important;
   }
+
+  .bs-scroll-cue,
+  .bs-intro-sky,
+  .bs-intro-sunshine,
+  .bs-intro-mist {
+    display: none !important;
+  }
+
+  .bs-intro-tagline {
+    opacity: 1 !important;
+    animation: none !important;
+  }
 }
 
 .bs-beat {
@@ -214,7 +226,7 @@
 
 .bs-intro {
   position: relative;
-  height: 220vh;
+  height: 320vh;
 }
 
 .bs-intro-stage {
@@ -222,36 +234,142 @@
   top: 0;
   height: 100vh;
   overflow: hidden;
+  /* 0 -> 1 across the first 30% of scroll (the approach) */
+  --bs-enter: clamp(0, calc(var(--bs-intro-progress, 0) / 0.30), 1);
+  /* 0 -> 1 across the last 20% of scroll (the recede) -- shared by the
+     words and the backdrop layers, which is why it lives here rather than
+     on .bs-intro-word directly. */
+  --bs-exit: clamp(0, calc((var(--bs-intro-progress, 0) - 0.75) / 0.2), 1);
 }
 
 .bs-intro-word {
   position: absolute;
   top: 50%;
   left: 50%;
+  z-index: 1;
   font-size: clamp(3rem, 11vw, 8rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
   white-space: nowrap;
   pointer-events: none;
-  /* 0 -> 1 across the first 45% of scroll (the approach) */
-  --bs-enter: clamp(0, calc(var(--bs-intro-progress, 0) / 0.45), 1);
-  /* 0 -> 1 across the last 30% of scroll (the recede) */
-  --bs-exit: clamp(0, calc((var(--bs-intro-progress, 0) - 0.55) / 0.3), 1);
   opacity: calc(1 - var(--bs-exit));
   color: color-mix(in srgb, var(--color-text), #f4c869 calc(var(--bs-enter) * 100%));
 }
 
 .bs-intro-word--bon {
   transform: translate(
-    calc(-100% + (1 - var(--bs-enter)) * -38vw + var(--bs-exit) * -50vw),
+    calc(-100% + (1 - var(--bs-enter)) * -50vw + var(--bs-exit) * -50vw),
     calc(-50% + (1 - var(--bs-enter)) * 42vh)
   );
 }
 
 .bs-intro-word--heur {
   transform: translate(
-    calc((1 - var(--bs-enter)) * 38vw + var(--bs-exit) * 50vw),
+    calc((1 - var(--bs-enter)) * 50vw + var(--bs-exit) * 50vw),
     calc(-50% + (1 - var(--bs-enter)) * 42vh)
   );
 }
+
+/* SCROLL-DOWN CUE
+   Visible only before scrolling starts -- fades out within the first 3% of
+   --bs-intro-progress. The icon's own pulse reuses the existing bs-flicker
+   keyframe (already defined above for beat 2's spark) for visual consistency. */
+
+.bs-scroll-cue {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  opacity: clamp(0, calc(1 - var(--bs-intro-progress, 0) / 0.03), 1);
+  pointer-events: none;
+}
+
+.bs-scroll-cue-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  transform: rotate(45deg);
+  animation: bs-flicker 2.2s ease-in-out infinite;
+}
+
+/* TAGLINE
+   Fades in once the words merge (0.30-0.40), holds, flickers once (see
+   bs-intro-tagline--flicker, added by JS at progress 0.40), then fades out
+   before ignition (0.55-0.65). */
+
+.bs-intro-tagline {
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  max-width: 32rem;
+  padding: 0 1.5rem;
+  margin: 0;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  pointer-events: none;
+  --bs-tagline-in: clamp(0, calc((var(--bs-intro-progress, 0) - 0.30) / 0.10), 1);
+  --bs-tagline-out: clamp(0, calc((var(--bs-intro-progress, 0) - 0.55) / 0.10), 1);
+  opacity: calc(var(--bs-tagline-in) * (1 - var(--bs-tagline-out)));
+}
+
+.bs-intro-tagline--flicker {
+  animation: bs-tagline-flicker 1s ease-in-out;
+}
+
+@keyframes bs-tagline-flicker {
+  0%, 100% { opacity: 1; }
+  15% { opacity: 0.3; }
+  30% { opacity: 1; }
+  45% { opacity: 0.4; }
+  60% { opacity: 1; }
+}
+
+/* LIVING-LIGHT BACKDROP
+   Palette ported from the real Bonheur app's Universe.js (mood="day" render)
+   -- its actual persistent ambient background, not the data-driven jar glow.
+   The sky/sunshine layers are static; the three mist blobs drift and breathe
+   via simplex noise (ported from the app's JarBackdrop.js/simplexNoise.js),
+   driven by bonheur-story.js writing --bs-mist-x/--bs-mist-y/--bs-mist-breathe
+   per blob every frame. Intro-only -- fades out over the same recede range
+   the words use (--bs-exit, 0.75-0.95). */
+
+.bs-intro-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
+  opacity: calc(1 - var(--bs-exit, 0));
+}
+
+.bs-intro-sunshine {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(225deg, rgba(255, 226, 160, 0.85) 0%, rgba(255, 217, 160, 0.5) 22%, rgba(255, 243, 214, 0.1) 50%, transparent 100%);
+  opacity: calc(1 - var(--bs-exit, 0));
+}
+
+.bs-intro-mist {
+  position: absolute;
+  z-index: 0;
+  width: 46vw;
+  height: 46vw;
+  max-width: 480px;
+  max-height: 480px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: calc(var(--bs-mist-breathe, 0.3) * (1 - var(--bs-exit, 0)));
+  transform: translate(var(--bs-mist-x, 0px), var(--bs-mist-y, 0px));
+}
+
+.bs-intro-mist--pink { top: 18%; left: 12%; background: #F0BEDE; }
+.bs-intro-mist--purple { top: 34%; left: 62%; background: #C3A6EE; }
+.bs-intro-mist--teal { top: 68%; left: 30%; background: #C2E0E8; }
