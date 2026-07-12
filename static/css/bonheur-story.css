@@ -160,6 +160,19 @@
     opacity: 1 !important;
     animation: none !important;
   }
+
+  .bs-ache-star,
+  .bs-ache-ink {
+    display: none !important;
+  }
+
+  .bs-ache-stage {
+    background: #0a0816;
+  }
+
+  .bs-ache-text {
+    opacity: 1 !important;
+  }
 }
 
 .bs-beat {
@@ -404,3 +417,85 @@
 .bs-intro-mist--pink { top: 18%; left: 12%; background: #F0BEDE; }
 .bs-intro-mist--purple { top: 34%; left: 62%; background: #C3A6EE; }
 .bs-intro-mist--teal { top: 68%; left: 30%; background: #C2E0E8; }
+
+/* ACHE BEAT — scattering stars fading into spreading darkness.
+   Driven by --bs-ache-progress (0-1), written by the scroll/rAF handler in
+   bonheur-story.js -- a second, independent instance of the same pattern
+   --bs-intro-progress already uses for beat 1. */
+
+.bs-ache {
+  position: relative;
+  height: 280vh;
+  display: block;
+  padding: 0;
+}
+
+.bs-ache-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.bs-ache-star {
+  position: fixed;
+  top: var(--bs-star-y, 50%);
+  left: var(--bs-star-x, 50%);
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
+  box-shadow: 0 0 14px 5px rgba(244, 200, 105, 0.5);
+  pointer-events: none;
+  animation: bs-flicker 2.4s ease-in-out infinite;
+  animation-delay: var(--bs-star-delay, 0s);
+  transform: translate(
+    calc(-50% + var(--bs-star-wobble-x, 0px)),
+    calc(-50% + var(--bs-star-wobble-y, 0px))
+  );
+  /* 0 -> 1 over a 0.08-wide ramp starting at this star's own random
+     threshold -- staggers each star's fade-in/out independently. */
+  --bs-star-fade-in: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-in, 0)) / 0.08), 1);
+  --bs-star-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-out, 1)) / 0.08), 1);
+  opacity: calc(var(--bs-star-fade-in) * (1 - var(--bs-star-fade-out)));
+}
+
+.bs-ache-ink {
+  position: fixed;
+  top: var(--bs-ink-y, 50%);
+  left: var(--bs-ink-x, 50%);
+  z-index: 2;
+  width: var(--bs-ink-size, 60vw);
+  height: var(--bs-ink-size, 60vw);
+  border-radius: 50%;
+  background: #0a0816;
+  filter: blur(70px);
+  pointer-events: none;
+  /* 0 -> 1 across the last 35% of scroll -- grows from nothing to full
+     size, merging with the other blobs to cover the screen. */
+  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.55) / 0.35), 1);
+  transform: translate(
+    calc(-50% + var(--bs-ink-wobble-x, 0px)),
+    calc(-50% + var(--bs-ink-wobble-y, 0px))
+  ) scale(var(--bs-ink-grow));
+}
+
+.bs-ache-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  max-width: 34rem;
+  padding: 0 1.5rem;
+  margin: 0;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #f4f0ff;
+  pointer-events: none;
+  /* 0 -> 1 across progress 0.75-0.90, holding through 1.0 -- appears once
+     the screen is substantially dark. */
+  opacity: clamp(0, calc((var(--bs-ache-progress, 0) - 0.75) / 0.15), 1);
+}
