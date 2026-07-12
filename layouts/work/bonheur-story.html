@@ -7,14 +7,14 @@
       <div class="bs-cluster"></div>
     </div>
 
-    <header class="bs-beat bs-beat-header page-int">
-      <div class="bs-beat-inner">
-        {{ with .Params.subtitle }}
-          <p class="eyebrow text-accent">{{ . }}</p>
-        {{ end }}
-        <h1 class="heading-page text-2xl sm:text-3xl">{{ .Title }}</h1>
+    <h1 class="sr-only">{{ .Title }}{{ with .Params.subtitle }} — {{ . }}{{ end }}</h1>
+
+    <section class="bs-intro" id="bs-intro">
+      <div class="bs-intro-stage">
+        <span class="bs-intro-word bs-intro-word--bon" aria-hidden="true">Bon</span>
+        <span class="bs-intro-word bs-intro-word--heur" aria-hidden="true">heur</span>
       </div>
-    </header>
+    </section>
 
     {{ range .Site.Data.bonheur_story.beats }}
     <section class="bs-beat" data-beat-id="{{ .id }}" data-motif="{{ .motif }}">
