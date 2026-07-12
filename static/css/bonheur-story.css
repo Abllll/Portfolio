@@ -247,7 +247,11 @@
 }
 
 .bs-intro-word {
-  position: absolute;
+  /* fixed (not absolute) so its travel spans the true browser viewport --
+     .bs-intro-stage sits inside the page's max-width/padded container,
+     which clips absolute-positioned descendants at its own edge, well
+     short of the real screen edge on viewports wider than that container. */
+  position: fixed;
   top: 50%;
   left: 50%;
   z-index: 1;
