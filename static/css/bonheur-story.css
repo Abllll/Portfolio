@@ -299,9 +299,22 @@
   top: 50%;
   left: 50%;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
   transform: translate(-50%, -50%);
   opacity: clamp(0, calc(1 - var(--bs-intro-progress, 0) / 0.03), 1);
   pointer-events: none;
+}
+
+.bs-scroll-cue-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  animation: bs-flicker 2.2s ease-in-out infinite;
 }
 
 .bs-scroll-cue-icon {
@@ -321,7 +334,7 @@
 
 .bs-intro-tagline {
   position: absolute;
-  top: 62%;
+  top: 68%;
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
