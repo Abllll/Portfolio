@@ -7,6 +7,22 @@
   position: relative;
 }
 
+/* Fine grain over the whole page -- kills the flat, plastic look of the
+   pastel gradients and solid dark beats by breaking up perfectly smooth
+   color with a barely-visible texture, the way a scanned or printed
+   surface never sits perfectly flat. mix-blend-mode: overlay so it reads
+   as texture on whatever's beneath it (light or dark) rather than a grey
+   film sitting on top. */
+.bs-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
 .bs-motif {
   position: sticky;
   top: 0;
@@ -284,9 +300,11 @@
   top: 50%;
   left: 50%;
   z-index: 1;
+  font-family: "Fraunces", var(--font-serif);
+  font-style: italic;
   font-size: clamp(3rem, 11vw, 8rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   line-height: 1;
   white-space: nowrap;
   pointer-events: none;
@@ -318,6 +336,34 @@
   ) rotate(calc((1 - var(--bs-enter)) * 14deg));
 }
 
+/* SIGNATURE STROKE — a hand-drawn ink flourish that underlines "Bonheur"
+   once the two words settle at center, like signing a diary entry. Draws
+   itself in (stroke-dashoffset) just after the words arrive, and fades
+   out together with them (--bs-exit, inherited from .bs-intro-stage). */
+.bs-intro-signature {
+  position: fixed;
+  top: 55%;
+  left: 50%;
+  z-index: 1;
+  width: min(50vw, 340px);
+  height: auto;
+  transform: translate(-50%, 0);
+  pointer-events: none;
+  --bs-sig-draw: clamp(0, calc((var(--bs-intro-progress, 0) - 0.28) / 0.14), 1);
+  opacity: calc(1 - var(--bs-exit));
+}
+
+.bs-intro-signature path {
+  fill: none;
+  stroke: #f4c869;
+  stroke-width: 2;
+  stroke-linecap: round;
+  /* Hand-measured approximate length of the path above -- a few px of
+     error just means the draw finishes a hair early/late, not visible. */
+  stroke-dasharray: 340;
+  stroke-dashoffset: calc(340px * (1 - var(--bs-sig-draw)));
+}
+
 /* SCROLL-DOWN CUE
    Visible only before scrolling starts -- fades out within the first 3% of
    --bs-intro-progress. The icon's own pulse reuses the existing bs-flicker
@@ -338,8 +384,9 @@
 }
 
 .bs-scroll-cue-label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-family: "Space Mono", var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #3a3458;
@@ -363,7 +410,7 @@
 
 .bs-intro-tagline {
   position: absolute;
-  top: 61%;
+  top: 63%;
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
@@ -371,9 +418,10 @@
   padding: 0 1.5rem;
   margin: 0;
   text-align: center;
-  font-size: 1.05rem;
+  font-family: "Literata", var(--font-serif);
+  font-size: 1.1rem;
   line-height: 1.6;
-  color: var(--color-text);
+  color: #463452;
   pointer-events: none;
   --bs-tagline-in: clamp(0, calc((var(--bs-intro-progress, 0) - 0.30) / 0.10), 1);
   --bs-tagline-out: clamp(0, calc((var(--bs-intro-progress, 0) - 0.55) / 0.10), 1);
@@ -386,7 +434,7 @@
 
 .bs-intro-logo {
   position: absolute;
-  top: 70%;
+  top: 72%;
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);

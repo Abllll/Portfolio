@@ -1,6 +1,7 @@
 {{/* layouts/work/bonheur-story.html */}}
 {{ define "main" }}
   <section class="layout-page bs-page">
+    <div class="bs-grain" aria-hidden="true"></div>
     <div class="bs-motif" id="bs-motif" data-motif="{{ (index .Site.Data.bonheur_story.beats 0).motif }}" aria-hidden="true">
       <div class="bs-spark"></div>
       <div class="bs-jar"></div>
@@ -22,6 +23,9 @@
         </div>
         <span class="bs-intro-word bs-intro-word--bon" aria-hidden="true">Bon</span>
         <span class="bs-intro-word bs-intro-word--heur" aria-hidden="true">heur</span>
+        <svg class="bs-intro-signature" viewBox="0 0 300 20" aria-hidden="true">
+          <path d="M6,14 C 60,2 100,20 150,10 C 200,0 240,18 294,8"></path>
+        </svg>
         <p class="bs-intro-tagline">A personal memory companion that helps people cultivate happiness by collecting meaningful everyday moments.</p>
         <img class="bs-intro-logo" src="{{ "images/bonheur-story/logo.png" | relURL }}" alt="" aria-hidden="true">
       </div>
