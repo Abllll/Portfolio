@@ -522,10 +522,10 @@
   position: fixed;
   top: var(--bs-star-y, 50%);
   left: var(--bs-star-x, 50%);
-  /* Above the void/ink layer (z-index 2), not below it, so a star already
-     on screen stays visible on top of the dark once it arrives rather
-     than getting abruptly painted over. */
-  z-index: 3;
+  /* Below the void/ink layer (z-index 2), not above it -- the negativity-
+     bias storyline needs darkness to totally overcast every star once it
+     arrives, not leave them glowing on top of it. */
+  z-index: 1;
   width: 6px;
   height: 6px;
   border-radius: 50%;
