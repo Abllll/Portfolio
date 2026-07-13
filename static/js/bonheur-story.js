@@ -307,25 +307,35 @@
     return 70 * (n0 + n1 + n2);
   }
 
-  var STAR_COUNT = 20;
+  var STAR_COUNT = 9;
   var stars = [];
   for (var i = 0; i < STAR_COUNT; i += 1) {
     var star = document.createElement("div");
     star.className = "bs-ache-star";
     var x = Math.random() * 90 + 5;
     var y = Math.random() * 80 + 10;
-    // Spread "in" thresholds across a wide 0.00-0.35 window so the 20
-    // stars visibly float in one after another rather than clustering
-    // into view all at once. "out" is derived from each star's own "in"
-    // (always at least 0.15 later, and never before 0.45) so a star can
-    // never start fading out before it's even finished appearing.
-    var inThreshold = Math.random() * 0.35;
-    var minOut = Math.max(0.45, inThreshold + 0.15);
-    var outThreshold = minOut + Math.random() * (0.75 - minOut);
+    // Spread "in" thresholds across a 0.00-0.25 window so the stars
+    // visibly float in one after another rather than all at once. "out"
+    // is derived from each star's own "in" (always at least 0.15 later,
+    // never before 0.35, never after 0.60 -- finishing just before the
+    // ink blobs fully solidify) so a star can never start fading out
+    // before it's even finished appearing.
+    var inThreshold = Math.random() * 0.25;
+    var minOut = Math.max(0.35, inThreshold + 0.15);
+    var outThreshold = minOut + Math.random() * (0.60 - minOut);
+    // Each star floats in from a random direction/distance rather than
+    // just popping into existence in place -- see .bs-ache-star's
+    // transform, which interpolates this out to 0 as the star fades in.
+    var enterAngle = Math.random() * Math.PI * 2;
+    var enterDist = 10 + Math.random() * 8;
+    var enterX = Math.cos(enterAngle) * enterDist;
+    var enterY = Math.sin(enterAngle) * enterDist;
     star.style.setProperty("--bs-star-x", x.toFixed(2) + "%");
     star.style.setProperty("--bs-star-y", y.toFixed(2) + "%");
     star.style.setProperty("--bs-star-in", inThreshold.toFixed(3));
     star.style.setProperty("--bs-star-out", outThreshold.toFixed(3));
+    star.style.setProperty("--bs-star-enter-x", enterX.toFixed(2) + "vw");
+    star.style.setProperty("--bs-star-enter-y", enterY.toFixed(2) + "vh");
     stage.appendChild(star);
     stars.push({ el: star, x: x, y: y, seed: 100 + i * 37.7 });
   }
@@ -338,7 +348,10 @@
     var starRef = stars[Math.floor(Math.random() * stars.length)];
     ink.style.setProperty("--bs-ink-x", starRef.x.toFixed(2) + "%");
     ink.style.setProperty("--bs-ink-y", starRef.y.toFixed(2) + "%");
-    var size = 55 + Math.random() * 20;
+    // Large enough (a single blob can span the full viewport diagonal)
+    // that 4 of them at random points reliably merge into complete,
+    // solid coverage rather than leaving gaps at the corners.
+    var size = 100 + Math.random() * 40;
     ink.style.setProperty("--bs-ink-size", size.toFixed(1) + "vw");
     stage.appendChild(ink);
     inks.push({ el: ink, seed: 500 + j * 61.3 });

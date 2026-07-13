@@ -162,7 +162,8 @@
   }
 
   .bs-ache-star,
-  .bs-ache-ink {
+  .bs-ache-ink,
+  .bs-ache-void {
     display: none !important;
   }
 
@@ -444,10 +445,6 @@
   background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
   box-shadow: 0 0 14px 5px rgba(244, 200, 105, 0.5);
   pointer-events: none;
-  transform: translate(
-    calc(-50% + var(--bs-star-wobble-x, 0px)),
-    calc(-50% + var(--bs-star-wobble-y, 0px))
-  );
   /* 0 -> 1 over a 0.08-wide ramp starting at this star's own random
      threshold -- staggers each star's fade-in/out independently.
      --bs-star-twinkle is a per-frame noise value (same technique as the
@@ -458,6 +455,29 @@
   --bs-star-fade-in: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-in, 0)) / 0.08), 1);
   --bs-star-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-out, 1)) / 0.08), 1);
   opacity: calc(var(--bs-star-fade-in) * (1 - var(--bs-star-fade-out)) * var(--bs-star-twinkle, 1));
+  /* Floats in from a random direction/distance as it fades in -- the
+     (1 - fade-in) term is large before the star has appeared and settles
+     to 0 once fully visible, so it arrives at rest exactly where its
+     --bs-star-x/-y say, rather than just popping into existence in place. */
+  transform: translate(
+    calc(-50% + var(--bs-star-wobble-x, 0px) + (1 - var(--bs-star-fade-in)) * var(--bs-star-enter-x, 0vw)),
+    calc(-50% + var(--bs-star-wobble-y, 0px) + (1 - var(--bs-star-fade-in)) * var(--bs-star-enter-y, 0vh))
+  );
+}
+
+/* A guaranteed full-bleed dark layer, same grow/hold/fade-out timing as
+   the organic ink blobs below -- the blobs add liquid texture on top of
+   it, but coverage itself doesn't depend on luck getting 4 randomly
+   positioned blobs to fully tile the viewport. */
+.bs-ache-void {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  background: #0a0816;
+  pointer-events: none;
+  --bs-void-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.40) / 0.25), 1);
+  --bs-void-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
+  opacity: calc(var(--bs-void-in) * (1 - var(--bs-void-out)));
 }
 
 .bs-ache-ink {
@@ -471,12 +491,12 @@
   background: #0a0816;
   filter: blur(70px);
   pointer-events: none;
-  /* Grows 0.45-0.75, holds, then fades back to fully transparent 0.90-1.0
+  /* Grows 0.40-0.65, holds, then fades back to fully transparent 0.92-1.0
      -- without this fade-out, --bs-ache-progress (which clamps at 1
      forever once you scroll past this beat, same as --bs-intro-progress)
      would leave the blob permanently covering the page. */
-  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.45) / 0.30), 1);
-  --bs-ink-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.90) / 0.10), 1);
+  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.40) / 0.25), 1);
+  --bs-ink-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(1 - var(--bs-ink-fade-out));
   transform: translate(
     calc(-50% + var(--bs-ink-wobble-x, 0px)),
@@ -496,12 +516,14 @@
   text-align: center;
   font-size: 1.1rem;
   line-height: 1.7;
-  color: #f4f0ff;
+  color: #f4c869;
   pointer-events: none;
-  /* Fades in 0.60-0.75, holds while the screen is dark, fades back out
-     0.90-1.0 -- same reasoning as the ink blob above: needs an explicit
-     exit or it stays visible forever past this beat. */
-  --bs-ache-text-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.60) / 0.15), 1);
-  --bs-ache-text-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.90) / 0.10), 1);
+  /* Fades in 0.50-0.60, holds through most of the beat's tail while the
+     screen is dark, fades back out 0.92-1.0 -- same reasoning as the ink
+     blob above: needs an explicit exit or it stays visible forever past
+     this beat. Widened the hold (0.60-0.92, was 0.75-0.90) to give more
+     reading time. */
+  --bs-ache-text-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.50) / 0.10), 1);
+  --bs-ache-text-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(var(--bs-ache-text-in) * (1 - var(--bs-ache-text-out)));
 }
