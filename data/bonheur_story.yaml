@@ -2,7 +2,7 @@ beats:
   - id: spark
     number: 1
     title: "Spark"
-    body: "Bonheur — French for happiness. It sounds like bon + heur, a good hour, and that's the belief: happiness isn't one big thing, it's small moments, collected. This is a practice of noticing what actually sparks joy, keeping it, and letting a life take shape around it."
+    body: "Bonheur is the French word for happiness. Its sound evokes bon (good) and heure (hour), inspiring the idea that happiness isn't one grand achievement, but a collection of good moments. Bonheur is a practice of noticing what truly sparks joy, preserving those moments, and letting a meaningful life gradually take shape around them."
     motif: drifting
     media: null
 
