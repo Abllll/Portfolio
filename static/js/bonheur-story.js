@@ -385,3 +385,37 @@
 
   window.requestAnimationFrame(frame);
 })();
+
+// Drives --bs-turn-progress (0-1) from how far the user has scrolled
+// through #bs-turn -- a third, independent instance of the same pattern
+// --bs-intro-progress and --bs-ache-progress already use. Unlike Ache,
+// this beat has no JS-generated elements or per-frame drift -- all visual
+// behavior lives in bonheur-story.css as calc()/clamp() expressions
+// reading this one property.
+(function () {
+  "use strict";
+
+  var turn = document.getElementById("bs-turn");
+  if (!turn) return;
+
+  var ticking = false;
+
+  function updateTurnProgress() {
+    ticking = false;
+    var rect = turn.getBoundingClientRect();
+    var scrollableDistance = rect.height - window.innerHeight;
+    var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
+    progress = Math.min(1, Math.max(0, progress));
+    document.documentElement.style.setProperty("--bs-turn-progress", progress.toFixed(4));
+  }
+
+  function onScrollOrResize() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(updateTurnProgress);
+  }
+
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize);
+  updateTurnProgress();
+})();
