@@ -363,7 +363,7 @@
 
 .bs-intro-tagline {
   position: absolute;
-  top: 68%;
+  top: 61%;
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
@@ -386,7 +386,7 @@
 
 .bs-intro-logo {
   position: absolute;
-  top: 77%;
+  top: 70%;
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
