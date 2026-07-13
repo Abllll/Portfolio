@@ -34,6 +34,23 @@
         <p class="bs-ache-text">We often let the good moments slip away unnoticed. Our minds are wired with a negativity bias, so what captures our attention isn't always what truly mattered. What moved us most is often forgotten first.</p>
       </div>
     </section>
+    {{ else if eq .id "turn" }}
+    <section class="bs-beat bs-turn" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-turn">
+      <div class="bs-turn-stage">
+        <div class="bs-turn-photo">
+          <div class="bs-turn-photo-image">
+            <div class="bs-turn-photo-spark"></div>
+          </div>
+        </div>
+        <svg class="bs-turn-cutline" viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r="54"></circle>
+        </svg>
+        <div class="bs-turn-sticker">
+          <div class="bs-turn-sticker-spark"></div>
+        </div>
+        <p class="bs-turn-caption">So: catch it before it fades. A photo, a word for what it was — a breeze, a small win, someone's laugh. Bonheur cuts the moment out of its own photo and keeps it as a spark — a little sticker of the thing itself.</p>
+      </div>
+    </section>
     {{ else }}
     <section class="bs-beat" data-beat-id="{{ .id }}" data-motif="{{ .motif }}">
       <div class="bs-beat-inner">

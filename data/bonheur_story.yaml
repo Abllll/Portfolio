@@ -12,10 +12,7 @@ beats:
 
   - id: turn
     number: 3
-    title: "The Turn"
-    body: "So: catch it before it fades. A photo, a word for what it was — a breeze, a small win, someone's laugh. Bonheur cuts the moment out of its own photo and keeps it as a spark — a little sticker of the thing itself."
     motif: caught
-    media: null
 
   - id: jar
     number: 4
