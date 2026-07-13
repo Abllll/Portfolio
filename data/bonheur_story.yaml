@@ -2,7 +2,7 @@ beats:
   - id: spark
     number: 1
     title: "Spark"
-    body: "Bonheur — bon + heur, a good hour. A life is just an accumulation of them. This is a practice of noticing the ones that already happened, before they disappear."
+    body: "Bonheur — French for happiness. It sounds like bon + heur, a good hour, and that's the belief: happiness isn't one big thing, it's small moments, collected. This is a practice of noticing what actually sparks joy, keeping it, and letting a life take shape around it."
     motif: drifting
     media: null
 
