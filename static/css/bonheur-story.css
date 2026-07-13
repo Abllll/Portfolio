@@ -574,6 +574,7 @@
 .bs-turn-photo {
   --bs-turn-enter: clamp(0, calc(var(--bs-turn-progress, 0) / 0.15), 1);
   --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
+  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.9) / 0.1), 1);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -583,7 +584,7 @@
   background: #faf6ef;
   border-radius: 2px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  opacity: calc(var(--bs-turn-enter) * (1 - 0.45 * var(--bs-turn-peel)));
+  opacity: calc(var(--bs-turn-enter) * (1 - 0.45 * var(--bs-turn-peel)) * (1 - var(--bs-turn-exit)));
   transform: translate(-50%, -50%) scale(calc(0.9 + 0.1 * var(--bs-turn-enter)));
   pointer-events: none;
 }
@@ -643,6 +644,7 @@
 .bs-turn-sticker {
   --bs-turn-fade: clamp(0, calc((var(--bs-turn-progress, 0) - 0.35) / 0.1), 1);
   --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
+  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.9) / 0.1), 1);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -652,7 +654,7 @@
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid #faf6ef;
-  opacity: var(--bs-turn-fade);
+  opacity: calc(var(--bs-turn-fade) * (1 - var(--bs-turn-exit)));
   transform:
     translate(-50%, calc(-50% - 18px))
     translate(calc(var(--bs-turn-peel) * 40px), calc(var(--bs-turn-peel) * -40px))
@@ -676,7 +678,8 @@
 }
 
 .bs-turn-caption {
-  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.65) / 0.2), 1);
+  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.65) / 0.1), 1);
+  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.9) / 0.1), 1);
   position: fixed;
   top: calc(50% + 130px);
   left: 50%;
@@ -690,5 +693,5 @@
   line-height: 1.7;
   color: #f4f0ff;
   pointer-events: none;
-  opacity: var(--bs-turn-caption-in);
+  opacity: calc(var(--bs-turn-caption-in) * (1 - var(--bs-turn-exit)));
 }
