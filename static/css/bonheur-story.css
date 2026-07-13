@@ -384,6 +384,23 @@
   animation: bs-tagline-flicker 1s ease-in-out;
 }
 
+.bs-intro-logo {
+  position: absolute;
+  top: 84%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: auto;
+  pointer-events: none;
+  /* Fades in/out together with the tagline right above it -- same
+     --bs-intro-progress thresholds as .bs-intro-tagline, so the two read
+     as one unit rather than the logo lagging or lingering on its own. */
+  --bs-tagline-in: clamp(0, calc((var(--bs-intro-progress, 0) - 0.30) / 0.10), 1);
+  --bs-tagline-out: clamp(0, calc((var(--bs-intro-progress, 0) - 0.55) / 0.10), 1);
+  opacity: calc(var(--bs-tagline-in) * (1 - var(--bs-tagline-out)));
+}
+
 @keyframes bs-tagline-flicker {
   0%, 100% { opacity: 1; }
   15% { opacity: 0.3; }
