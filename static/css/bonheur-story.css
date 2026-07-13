@@ -457,7 +457,11 @@
   position: fixed;
   top: var(--bs-star-y, 50%);
   left: var(--bs-star-x, 50%);
-  z-index: 1;
+  /* Above the void/ink layer (z-index 2), not below it -- darkness now
+     arrives early (see --bs-void-in/--bs-ink-grow) while stars are still
+     visible, and a star needs to read as glowing above the dark, not get
+     painted over by it once the void reaches full opacity. */
+  z-index: 3;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -494,7 +498,7 @@
   z-index: 2;
   background: #0a0816;
   pointer-events: none;
-  --bs-void-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.40) / 0.25), 1);
+  --bs-void-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.05) / 0.25), 1);
   --bs-void-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(var(--bs-void-in) * (1 - var(--bs-void-out)));
 }
@@ -510,11 +514,16 @@
   background: #0a0816;
   filter: blur(70px);
   pointer-events: none;
-  /* Grows 0.40-0.65, holds, then fades back to fully transparent 0.92-1.0
-     -- without this fade-out, --bs-ache-progress (which clamps at 1
-     forever once you scroll past this beat, same as --bs-intro-progress)
-     would leave the blob permanently covering the page. */
-  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.40) / 0.25), 1);
+  /* Grows 0.05-0.30 (matching --bs-void-in, so the void's flat black and
+     the ink's organic blobs arrive together right as the stars themselves
+     are fading in -- darkness needs to reach the stars quickly, or they
+     spend their whole visible life on the page's plain light background
+     and read as blemishes instead of points of light), holds, then fades
+     back to fully transparent 0.92-1.0 -- without this fade-out,
+     --bs-ache-progress (which clamps at 1 forever once you scroll past
+     this beat, same as --bs-intro-progress) would leave the blob
+     permanently covering the page. */
+  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.05) / 0.25), 1);
   --bs-ink-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(1 - var(--bs-ink-fade-out));
   transform: translate(

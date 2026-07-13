@@ -317,12 +317,13 @@
     // Spread "in" thresholds across a 0.00-0.25 window so the stars
     // visibly float in one after another rather than all at once. "out"
     // is derived from each star's own "in" (always at least 0.15 later,
-    // never before 0.35, never after 0.60 -- finishing just before the
-    // ink blobs fully solidify) so a star can never start fading out
-    // before it's even finished appearing.
+    // never before 0.35) and spread widely, up to 0.95 -- most stars are
+    // gone before the text arrives at 0.75, but some linger and keep
+    // twinkling behind the text instead of leaving it on a flat, static
+    // black screen.
     var inThreshold = Math.random() * 0.25;
     var minOut = Math.max(0.35, inThreshold + 0.15);
-    var outThreshold = minOut + Math.random() * (0.60 - minOut);
+    var outThreshold = minOut + Math.random() * (0.95 - minOut);
     // Each star floats in from a random direction/distance rather than
     // just popping into existence in place -- see .bs-ache-star's
     // transform, which interpolates this out to 0 as the star fades in.
