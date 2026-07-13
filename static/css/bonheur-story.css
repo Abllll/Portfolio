@@ -522,16 +522,19 @@
   position: fixed;
   top: var(--bs-star-y, 50%);
   left: var(--bs-star-x, 50%);
-  /* Above the void/ink layer (z-index 2), not below it -- darkness now
-     arrives early (see --bs-void-in/--bs-ink-grow) while stars are still
-     visible, and a star needs to read as glowing above the dark, not get
-     painted over by it once the void reaches full opacity. */
+  /* Above the void/ink layer (z-index 2), not below it, so a star already
+     on screen stays visible on top of the dark once it arrives rather
+     than getting abruptly painted over. */
   z-index: 3;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
-  box-shadow: 0 0 14px 5px rgba(244, 200, 105, 0.5);
+  /* A more solid, defined core (less pure soft-blur) than before, plus
+     the crossed glint in ::before -- needs to read as a distinct star,
+     not a diffuse blob, since it appears on the page's plain light
+     background before the ink/void darkness arrives (see --bs-void-in). */
+  background: radial-gradient(circle, #fffefa 0%, #fff3d2 35%, #f4c869 60%, transparent 100%);
+  box-shadow: 0 0 8px 2px rgba(244, 200, 105, 0.65);
   pointer-events: none;
   /* 0 -> 1 over a 0.08-wide ramp starting at this star's own random
      threshold -- staggers each star's fade-in/out independently.
@@ -553,6 +556,23 @@
   );
 }
 
+/* The crossed glint that reads as "star" rather than "dot" -- two thin
+   bright bars, brightest at the center where they cross the core above.
+   Inherits the parent's opacity/transform automatically since it's a
+   pseudo-element of the same box, so no separate animation needed here. */
+.bs-ache-star::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(to right, transparent 44%, rgba(255, 248, 231, 0.85) 49%, rgba(255, 248, 231, 0.85) 51%, transparent 56%),
+    linear-gradient(to bottom, transparent 44%, rgba(255, 248, 231, 0.85) 49%, rgba(255, 248, 231, 0.85) 51%, transparent 56%);
+}
+
 /* A guaranteed full-bleed dark layer, same grow/hold/fade-out timing as
    the organic ink blobs below -- the blobs add liquid texture on top of
    it, but coverage itself doesn't depend on luck getting 4 randomly
@@ -563,7 +583,11 @@
   z-index: 2;
   background: #0a0816;
   pointer-events: none;
-  --bs-void-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.05) / 0.25), 1);
+  /* Starts at 0.35 -- deliberately after the stars have had a full
+     moment to appear and hold (their own --bs-star-out floor is also
+     0.35), so darkness reads as casting over an already-established sky
+     rather than arriving simultaneously with it. */
+  --bs-void-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.35) / 0.25), 1);
   --bs-void-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(var(--bs-void-in) * (1 - var(--bs-void-out)));
 }
@@ -579,16 +603,15 @@
   background: #0a0816;
   filter: blur(70px);
   pointer-events: none;
-  /* Grows 0.05-0.30 (matching --bs-void-in, so the void's flat black and
-     the ink's organic blobs arrive together right as the stars themselves
-     are fading in -- darkness needs to reach the stars quickly, or they
-     spend their whole visible life on the page's plain light background
-     and read as blemishes instead of points of light), holds, then fades
-     back to fully transparent 0.92-1.0 -- without this fade-out,
-     --bs-ache-progress (which clamps at 1 forever once you scroll past
-     this beat, same as --bs-intro-progress) would leave the blob
-     permanently covering the page. */
-  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.05) / 0.25), 1);
+  /* Grows 0.35-0.60 (matching --bs-void-in -- both arrive together, after
+     the stars have had a full moment to appear and hold, so darkness
+     reads as casting over an already-established sky rather than
+     crowding in alongside it), holds, then fades back to fully
+     transparent 0.92-1.0 -- without this fade-out, --bs-ache-progress
+     (which clamps at 1 forever once you scroll past this beat, same as
+     --bs-intro-progress) would leave the blob permanently covering the
+     page. */
+  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.35) / 0.25), 1);
   --bs-ink-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(1 - var(--bs-ink-fade-out));
   transform: translate(
