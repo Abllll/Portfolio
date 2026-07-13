@@ -167,6 +167,25 @@
     display: none !important;
   }
 
+  .bs-turn-photo,
+  .bs-turn-cutline {
+    display: none !important;
+  }
+
+  .bs-turn-sticker {
+    opacity: 1 !important;
+    transform:
+      translate(-50%, calc(-50% - 18px))
+      translate(40px, -40px)
+      rotate(8deg)
+      scale(1.1) !important;
+    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.5)) !important;
+  }
+
+  .bs-turn-caption {
+    opacity: 1 !important;
+  }
+
   .bs-ache-stage {
     background: #0a0816;
   }
@@ -526,4 +545,150 @@
   --bs-ache-text-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.50) / 0.10), 1);
   --bs-ache-text-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(var(--bs-ache-text-in) * (1 - var(--bs-ache-text-out)));
+}
+
+/* TURN BEAT — a polaroid fades in from Ache's black, a cut-line traces
+   itself around the spark, the spark peels free as a sticker, then the
+   caption appears. Driven entirely by --bs-turn-progress (0-1), written by
+   the scroll/rAF handler in bonheur-story.js -- a third, independent
+   instance of the same pattern --bs-intro-progress and --bs-ache-progress
+   already use. Unlike Ache, nothing here is JS-generated: every element is
+   static markup, and all motion is CSS calc()/clamp() reading the single
+   progress value. */
+
+.bs-turn {
+  position: relative;
+  height: 220vh;
+  display: block;
+  padding: 0;
+}
+
+.bs-turn-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #0a0816;
+}
+
+.bs-turn-photo {
+  --bs-turn-enter: clamp(0, calc(var(--bs-turn-progress, 0) / 0.15), 1);
+  --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 260px;
+  padding: 14px 14px 50px;
+  background: #faf6ef;
+  border-radius: 2px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  opacity: calc(var(--bs-turn-enter) * (1 - 0.45 * var(--bs-turn-peel)));
+  transform: translate(-50%, -50%) scale(calc(0.9 + 0.1 * var(--bs-turn-enter)));
+  pointer-events: none;
+}
+
+.bs-turn-photo-image {
+  position: relative;
+  width: 232px;
+  height: 232px;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.bs-turn-photo-image::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at 40% 35%, #fff3d6 0%, #f4c869 45%, #f2a879 75%, #f4c869 100%);
+  filter: blur(10px);
+}
+
+.bs-turn-photo-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
+  box-shadow: 0 0 24px 8px rgba(244, 200, 105, 0.55);
+}
+
+.bs-turn-cutline {
+  --bs-turn-draw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.15) / 0.3), 1);
+  --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, calc(-50% - 18px));
+  opacity: calc(1 - var(--bs-turn-peel));
+  pointer-events: none;
+}
+
+.bs-turn-cutline circle {
+  fill: none;
+  stroke: rgba(244, 200, 105, 0.8);
+  stroke-width: 2;
+  /* Circumference of r=54: 2 * PI * 54 ≈ 339.29 */
+  stroke-dasharray: 339.29px;
+  stroke-dashoffset: calc(339.29px * (1 - var(--bs-turn-draw)));
+}
+
+.bs-turn-sticker {
+  --bs-turn-fade: clamp(0, calc((var(--bs-turn-progress, 0) - 0.35) / 0.1), 1);
+  --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #faf6ef;
+  opacity: var(--bs-turn-fade);
+  transform:
+    translate(-50%, calc(-50% - 18px))
+    translate(calc(var(--bs-turn-peel) * 40px), calc(var(--bs-turn-peel) * -40px))
+    rotate(calc(var(--bs-turn-peel) * 8deg))
+    scale(calc(1 + var(--bs-turn-peel) * 0.1));
+  filter: drop-shadow(0 calc(var(--bs-turn-peel) * 16px) calc(var(--bs-turn-peel) * 24px) rgba(0, 0, 0, 0.5));
+  background: radial-gradient(circle at 40% 35%, #fff3d6 0%, #f4c869 50%, #f2a879 100%);
+  pointer-events: none;
+}
+
+.bs-turn-sticker-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
+  box-shadow: 0 0 24px 8px rgba(244, 200, 105, 0.55);
+}
+
+.bs-turn-caption {
+  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.65) / 0.2), 1);
+  position: fixed;
+  top: calc(50% + 130px);
+  left: 50%;
+  z-index: 3;
+  transform: translate(-50%, 0);
+  max-width: 30rem;
+  padding: 0 1.5rem;
+  margin: 0;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #f4f0ff;
+  pointer-events: none;
+  opacity: var(--bs-turn-caption-in);
 }
