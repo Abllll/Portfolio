@@ -390,7 +390,7 @@
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
-  width: 56px;
+  width: 112px;
   height: auto;
   pointer-events: none;
   /* Fades in/out together with the tagline right above it -- same
