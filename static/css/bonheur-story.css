@@ -253,12 +253,15 @@
   z-index: 1;
   text-align: center;
   pointer-events: none;
-  /* Rises 0 -> 0.35 (22vh), making room below for the sparks; fades out
-     together with everything else in the beat's final 0.85-1.0. */
+  /* Fades in over the first 0.10 -- a beat of empty space right after the
+     intro's own exit, rather than popping in at full opacity the instant
+     Bonheur is gone. Rises 0 -> 0.35 (22vh), making room below for the
+     sparks; fades out together with everything else 0.85-1.0. */
+  --bs-spark-beat-heading-in: clamp(0, calc(var(--bs-spark-beat-progress, 0) / 0.1), 1);
   --bs-spark-beat-rise: clamp(0, calc(var(--bs-spark-beat-progress, 0) / 0.35), 1);
   --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
   transform: translate(-50%, calc(-50% - var(--bs-spark-beat-rise) * 22vh));
-  opacity: calc(1 - var(--bs-spark-beat-exit));
+  opacity: calc(var(--bs-spark-beat-heading-in) * (1 - var(--bs-spark-beat-exit)));
 }
 
 .bs-spark-beat-number {
@@ -272,8 +275,12 @@
 
 .bs-spark-beat-title {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  /* Same handwritten face as the "Bonheur" wordmark, but in black rather
+     than gold -- ties the two headings together typographically. */
+  font-family: "Caveat", var(--font-script);
+  font-weight: 700;
+  color: #000;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
 }
 
 .bs-spark-beat-dot {
@@ -297,7 +304,7 @@
 
 .bs-spark-beat-body {
   position: fixed;
-  top: 78%;
+  top: 68%;
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);

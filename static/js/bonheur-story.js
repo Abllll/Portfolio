@@ -469,10 +469,11 @@
     var dot = document.createElement("div");
     dot.className = "bs-spark-beat-dot";
     var x = Math.random() * 80 + 10;
-    var y = Math.random() * 30 + 40;
-    // Spread across 0.05-0.55 so the sparks visibly scatter in one after
-    // another as the heading rises, rather than popping in all at once.
-    var inAt = 0.05 + Math.random() * 0.5;
+    var y = Math.random() * 22 + 38;
+    // Spread across 0.10-0.55 (starting once the heading has finished its
+    // own fade-in) so the sparks visibly scatter in one after another as
+    // the heading rises, rather than popping in all at once.
+    var inAt = 0.1 + Math.random() * 0.45;
     dot.style.setProperty("--bs-spark-beat-dot-x", x.toFixed(2) + "%");
     dot.style.setProperty("--bs-spark-beat-dot-y", y.toFixed(2) + "%");
     dot.style.setProperty("--bs-spark-beat-dot-in-at", inAt.toFixed(3));
