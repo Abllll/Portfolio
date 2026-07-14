@@ -210,6 +210,109 @@
     opacity: 1 !important;
   }
 
+  .bs-spark-beat-heading {
+    transform: translate(-50%, calc(-50% - 22vh)) !important;
+    opacity: 1 !important;
+  }
+
+  .bs-spark-beat-dot {
+    opacity: 1 !important;
+  }
+
+  .bs-spark-beat-body {
+    opacity: 1 !important;
+  }
+}
+
+/* SPARKS BEAT (beat 1's second half) — several sparks scatter onto the
+   screen as the "01 Sparks" heading rises out of the way to make room for
+   them, then the body copy settles in below. Driven entirely by
+   --bs-spark-beat-progress (0-1), a fourth independent instance of the
+   same scroll+rAF pattern --bs-intro-progress/--bs-ache-progress/
+   --bs-turn-progress already use. Everything fades out 0.85-1.0 so
+   nothing is left as a fixed ghost overlay once the user scrolls into
+   the Ache beat (the exact bug already fixed once on the Turn beat). */
+.bs-spark-beat {
+  position: relative;
+  height: 200vh;
+  display: block;
+  padding: 0;
+}
+
+.bs-spark-beat-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.bs-spark-beat-heading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  text-align: center;
+  pointer-events: none;
+  /* Rises 0 -> 0.35 (22vh), making room below for the sparks; fades out
+     together with everything else in the beat's final 0.85-1.0. */
+  --bs-spark-beat-rise: clamp(0, calc(var(--bs-spark-beat-progress, 0) / 0.35), 1);
+  --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
+  transform: translate(-50%, calc(-50% - var(--bs-spark-beat-rise) * 22vh));
+  opacity: calc(1 - var(--bs-spark-beat-exit));
+}
+
+.bs-spark-beat-number {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  opacity: 0.6;
+}
+
+.bs-spark-beat-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.bs-spark-beat-dot {
+  position: fixed;
+  top: var(--bs-spark-beat-dot-y, 50%);
+  left: var(--bs-spark-beat-dot-x, 50%);
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  /* Same gradient/glow as .bs-ache-star and the persistent .bs-spark
+     motif -- deliberately consistent spark iconography across the page. */
+  background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
+  box-shadow: 0 0 14px 5px rgba(244, 200, 105, 0.5);
+  --bs-spark-beat-dot-in: clamp(0, calc((var(--bs-spark-beat-progress, 0) - var(--bs-spark-beat-dot-in-at, 0)) / 0.1), 1);
+  --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
+  opacity: calc(var(--bs-spark-beat-dot-in) * (1 - var(--bs-spark-beat-exit)));
+  transform: translate(-50%, -50%);
+}
+
+.bs-spark-beat-body {
+  position: fixed;
+  top: 78%;
+  left: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  max-width: 30rem;
+  padding: 0 1.5rem;
+  margin: 0;
+  text-align: center;
+  font-family: "Literata", var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #463452;
+  pointer-events: none;
+  --bs-spark-beat-body-in: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.55) / 0.15), 1);
+  --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
+  opacity: calc(var(--bs-spark-beat-body-in) * (1 - var(--bs-spark-beat-exit)));
 }
 
 .bs-beat {

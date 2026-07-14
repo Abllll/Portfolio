@@ -32,7 +32,17 @@
     </section>
 
     {{ range .Site.Data.bonheur_story.beats }}
-    {{ if eq .id "ache" }}
+    {{ if eq .id "spark" }}
+    <section class="bs-beat bs-spark-beat" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-spark-beat">
+      <div class="bs-spark-beat-stage">
+        <div class="bs-spark-beat-heading">
+          <p class="bs-spark-beat-number">{{ printf "%02d" .number }}</p>
+          <h2 class="bs-spark-beat-title">{{ .title }}</h2>
+        </div>
+        <p class="bs-spark-beat-body">{{ .body }}</p>
+      </div>
+    </section>
+    {{ else if eq .id "ache" }}
     <section class="bs-beat bs-ache" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-ache">
       <div class="bs-ache-stage">
         <div class="bs-ache-void" aria-hidden="true"></div>

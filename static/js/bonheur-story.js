@@ -421,3 +421,61 @@
   window.addEventListener("resize", onScrollOrResize);
   updateTurnProgress();
 })();
+
+// Drives --bs-spark-beat-progress (0-1) from how far the user has
+// scrolled through #bs-spark-beat -- a fourth, independent instance of
+// the same pattern --bs-intro-progress/--bs-ache-progress/
+// --bs-turn-progress already use.
+(function () {
+  "use strict";
+
+  var sparkBeat = document.getElementById("bs-spark-beat");
+  if (!sparkBeat) return;
+
+  var ticking = false;
+
+  function updateSparkBeatProgress() {
+    ticking = false;
+    var rect = sparkBeat.getBoundingClientRect();
+    var scrollableDistance = rect.height - window.innerHeight;
+    var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
+    progress = Math.min(1, Math.max(0, progress));
+    document.documentElement.style.setProperty("--bs-spark-beat-progress", progress.toFixed(4));
+  }
+
+  function onScrollOrResize() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(updateSparkBeatProgress);
+  }
+
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize);
+  updateSparkBeatProgress();
+})();
+
+// Generates the scattering sparks for the Sparks beat -- each is static
+// markup-free (JS-created since positions must be genuinely random) and
+// only needs a position and a staggered "in" threshold; all fade/exit
+// timing lives in bonheur-story.css reading --bs-spark-beat-progress.
+(function () {
+  "use strict";
+
+  var stage = document.querySelector(".bs-spark-beat-stage");
+  if (!stage) return;
+
+  var DOT_COUNT = 10;
+  for (var i = 0; i < DOT_COUNT; i += 1) {
+    var dot = document.createElement("div");
+    dot.className = "bs-spark-beat-dot";
+    var x = Math.random() * 80 + 10;
+    var y = Math.random() * 30 + 40;
+    // Spread across 0.05-0.55 so the sparks visibly scatter in one after
+    // another as the heading rises, rather than popping in all at once.
+    var inAt = 0.05 + Math.random() * 0.5;
+    dot.style.setProperty("--bs-spark-beat-dot-x", x.toFixed(2) + "%");
+    dot.style.setProperty("--bs-spark-beat-dot-y", y.toFixed(2) + "%");
+    dot.style.setProperty("--bs-spark-beat-dot-in-at", inAt.toFixed(3));
+    stage.appendChild(dot);
+  }
+})();
