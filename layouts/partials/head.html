@@ -44,12 +44,14 @@
 <link rel="stylesheet" href="{{ "css/page-transitions.css" | relURL }}">
 {{ if .IsHome }}
 <link rel="stylesheet" href="{{ "css/explorers-path.css" | relURL }}">
-{{ end }}
-{{ if eq .Layout "bonheur-story" }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Literata:ital,wght@0,400;0,500;1,400&family=Space+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="{{ "css/bonheur-story.css" | relURL }}">
+{{ end }}
+{{ if eq .Layout "redirect" }}
+<meta http-equiv="refresh" content="0; url={{ .Site.Home.RelPermalink }}#{{ .Params.redirectAnchor }}">
+<link rel="canonical" href="{{ .Site.Home.RelPermalink }}">
 {{ end }}
 
 {{ if .Site.Params.icons.useFontAwesome }}

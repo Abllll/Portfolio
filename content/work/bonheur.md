@@ -1,17 +1,13 @@
 +++
 title = "Bonheur"
-subtitle = "A personal emotional memory cabinet"
-description = "A calm, guilt-free way to keep small parenting moments — no streaks, no feed, no social pressure."
-date = 2026-06-06
-role = "Solo product designer & builder"
-timeline = "Ongoing since June 2026"
-team = "Solo (design, interaction, and build)"
-tags = ["Product Design", "Systems Thinking", "Interaction Design", "React Native"]
-featured = true
-icon = "fa-solid fa-box-archive"
-layout = "bonheur-story"
+layout = "redirect"
+redirectAnchor = "bonheur"
+
+[build]
+  list = "never"
 +++
 
-<!-- Content for this page is driven entirely by data/bonheur_story.yaml,
-     rendered by layouts/work/bonheur-story.html. This body is intentionally
-     unused (that layout never calls .Content). -->
+<!-- This page is a redirect stub. Bonheur's real content now lives inline
+     on the homepage (layouts/partials/home/bonheur-section.html), driven
+     by data/bonheur_story.yaml. This URL redirects to /#bonheur via
+     layouts/work/redirect.html, kept alive for old links/bookmarks. -->

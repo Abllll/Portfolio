@@ -1,6 +1,5 @@
-{{/* layouts/work/bonheur-story.html */}}
-{{ define "main" }}
-  <section class="layout-page bs-page">
+{{/* layouts/partials/home/bonheur-section.html */}}
+  <section id="bonheur" class="layout-page bs-page">
     <div class="bs-grain" aria-hidden="true"></div>
     <div class="bs-motif" id="bs-motif" data-motif="{{ (index .Site.Data.bonheur_story.beats 0).motif }}" aria-hidden="true">
       <div class="bs-spark"></div>
@@ -95,4 +94,3 @@
   </section>
 
   <script src="{{ "js/bonheur-story.js" | relURL }}" defer></script>
-{{ end }}
