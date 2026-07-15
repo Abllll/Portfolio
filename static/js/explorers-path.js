@@ -341,6 +341,14 @@
     panelClose.addEventListener("click", closePanel);
   }
 
+  Array.prototype.slice.call(document.querySelectorAll(".ep-panel-case-study-link")).forEach(function (link) {
+    link.addEventListener("click", function () {
+      if (link.getAttribute("href").charAt(0) === "#") {
+        closePanel();
+      }
+    });
+  });
+
   document.addEventListener("keydown", function (event) {
     if (panel && !panel.hidden && event.key === "Escape") {
       closePanel();

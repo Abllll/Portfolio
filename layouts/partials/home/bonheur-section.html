@@ -1,0 +1,96 @@
+{{/* layouts/partials/home/bonheur-section.html */}}
+  <section id="bonheur" class="layout-page bs-page">
+    <div class="bs-grain" aria-hidden="true"></div>
+    <div class="bs-motif" id="bs-motif" data-motif="{{ (index .Site.Data.bonheur_story.beats 0).motif }}" aria-hidden="true">
+      <div class="bs-spark"></div>
+      <div class="bs-jar"></div>
+      <div class="bs-cluster"></div>
+    </div>
+
+    <h1 class="sr-only">{{ .Title }}{{ with .Params.subtitle }} — {{ . }}{{ end }}</h1>
+
+    <section class="bs-intro" id="bs-intro">
+      <div class="bs-intro-stage">
+        <div class="bs-intro-sky" aria-hidden="true"></div>
+        <div class="bs-intro-sunshine" aria-hidden="true"></div>
+        <div class="bs-intro-mist bs-intro-mist--pink" aria-hidden="true"></div>
+        <div class="bs-intro-mist bs-intro-mist--purple" aria-hidden="true"></div>
+        <div class="bs-intro-mist bs-intro-mist--teal" aria-hidden="true"></div>
+        <div class="bs-scroll-cue" aria-hidden="true">
+          <span class="bs-scroll-cue-label">Scroll down</span>
+          <span class="bs-scroll-cue-icon"></span>
+        </div>
+        <span class="bs-intro-word bs-intro-word--bon" aria-hidden="true">Bon</span>
+        <span class="bs-intro-word bs-intro-word--heur" aria-hidden="true">heur</span>
+        <svg class="bs-intro-signature" viewBox="0 0 300 20" aria-hidden="true">
+          <path d="M6,14 C 60,2 100,20 150,10 C 200,0 240,18 294,8"></path>
+        </svg>
+        <p class="bs-intro-tagline">A personal memory companion that helps people cultivate happiness by collecting meaningful everyday moments.</p>
+        <img class="bs-intro-logo" src="{{ "images/bonheur-story/logo.png" | relURL }}" alt="" aria-hidden="true">
+      </div>
+    </section>
+
+    {{ range .Site.Data.bonheur_story.beats }}
+    {{ if eq .id "spark" }}
+    <section class="bs-beat bs-spark-beat" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-spark-beat">
+      <div class="bs-spark-beat-stage">
+        <div class="bs-spark-beat-heading">
+          <p class="bs-spark-beat-number">{{ printf "%02d" .number }}</p>
+          <h2 class="bs-spark-beat-title">{{ .title }}</h2>
+        </div>
+        <p class="bs-spark-beat-body">{{ .body }}</p>
+      </div>
+    </section>
+    {{ else if eq .id "ache" }}
+    <section class="bs-beat bs-ache" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-ache">
+      <div class="bs-ache-stage">
+        <div class="bs-ache-void" aria-hidden="true"></div>
+        <p class="bs-ache-text">Our minds are wired with a negativity bias, so what captures our attention isn't always what truly mattered.<br>What moved us most is often forgotten first.</p>
+      </div>
+    </section>
+    {{ else if eq .id "turn" }}
+    <section class="bs-beat bs-turn" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-turn">
+      <div class="bs-turn-stage">
+        <div class="bs-turn-photo">
+          <div class="bs-turn-photo-image">
+            <div class="bs-turn-photo-spark"></div>
+          </div>
+        </div>
+        <svg class="bs-turn-cutline" viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r="54"></circle>
+        </svg>
+        <div class="bs-turn-sticker">
+          <div class="bs-turn-sticker-spark"></div>
+        </div>
+        <p class="bs-turn-caption">So: catch it before it fades. A photo, a word for what it was — a breeze, a small win, someone's laugh. Bonheur cuts the moment out of its own photo and keeps it as a spark — a little sticker of the thing itself.</p>
+      </div>
+    </section>
+    {{ else }}
+    <section class="bs-beat" data-beat-id="{{ .id }}" data-motif="{{ .motif }}">
+      <div class="bs-beat-inner">
+        <p class="bs-beat-number">{{ printf "%02d" .number }}</p>
+        <h2 class="heading-section">{{ .title }}</h2>
+        <p>{{ .body }}</p>
+
+        <div class="bs-beat-media">
+          {{ if .media }}
+            <img src="{{ .media | relURL }}" alt="{{ .title }}">
+          {{ else }}
+            <div class="bs-media-placeholder">Artwork pending — {{ .title }}</div>
+          {{ end }}
+
+          {{ if isset . "video" }}
+            {{ if .video }}
+              <video src="{{ .video | relURL }}" controls muted loop></video>
+            {{ else }}
+              <div class="bs-media-placeholder">Walkthrough video pending — {{ .title }}</div>
+            {{ end }}
+          {{ end }}
+        </div>
+      </div>
+    </section>
+    {{ end }}
+    {{ end }}
+  </section>
+
+  <script src="{{ "js/bonheur-story.js" | relURL }}" defer></script>

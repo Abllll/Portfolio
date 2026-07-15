@@ -1,0 +1,8 @@
+{{/* layouts/work/redirect.html */}}
+{{ define "main" }}
+<section class="layout-page">
+  <p>
+    <a href="{{ .Site.Home.RelPermalink }}#{{ .Params.redirectAnchor }}">Continue to {{ .Title }} →</a>
+  </p>
+</section>
+{{ end }}

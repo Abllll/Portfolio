@@ -77,8 +77,9 @@ hotspots:
     chapter: "Now"
     type: case-study
     title: "Bonheur"
-    teaser: "A personal emotional memory cabinet — the first real Work entry."
-    workRef: "work/bonheur/"
+    teaser: "Every good hour becomes a spark — kept in a jar, mapped into a star cloud by year's end."
+    icon: "&#9733;"
+    workRef: "#bonheur"
     xPercent: 25
     yPercent: 20
 

@@ -1,0 +1,36 @@
+beats:
+  - id: spark
+    number: 1
+    title: "Sparks"
+    body: "Bonheur is the French word for happiness. Its sound evokes bon (good) and heure (hour), inspiring the idea that happiness isn't one grand achievement, but a collection of good moments. Bonheur is a practice of noticing what truly sparks joy, preserving those moments, and letting a meaningful life gradually take shape around them."
+    motif: drifting
+
+  - id: ache
+    number: 2
+    motif: fading
+
+  - id: turn
+    number: 3
+    motif: caught
+
+  - id: jar
+    number: 4
+    title: "The Jar"
+    body: "Every day gets its own jar. Drop a spark in and it glows — brighter with every good hour you caught that day. Up to three a day; some days the jar stays dim, and that's allowed to just be true."
+    motif: jar-fill
+    media: null
+
+  - id: star-cloud
+    number: 5
+    title: "The Star Cloud"
+    body: "Zoom out to a year, and every spark you've kept becomes a point of light. The ones that repeat — the same person, the same small ritual, the same word — drift together into their own cluster, orbiting a sun at the center. Not a mood board. A map of what actually moves you, drawn by you without meaning to."
+    motif: cloud
+    media: null
+
+  - id: keeping
+    number: 6
+    title: "The Keeping"
+    body: "No streaks. No feed. No score to keep. Just the good hours, kept — however many there turn out to be."
+    motif: settled
+    media: null
+    video: null

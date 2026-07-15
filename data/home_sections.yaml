@@ -1,0 +1,15 @@
+- id: ep-viewport
+  kind: illustration
+  label: "Explorer's Path"
+- id: bonheur
+  kind: bonheur
+  label: "Bonheur"
+- id: project-2
+  kind: placeholder
+  label: "Project 2"
+- id: project-3
+  kind: placeholder
+  label: "Project 3"
+- id: project-4
+  kind: placeholder
+  label: "Project 4"
