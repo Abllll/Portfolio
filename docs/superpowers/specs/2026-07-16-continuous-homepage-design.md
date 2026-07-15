@@ -145,6 +145,52 @@ soon", wrapped in `<section id="{{ .id }}">`).
   matching the site's existing quiet visual language) — no new icon
   artwork required for this pass.
 
+## Section transitions
+
+The reference is the Shopify Editions Winter '26 page
+(shopify.com/editions/winter2026): each chapter gets a full-bleed,
+unhurried entrance — generous scroll runway before the next chapter
+reveals, restrained motion (no bouncing, no parallax showing off),
+minimal chrome. Screenshotted it directly (a plain markdown fetch
+doesn't render its scroll-driven behavior) to confirm this rather than
+guess from memory. Translated into concrete, buildable rules:
+
+- **Illustration → intro.** No pin, no scroll-jack — the illustration
+  simply ends and the intro section begins in normal document flow
+  (per the "Scroll-direction rule" section above, this is already how
+  `.ep-viewport` behaves). As the intro section crosses ~30% into the
+  viewport, its content fades and rises in (`opacity 0→1`,
+  `translateY 12px→0`), staggered: name first, badge ~120ms later,
+  summary line ~120ms after that. This is the same fade-up-and-stagger
+  technique already built and validated for Bonheur's own beats
+  (see "Polish the Sparks beat: fade-in the heading... tighten
+  spacing") — reused here rather than inventing a second animation
+  language for the same site.
+- **Intro → Bonheur.** No new work — Bonheur's own intro stage
+  (`bs-intro`, `bs-scroll-cue`, the sky/mist/sunshine reveal) already
+  does its own bespoke entrance. Nothing about that changes by being
+  embedded; it fires exactly as it does today.
+- **Bonheur → placeholder sections.** Same fade-and-rise treatment as
+  the intro section: title fades up, then the "coming soon" line,
+  ~120ms stagger. One shared CSS animation (a `.reveal` class toggled
+  by IntersectionObserver, same 30%-visible threshold), applied to the
+  intro section and each placeholder section — not Bonheur's, which
+  keeps its own.
+- **Scroll runway.** Every section other than Bonheur's (which sizes
+  itself to its beats) gets `min-height: 100vh`, so the reveal has
+  room to read as deliberate rather than rushed — the "unhurried
+  pacing" part of the Shopify reference, applied as a concrete layout
+  rule rather than left as a vibe.
+- **Dot-nav appearance.** Fades in (`opacity 0→1`, slight slide in
+  from the left edge) at the exact moment the intro section's
+  IntersectionObserver entry fires — tied to actual section entry,
+  not a hardcoded scroll-Y pixel value, so it stays correct regardless
+  of viewport height or content changes later.
+
+`prefers-reduced-motion` disables all of the above (fades/slides
+resolve instantly to their end state) — matching the existing sitewide
+cross-document transition rule, which already respects it.
+
 ## Bonheur hotspot → same-page anchor
 
 `data/explorers_path.yaml`'s `now-case-study-1` hotspot currently sets
@@ -223,3 +269,9 @@ surface — verification is manual browser spot-check:
 7. Visiting `/work/bonheur/` directly redirects to `/#bonheur`.
 8. `/work/` renders with zero listed projects, no error.
 9. Mobile-width spot-check of the shrunk dot-nav.
+10. Intro and each placeholder section fade/rise in with the staggered
+    name → badge → summary (or title → "coming soon") timing, once
+    ~30% visible — not before, not abruptly.
+11. Bonheur's own intro reveal is unaffected by relocation.
+12. With `prefers-reduced-motion` enabled, all fades/slides resolve
+    instantly — no motion plays.
