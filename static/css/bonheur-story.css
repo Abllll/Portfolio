@@ -1,10 +1,58 @@
 /* static/css/bonheur-story.css
-   BONHEUR STORY PAGE — scrollytelling case study.
-   Loaded only on this page (see layouts/partials/head.html). All rules are
-   scoped under bs- prefixed classes so nothing here leaks onto other pages. */
+   BONHEUR STORY PAGE — scrollytelling case study, now embedded as one
+   section of the continuous homepage (see layouts/partials/head.html,
+   loaded whenever .IsHome). All rules are scoped under bs- prefixed
+   classes so nothing here leaks onto other sections. */
 
 .bs-page {
   position: relative;
+}
+
+/* Several beats use position:fixed for full-viewport-width travel (see
+   .bs-intro-word's comment for why absolute isn't an option — it'd be
+   clipped by the page's max-width container). Fixed elements escape the
+   document flow entirely, so without this gate they'd render (and
+   intercept clicks) everywhere on the page, all the time, regardless of
+   scroll position -- harmless when this was the only content on its own
+   URL, broken now that it's one section among several. Each beat's own
+   scroll-tracking JS (already computing getBoundingClientRect() every
+   frame for its --bs-*-progress custom property) also toggles a
+   `--active` class once its own bounding rect actually intersects the
+   viewport; these stay hidden until then. */
+.bs-intro-sky,
+.bs-intro-sunshine,
+.bs-intro-mist,
+.bs-intro-word,
+.bs-intro-signature,
+.bs-spark-beat-heading,
+.bs-spark-beat-dot,
+.bs-spark-beat-body,
+.bs-ache-void,
+.bs-ache-ink,
+.bs-ache-text,
+.bs-turn-photo,
+.bs-turn-cutline,
+.bs-turn-sticker,
+.bs-turn-caption {
+  visibility: hidden;
+}
+
+#bs-intro.bs-intro--active .bs-intro-sky,
+#bs-intro.bs-intro--active .bs-intro-sunshine,
+#bs-intro.bs-intro--active .bs-intro-mist,
+#bs-intro.bs-intro--active .bs-intro-word,
+#bs-intro.bs-intro--active .bs-intro-signature,
+#bs-spark-beat.bs-spark-beat--active .bs-spark-beat-heading,
+#bs-spark-beat.bs-spark-beat--active .bs-spark-beat-dot,
+#bs-spark-beat.bs-spark-beat--active .bs-spark-beat-body,
+#bs-ache.bs-ache--active .bs-ache-void,
+#bs-ache.bs-ache--active .bs-ache-ink,
+#bs-ache.bs-ache--active .bs-ache-text,
+#bs-turn.bs-turn--active .bs-turn-photo,
+#bs-turn.bs-turn--active .bs-turn-cutline,
+#bs-turn.bs-turn--active .bs-turn-sticker,
+#bs-turn.bs-turn--active .bs-turn-caption {
+  visibility: visible;
 }
 
 /* Fine grain over the whole page -- kills the flat, plastic look of the

@@ -59,6 +59,7 @@
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
     document.documentElement.style.setProperty("--bs-intro-progress", progress.toFixed(4));
+    intro.classList.toggle("bs-intro--active", rect.bottom > 0 && rect.top < window.innerHeight);
 
     if (!taglineFlickered && tagline && progress >= 0.4) {
       taglineFlickered = true;
@@ -217,6 +218,7 @@
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
     document.documentElement.style.setProperty("--bs-ache-progress", progress.toFixed(4));
+    ache.classList.toggle("bs-ache--active", rect.bottom > 0 && rect.top < window.innerHeight);
   }
 
   function onScrollOrResize() {
@@ -378,6 +380,7 @@
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
     document.documentElement.style.setProperty("--bs-turn-progress", progress.toFixed(4));
+    turn.classList.toggle("bs-turn--active", rect.bottom > 0 && rect.top < window.innerHeight);
   }
 
   function onScrollOrResize() {
@@ -410,6 +413,7 @@
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
     document.documentElement.style.setProperty("--bs-spark-beat-progress", progress.toFixed(4));
+    sparkBeat.classList.toggle("bs-spark-beat--active", rect.bottom > 0 && rect.top < window.innerHeight);
   }
 
   function onScrollOrResize() {
