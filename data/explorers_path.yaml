@@ -79,7 +79,7 @@ hotspots:
     title: "Bonheur"
     teaser: "Every good hour becomes a spark — kept in a jar, mapped into a star cloud by year's end."
     icon: "&#9733;"
-    workRef: "work/bonheur/"
+    workRef: "#bonheur"
     xPercent: 25
     yPercent: 20
 

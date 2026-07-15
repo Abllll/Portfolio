@@ -36,7 +36,7 @@
         <h2 id="ep-panel-title-{{ .id }}" class="ep-panel-heading">{{ .title }}</h2>
         {{- if eq .type "case-study" }}
         <p>{{ .teaser }}</p>
-        <a href="{{ .workRef | relURL }}" class="btn-primary btn-primary-sm">View the case study →</a>
+        <a href="{{ if hasPrefix .workRef "#" }}{{ .workRef }}{{ else }}{{ .workRef | relURL }}{{ end }}" class="ep-panel-case-study-link btn-primary btn-primary-sm">View the case study →</a>
         {{- else }}
         <p>{{ .body }}</p>
         {{- end }}
@@ -58,7 +58,7 @@
         <summary>{{ .chapter }} — {{ .title }}</summary>
         {{- if eq .type "case-study" }}
         <p>{{ .teaser }}</p>
-        <a href="{{ .workRef | relURL }}">View the case study →</a>
+        <a href="{{ if hasPrefix .workRef "#" }}{{ .workRef }}{{ else }}{{ .workRef | relURL }}{{ end }}" class="ep-panel-case-study-link">View the case study →</a>
         {{- else }}
         <p>{{ .body }}</p>
         {{- end }}
