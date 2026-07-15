@@ -182,7 +182,6 @@
     animation: none !important;
   }
 
-  .bs-ache-star,
   .bs-ache-ink,
   .bs-ache-void {
     display: none !important;
@@ -297,8 +296,8 @@
   height: 8px;
   border-radius: 50%;
   pointer-events: none;
-  /* Same gradient/glow as .bs-ache-star and the persistent .bs-spark
-     motif -- deliberately consistent spark iconography across the page. */
+  /* Same gradient/glow as the persistent .bs-spark motif -- deliberately
+     consistent spark iconography across the page. */
   background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
   box-shadow: 0 0 14px 5px rgba(244, 200, 105, 0.5);
   --bs-spark-beat-dot-in: clamp(0, calc((var(--bs-spark-beat-progress, 0) - var(--bs-spark-beat-dot-in-at, 0)) / 0.1), 1);
@@ -615,14 +614,18 @@
 .bs-intro-mist--purple { top: 34%; left: 62%; background: #C3A6EE; }
 .bs-intro-mist--teal { top: 68%; left: 30%; background: #C2E0E8; }
 
-/* ACHE BEAT — scattering stars fading into spreading darkness.
-   Driven by --bs-ache-progress (0-1), written by the scroll/rAF handler in
-   bonheur-story.js -- a second, independent instance of the same pattern
-   --bs-intro-progress already uses for beat 1. */
+/* ACHE BEAT — darkness casting directly over the screen, then the
+   negativity-bias text. Driven by --bs-ache-progress (0-1), written by
+   the scroll/rAF handler in bonheur-story.js -- a second, independent
+   instance of the same pattern --bs-intro-progress already uses for beat
+   1. No star-scatter-in phase here -- the Sparks beat immediately before
+   this one already establishes "many sparks appearing," so Ache jumps
+   straight to darkness casting over rather than repeating it. Shorter
+   (160vh, was 280vh) since there's less to get through. */
 
 .bs-ache {
   position: relative;
-  height: 280vh;
+  height: 160vh;
   display: block;
   padding: 0;
 }
@@ -632,43 +635,6 @@
   top: 0;
   height: 100vh;
   overflow: hidden;
-}
-
-.bs-ache-star {
-  position: fixed;
-  top: var(--bs-star-y, 50%);
-  left: var(--bs-star-x, 50%);
-  /* Below the void/ink layer (z-index 2), not above it -- the negativity-
-     bias storyline needs darkness to totally overcast every star once it
-     arrives, not leave them glowing on top of it. */
-  z-index: 1;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  /* Same gradient stops as the persistent .bs-spark motif, just smaller
-     and with a tighter glow -- deliberately consistent spark iconography
-     across the page rather than a one-off style for this beat. */
-  background: radial-gradient(circle, #fff8e7 0%, #f4c869 45%, transparent 75%);
-  box-shadow: 0 0 14px 5px rgba(244, 200, 105, 0.5);
-  pointer-events: none;
-  /* 0 -> 1 over a 0.08-wide ramp starting at this star's own random
-     threshold -- staggers each star's fade-in/out independently.
-     --bs-star-twinkle is a per-frame noise value (same technique as the
-     wobble) folded in as a multiplier -- a real @keyframes animation on
-     opacity here would completely override this envelope instead of
-     layering with it, since animated properties win over the cascaded
-     value for as long as they're running. */
-  --bs-star-fade-in: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-in, 0)) / 0.08), 1);
-  --bs-star-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - var(--bs-star-out, 1)) / 0.08), 1);
-  opacity: calc(var(--bs-star-fade-in) * (1 - var(--bs-star-fade-out)) * var(--bs-star-twinkle, 1));
-  /* Floats in from a random direction/distance as it fades in -- the
-     (1 - fade-in) term is large before the star has appeared and settles
-     to 0 once fully visible, so it arrives at rest exactly where its
-     --bs-star-x/-y say, rather than just popping into existence in place. */
-  transform: translate(
-    calc(-50% + var(--bs-star-wobble-x, 0px) + (1 - var(--bs-star-fade-in)) * var(--bs-star-enter-x, 0vw)),
-    calc(-50% + var(--bs-star-wobble-y, 0px) + (1 - var(--bs-star-fade-in)) * var(--bs-star-enter-y, 0vh))
-  );
 }
 
 /* A guaranteed full-bleed dark layer, same grow/hold/fade-out timing as
@@ -681,11 +647,9 @@
   z-index: 2;
   background: #0a0816;
   pointer-events: none;
-  /* Starts at 0.35 -- deliberately after the stars have had a full
-     moment to appear and hold (their own --bs-star-out floor is also
-     0.35), so darkness reads as casting over an already-established sky
-     rather than arriving simultaneously with it. */
-  --bs-void-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.35) / 0.25), 1);
+  /* Starts immediately -- darkness casts over from the very top of the
+     beat rather than waiting for anything to establish first. */
+  --bs-void-in: clamp(0, calc(var(--bs-ache-progress, 0) / 0.2), 1);
   --bs-void-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(var(--bs-void-in) * (1 - var(--bs-void-out)));
 }
@@ -701,15 +665,12 @@
   background: #0a0816;
   filter: blur(70px);
   pointer-events: none;
-  /* Grows 0.35-0.60 (matching --bs-void-in -- both arrive together, after
-     the stars have had a full moment to appear and hold, so darkness
-     reads as casting over an already-established sky rather than
-     crowding in alongside it), holds, then fades back to fully
-     transparent 0.92-1.0 -- without this fade-out, --bs-ache-progress
-     (which clamps at 1 forever once you scroll past this beat, same as
-     --bs-intro-progress) would leave the blob permanently covering the
-     page. */
-  --bs-ink-grow: clamp(0, calc((var(--bs-ache-progress, 0) - 0.35) / 0.25), 1);
+  /* Grows 0-0.20 (matching --bs-void-in), holds, then fades back to
+     fully transparent 0.92-1.0 -- without this fade-out,
+     --bs-ache-progress (which clamps at 1 forever once you scroll past
+     this beat, same as --bs-intro-progress) would leave the blob
+     permanently covering the page. */
+  --bs-ink-grow: clamp(0, calc(var(--bs-ache-progress, 0) / 0.2), 1);
   --bs-ink-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(1 - var(--bs-ink-fade-out));
   transform: translate(
@@ -732,12 +693,12 @@
   line-height: 1.7;
   color: #f4c869;
   pointer-events: none;
-  /* Fades in 0.50-0.60, holds through most of the beat's tail while the
-     screen is dark, fades back out 0.92-1.0 -- same reasoning as the ink
-     blob above: needs an explicit exit or it stays visible forever past
-     this beat. Widened the hold (0.60-0.92, was 0.75-0.90) to give more
-     reading time. */
-  --bs-ache-text-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.50) / 0.10), 1);
+  /* Fades in 0.35-0.45 -- a brief pause in full darkness (once void/ink
+     finish growing at 0.20) before the text arrives -- holds through the
+     rest of the beat's tail, fades back out 0.92-1.0 -- same reasoning
+     as the ink blob above: needs an explicit exit or it stays visible
+     forever past this beat. */
+  --bs-ache-text-in: clamp(0, calc((var(--bs-ache-progress, 0) - 0.35) / 0.10), 1);
   --bs-ache-text-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
   opacity: calc(var(--bs-ache-text-in) * (1 - var(--bs-ache-text-out)));
 }

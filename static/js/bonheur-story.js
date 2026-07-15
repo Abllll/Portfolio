@@ -222,11 +222,14 @@
   updateAcheProgress();
 })();
 
-// Generates the ~13 scattering stars and 3-4 growing ink blobs for the
-// Ache beat, and drives their per-frame noise-driven drift. Skipped
-// entirely under prefers-reduced-motion (the elements are display:none
-// anyway per the CSS, so this just avoids wasted per-frame work and
-// avoids ever creating them in the first place).
+// Generates the 4 growing ink blobs for the Ache beat and drives their
+// per-frame noise-driven drift. The Sparks beat immediately before this
+// one already establishes "many sparks appearing" -- Ache no longer
+// re-does its own star-scatter-in, it jumps straight to darkness casting
+// over, so there's nothing here but the ink. Skipped entirely under
+// prefers-reduced-motion (the elements are display:none anyway per the
+// CSS, so this just avoids wasted per-frame work and avoids ever
+// creating them in the first place).
 (function () {
   "use strict";
 
@@ -307,49 +310,15 @@
     return 70 * (n0 + n1 + n2);
   }
 
-  var STAR_COUNT = 9;
-  var stars = [];
-  for (var i = 0; i < STAR_COUNT; i += 1) {
-    var star = document.createElement("div");
-    star.className = "bs-ache-star";
-    var x = Math.random() * 90 + 5;
-    var y = Math.random() * 80 + 10;
-    // Spread "in" thresholds across a 0.00-0.25 window so the stars
-    // visibly float in one after another rather than all at once. "out"
-    // is derived from each star's own "in" (always at least 0.15 later,
-    // never before 0.35, never after 0.60 -- matching --bs-void-in's own
-    // full-opacity point) so every star has finished fading by the time
-    // darkness has fully arrived -- paired with the void/ink sitting
-    // above the stars in z-index, darkness totally overcasts them with
-    // no lingering sparks, matching the negativity-bias storyline.
-    var inThreshold = Math.random() * 0.25;
-    var minOut = Math.max(0.35, inThreshold + 0.15);
-    var outThreshold = minOut + Math.random() * (0.60 - minOut);
-    // Each star floats in from a random direction/distance rather than
-    // just popping into existence in place -- see .bs-ache-star's
-    // transform, which interpolates this out to 0 as the star fades in.
-    var enterAngle = Math.random() * Math.PI * 2;
-    var enterDist = 10 + Math.random() * 8;
-    var enterX = Math.cos(enterAngle) * enterDist;
-    var enterY = Math.sin(enterAngle) * enterDist;
-    star.style.setProperty("--bs-star-x", x.toFixed(2) + "%");
-    star.style.setProperty("--bs-star-y", y.toFixed(2) + "%");
-    star.style.setProperty("--bs-star-in", inThreshold.toFixed(3));
-    star.style.setProperty("--bs-star-out", outThreshold.toFixed(3));
-    star.style.setProperty("--bs-star-enter-x", enterX.toFixed(2) + "vw");
-    star.style.setProperty("--bs-star-enter-y", enterY.toFixed(2) + "vh");
-    stage.appendChild(star);
-    stars.push({ el: star, x: x, y: y, seed: 100 + i * 37.7 });
-  }
-
   var INK_COUNT = 4;
   var inks = [];
   for (var j = 0; j < INK_COUNT; j += 1) {
     var ink = document.createElement("div");
     ink.className = "bs-ache-ink";
-    var starRef = stars[Math.floor(Math.random() * stars.length)];
-    ink.style.setProperty("--bs-ink-x", starRef.x.toFixed(2) + "%");
-    ink.style.setProperty("--bs-ink-y", starRef.y.toFixed(2) + "%");
+    var x = Math.random() * 90 + 5;
+    var y = Math.random() * 80 + 10;
+    ink.style.setProperty("--bs-ink-x", x.toFixed(2) + "%");
+    ink.style.setProperty("--bs-ink-y", y.toFixed(2) + "%");
     // Large enough (a single blob can span the full viewport diagonal)
     // that 4 of them at random points reliably merge into complete,
     // solid coverage rather than leaving gaps at the corners.
@@ -367,14 +336,6 @@
     var inView = rect.bottom > 0 && rect.top < window.innerHeight;
     if (inView) {
       t += 0.006;
-      stars.forEach(function (s) {
-        var nx = simplex2(t, s.seed);
-        var ny = simplex2(t + 100, s.seed);
-        var twinkle = 0.7 + simplex2(t * 2, s.seed + 50) * 0.3;
-        s.el.style.setProperty("--bs-star-wobble-x", (nx * 10).toFixed(2) + "px");
-        s.el.style.setProperty("--bs-star-wobble-y", (ny * 10).toFixed(2) + "px");
-        s.el.style.setProperty("--bs-star-twinkle", Math.max(0.3, twinkle).toFixed(3));
-      });
       inks.forEach(function (b) {
         var nx = simplex2(t, b.seed);
         var ny = simplex2(t + 100, b.seed);
