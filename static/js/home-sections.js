@@ -59,20 +59,39 @@
       });
     }
 
-    if ("IntersectionObserver" in window && sectionEls.length) {
-      var activeObserver = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              setActiveDot(entry.target.id);
-            }
-          });
+    // IntersectionObserver's threshold is a ratio of intersecting area to
+    // the *target's own* area -- unreachable for a section far taller
+    // than the viewport (Bonheur's beats add up to several thousand
+    // pixels), so a ratio-based observer would never mark it active for
+    // most of its own scroll range. Instead, track which section's box
+    // contains the viewport's vertical center -- correct regardless of
+    // how tall any individual section is.
+    if (sectionEls.length) {
+      var activeTicking = false;
+
+      function updateActiveDot() {
+        activeTicking = false;
+        var centerY = window.innerHeight / 2;
+        for (var i = 0; i < sectionEls.length; i++) {
+          var rect = sectionEls[i].el.getBoundingClientRect();
+          if (rect.top <= centerY && rect.bottom > centerY) {
+            setActiveDot(sectionEls[i].el.id);
+            break;
+          }
+        }
+      }
+
+      window.addEventListener(
+        "scroll",
+        function () {
+          if (activeTicking) return;
+          activeTicking = true;
+          window.requestAnimationFrame(updateActiveDot);
         },
-        { threshold: 0.5 }
+        { passive: true }
       );
-      sectionEls.forEach(function (pair) {
-        activeObserver.observe(pair.el);
-      });
+      window.addEventListener("resize", updateActiveDot);
+      updateActiveDot();
     }
 
     dots.forEach(function (dot) {
