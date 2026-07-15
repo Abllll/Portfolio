@@ -1,0 +1,7 @@
+<nav class="dot-nav" id="dot-nav" aria-label="Section navigation">
+  {{ range .Site.Data.home_sections }}
+  <a href="#{{ .id }}" class="dot-nav__dot" data-dot-target="{{ .id }}" aria-label="{{ .label }}">
+    <span class="dot-nav__marker" aria-hidden="true"></span>
+  </a>
+  {{ end }}
+</nav>
