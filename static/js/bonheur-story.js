@@ -10,6 +10,14 @@
 
   if (!motif || !beats.length) return;
 
+  // rootMargin shrinks the effective viewport to a single line at its
+  // vertical center -- a beat "intersects" exactly when it crosses that
+  // center line, so this fires consistently regardless of the beat's own
+  // height. A fixed threshold: 0.5 (fraction of the TARGET's own area)
+  // can mathematically never fire for any beat taller than 2x the
+  // viewport -- Turn (220vh) and the old Ache (280vh) never satisfied it,
+  // so the motif silently never updated to "caught"/"fading" while
+  // scrolling through them.
   var observer = new IntersectionObserver(
     function (entries) {
       entries.forEach(function (entry) {
@@ -21,7 +29,7 @@
         }
       });
     },
-    { threshold: 0.5 }
+    { rootMargin: "-50% 0px -50% 0px", threshold: 0 }
   );
 
   beats.forEach(function (beat) {
