@@ -275,13 +275,17 @@
     if (scrollCue) scrollCue.classList.add("is-dismissed");
   }
 
-  window.addEventListener(
-    "scroll",
-    function () {
-      if (window.scrollY > 40) dismissControlsHint();
-    },
-    { passive: true }
-  );
+  // wheel/touchmove, not "scroll" -- a "scroll" event fires for *any*
+  // scrollY change, including the page's own load-time corrective
+  // re-scroll (compensating for images above the illustration shifting
+  // layout as they finish loading, which in practice keeps adjusting
+  // for several seconds -- long enough that no fixed grace period after
+  // load reliably outlasts it). wheel/touchmove only fire for genuine
+  // user input and are never triggered by a programmatic
+  // window.scrollTo(), so they sidestep the timing problem entirely
+  // rather than trying to out-wait it.
+  window.addEventListener("wheel", dismissControlsHint, { passive: true });
+  window.addEventListener("touchmove", dismissControlsHint, { passive: true });
 
   document.addEventListener("keydown", function (event) {
     if (event.target.closest && event.target.closest(".ep-hotspot")) return;

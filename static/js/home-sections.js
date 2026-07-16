@@ -5,7 +5,6 @@
 
   var revealGroups = Array.prototype.slice.call(document.querySelectorAll(".reveal-group"));
   var dotNav = document.getElementById("dot-nav");
-  var introSection = document.getElementById("intro");
   var dots = dotNav ? Array.prototype.slice.call(dotNav.querySelectorAll(".dot-nav__dot")) : [];
 
   if (reduceMotion || !("IntersectionObserver" in window)) {
@@ -29,25 +28,11 @@
     });
   }
 
-  if (dotNav && introSection && "IntersectionObserver" in window) {
-    var navVisibilityObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            dotNav.classList.add("is-visible");
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-    navVisibilityObserver.observe(introSection);
-  }
-
   if (dots.length) {
     var sectionEls = dots
       .map(function (dot) {
         var id = dot.getAttribute("data-dot-target");
-        return { dot: dot, el: document.getElementById(id) };
+        return { dot: dot, el: document.getElementById(id), isIllustration: dot.getAttribute("data-dot-kind") === "illustration" };
       })
       .filter(function (pair) {
         return pair.el;
@@ -66,6 +51,11 @@
     // most of its own scroll range. Instead, track which section's box
     // contains the viewport's vertical center -- correct regardless of
     // how tall any individual section is.
+    var illustrationEl = null;
+    sectionEls.forEach(function (pair) {
+      if (pair.isIllustration) illustrationEl = pair.el;
+    });
+
     if (sectionEls.length) {
       var activeTicking = false;
 
@@ -78,6 +68,21 @@
             setActiveDot(sectionEls[i].el.id);
             break;
           }
+        }
+
+        // Dot-nav visibility is checked directly against the
+        // illustration's own rect (its #ep-viewport is position:sticky,
+        // so its rect reports top~0/bottom~100vh for its entire pinned
+        // duration) rather than reusing the loop above -- #intro sits
+        // between the illustration and the rest of the tracked sections
+        // but isn't itself one of the 5 dots, so relying on "which
+        // tracked section is centered" left a dead zone while scrolling
+        // through #intro where dot-nav visibility never got
+        // re-evaluated at all.
+        if (dotNav && illustrationEl) {
+          var illustrationRect = illustrationEl.getBoundingClientRect();
+          var illustrationActive = illustrationRect.top <= centerY && illustrationRect.bottom > centerY;
+          dotNav.classList.toggle("is-visible", !illustrationActive);
         }
       }
 

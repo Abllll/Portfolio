@@ -1,5 +1,67 @@
 # Explorer's Path — reversed landing (sub-project #1 of 4) — design spec
 
+## Revision note (post-implementation)
+
+After the internal camera-pan work below shipped and was reviewed live,
+it turned out to only be half of what was actually wanted: the
+illustration staying first in the page (scroll down through it, then
+down into intro/projects) with just its own internal pan reversed. What
+was actually wanted is a full page-level reorder: **project-4 → project-3
+→ project-2 → Bonheur → Intro → Illustration**, with the illustration as
+the very last section and the true landing point (page loads scrolled to
+it), and scrolling *up* -- not down -- as what moves back through
+Bonheur/projects toward the top of the document.
+
+This was built as a second pass on top of the architecture below (which
+is otherwise unchanged and still accurate for the illustration's own
+internal behavior). Additions, in `data/home_sections.yaml` /
+`layouts/index.html` / `static/js/home-sections.js` /
+`static/js/explorers-path.js`:
+
+- `data/home_sections.yaml` reordered: project-4, project-3, project-2,
+  bonheur, then the illustration entry (`ep-viewport`) last -- single
+  source of truth, so the dot-nav (which ranges over the same file)
+  reorders for free.
+- `layouts/index.html`: the projects/Bonheur loop now renders first, then
+  `home/intro.html`, then the illustration + its script, last.
+- A synchronous (non-deferred) inline script scrolls the page on load so
+  `#ep-spacer`'s top aligns with the viewport -- not
+  `document.body`'s literal max scroll position, which would overshoot
+  past the illustration into the site-wide footer (rendered after
+  `<main>` in `baseof.html`, so it always follows the illustration
+  regardless of reordering). A small +2px buffer avoids a sub-pixel
+  boundary overlap with `#intro` (content-sized, not 100vh, so it can
+  end within a fraction of a pixel of the illustration's start) that
+  was making `#intro` register as still "intersecting" and prematurely
+  reveal the dot-nav. A `window.load` re-scroll (skipped if the user has
+  already started interacting) corrects for layout shift from images
+  above the illustration finishing loading late -- observed to keep
+  shifting for several seconds, well past any short fixed grace period.
+- Dot-nav visibility switched from a one-time `IntersectionObserver` on
+  `#intro` to checking the illustration's own sticky rect directly on
+  every scroll tick (hidden while it's centered, shown otherwise) --
+  `#intro` isn't one of the 5 dot-nav sections, so tracking only the
+  dot-nav's own section list left a dead zone while scrolling through
+  it where visibility never got re-evaluated.
+- The onboarding hint's dismiss-on-scroll switched from a `"scroll"`
+  listener to `wheel`/`touchmove` listeners -- `"scroll"` fires for the
+  load-time corrective re-scroll too (a real scroll event with no way to
+  distinguish it from user input by event alone), and no fixed grace
+  period reliably outlasted the multi-second layout settling above. Real
+  input events sidestep the problem instead of racing it.
+- The scroll-cue's copy/icon flipped from "Scroll down" (pointing down)
+  to "Scroll up" (pointing up) -- the rest of the page is now reached by
+  scrolling up, not down.
+
+Verified via scripted Playwright checks matching the original list below,
+plus: DOM order top-to-bottom is project-4/3/2/bonheur/intro/illustration;
+page loads scrolled to the illustration; the onboarding hint survives
+several seconds of load-time layout settling and only dismisses on real
+wheel input; dot-nav is hidden at load and through `#intro`'s range, and
+becomes visible (with the correct active dot) once scrolled up into
+Bonheur/projects; WASD still moves her independent of scroll after the
+reorder; no console errors.
+
 ## Context
 
 This is the first of four planned changes to the Explorer's Path illustration,

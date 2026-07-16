@@ -1,9 +1,10 @@
 {{ define "main" }}
-  {{ partial "explorers-path/scene.html" . }}
-  <script src="{{ "js/explorers-path.js" | relURL }}" defer></script>
-
-  {{ partial "home/intro.html" . }}
-
+  {{/* Reversed reading order: projects (4->3->2->1/Bonheur), then the
+       intro, then the illustration last -- the illustration is the
+       landing point (see the load-scroll script below), reached first,
+       with everything else found by scrolling up from it. Order is
+       entirely driven by data/home_sections.yaml so the dot-nav (which
+       ranges over the same file) can never drift out of sync with it. */}}
   {{ range .Site.Data.home_sections }}
     {{ if eq .kind "bonheur" }}
       {{ partial "home/bonheur-section.html" $ }}
@@ -11,6 +12,57 @@
       {{ partial "home/project-placeholder.html" . }}
     {{ end }}
   {{ end }}
+
+  {{ partial "home/intro.html" . }}
+
+  {{ partial "explorers-path/scene.html" . }}
+  <script src="{{ "js/explorers-path.js" | relURL }}" defer></script>
+
+  {{/* The illustration is the landing point, but it's not literally the
+       last thing in the document (the site-wide footer, rendered in
+       baseof.html, always follows <main>) -- so "load at the bottom"
+       means scroll to align #ep-spacer's top with the viewport, not
+       document.body's actual max scroll position, which would overshoot
+       past the illustration into the footer. Synchronous (not deferred)
+       so it runs at parse time, before the browser's default scroll-to-
+       top paint is visible to the user. */}}
+  <script>
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    (function () {
+      var spacer = document.getElementById("ep-spacer");
+      if (!spacer) return;
+
+      // +2px, not the exact boundary -- #intro is content-sized (not
+      // 100vh), so its bottom edge can land within a sub-pixel of
+      // #ep-spacer's top; scrolling to the exact boundary risks a
+      // razor-thin overlap that IntersectionObserver reports as
+      // #intro still "intersecting", prematurely revealing the dot-nav
+      // at load.
+      function scrollToIllustration() {
+        window.scrollTo(0, spacer.getBoundingClientRect().top + window.scrollY + 2);
+      }
+
+      scrollToIllustration();
+
+      // Images above this point (project placeholders, Bonheur's media,
+      // the illustration's own layers) don't all have explicit
+      // dimensions, so they can shift layout as they finish loading --
+      // the browser's own scroll-anchoring then silently moves scrollY
+      // to compensate, away from where this script put it. Re-apply
+      // once everything has finished loading, but never fight the user
+      // if they've already started scrolling/interacting by then.
+      var userInteracted = false;
+      function markInteracted() {
+        userInteracted = true;
+      }
+      window.addEventListener("wheel", markInteracted, { passive: true, once: true });
+      window.addEventListener("touchstart", markInteracted, { passive: true, once: true });
+      window.addEventListener("keydown", markInteracted, { once: true });
+      window.addEventListener("load", function () {
+        if (!userInteracted) scrollToIllustration();
+      });
+    })();
+  </script>
 
   {{ partial "home/dot-nav.html" . }}
   <script src="{{ "js/home-sections.js" | relURL }}" defer></script>
