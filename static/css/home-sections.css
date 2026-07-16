@@ -11,9 +11,13 @@ html {
   padding: 4rem 1.5rem;
 }
 
-.home-intro,
 .home-placeholder {
   min-height: 100vh;
+}
+
+.home-intro {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
 }
 
 .home-intro__inner,
