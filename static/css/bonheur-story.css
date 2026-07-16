@@ -88,11 +88,18 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #fff4cc 0%, #ffdb70 20%, #f4c869 42%, #d99a30 62%, transparent 75%);
+  background: radial-gradient(circle at 32% 28%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.4) 14%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(244, 200, 105, 0.22) 62%,
+    rgba(244, 200, 105, 0.55) 86%,
+    rgba(196, 136, 38, 0.7) 100%);
+  border: 1px solid rgba(196, 136, 38, 0.4);
   box-shadow:
-    inset -1px -2px 3px rgba(120, 70, 0, 0.35),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.6),
-    0 0 24px 8px rgba(244, 200, 105, 0.55);
+    inset -1px -2px 2px rgba(180, 120, 20, 0.25),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.9),
+    0 0 12px 3px rgba(244, 200, 105, 0.35);
   /* Starts at 0.95, not 0.65 -- this sits dead-center, the exact same
      spot as "Bonheur" itself (.bs-motif is centered), and the word's own
      exit fade (--bs-exit, on .bs-intro-stage) doesn't finish until 0.95.
@@ -349,11 +356,18 @@
   pointer-events: none;
   /* Same gradient/glow as the persistent .bs-spark motif -- deliberately
      consistent spark iconography across the page. */
-  background: radial-gradient(circle at 38% 32%, #fff4cc 0%, #ffdb70 20%, #f4c869 42%, #d99a30 62%, transparent 75%);
+  background: radial-gradient(circle at 32% 28%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.4) 14%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(244, 200, 105, 0.22) 62%,
+    rgba(244, 200, 105, 0.55) 86%,
+    rgba(196, 136, 38, 0.7) 100%);
+  border: 1px solid rgba(196, 136, 38, 0.4);
   box-shadow:
-    inset -0.5px -1px 2px rgba(120, 70, 0, 0.35),
-    inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.6),
-    0 0 14px 5px rgba(244, 200, 105, 0.5);
+    inset -0.5px -1px 1.5px rgba(180, 120, 20, 0.25),
+    inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.9),
+    0 0 8px 2px rgba(244, 200, 105, 0.3);
   --bs-spark-beat-dot-in: clamp(0, calc((var(--bs-spark-beat-progress, 0) - var(--bs-spark-beat-dot-in-at, 0)) / 0.1), 1);
   --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
   opacity: calc(var(--bs-spark-beat-dot-in) * (1 - var(--bs-spark-beat-exit)));
@@ -824,11 +838,18 @@
   height: 20px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 38% 32%, #fff4cc 0%, #ffdb70 20%, #f4c869 42%, #d99a30 62%, transparent 75%);
+  background: radial-gradient(circle at 32% 28%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.4) 14%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(244, 200, 105, 0.22) 62%,
+    rgba(244, 200, 105, 0.55) 86%,
+    rgba(196, 136, 38, 0.7) 100%);
+  border: 1px solid rgba(196, 136, 38, 0.4);
   box-shadow:
-    inset -1px -2px 3px rgba(120, 70, 0, 0.35),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.6),
-    0 0 24px 8px rgba(244, 200, 105, 0.55);
+    inset -1px -2px 2px rgba(180, 120, 20, 0.25),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.9),
+    0 0 12px 3px rgba(244, 200, 105, 0.35);
 }
 
 .bs-turn-cutline {
@@ -886,11 +907,18 @@
   height: 20px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 38% 32%, #fff4cc 0%, #ffdb70 20%, #f4c869 42%, #d99a30 62%, transparent 75%);
+  background: radial-gradient(circle at 32% 28%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.4) 14%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(244, 200, 105, 0.22) 62%,
+    rgba(244, 200, 105, 0.55) 86%,
+    rgba(196, 136, 38, 0.7) 100%);
+  border: 1px solid rgba(196, 136, 38, 0.4);
   box-shadow:
-    inset -1px -2px 3px rgba(120, 70, 0, 0.35),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.6),
-    0 0 24px 8px rgba(244, 200, 105, 0.55);
+    inset -1px -2px 2px rgba(180, 120, 20, 0.25),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.9),
+    0 0 12px 3px rgba(244, 200, 105, 0.35);
 }
 
 .bs-turn-caption {

@@ -5,8 +5,11 @@
     {{ with $hero.badge }}
     <p class="home-intro__badge reveal-item reveal-item--2">{{ . }}</p>
     {{ end }}
+    {{ with $hero.tagline }}
+    <p class="home-intro__tagline reveal-item reveal-item--3">{{ . }}</p>
+    {{ end }}
     {{ with $hero.summary }}
-    <p class="home-intro__summary reveal-item reveal-item--3">{{ . }}</p>
+    <p class="home-intro__summary reveal-item reveal-item--4">{{ . }}</p>
     {{ end }}
   </div>
 </section>

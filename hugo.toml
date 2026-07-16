@@ -40,8 +40,8 @@ theme = "hugo-minimal-black"
   [params.hero]
     title = "Amber Li"
     badge = "Design Engineering"
-    tagline = "Roots & Branches"
-    summary = "a systems-thinking approach to engineering, spatial design, and the tools that connect them."
+    tagline = "Design driven by curiosity, balanced by engineering."
+    summary = "I believe the best products emerge from intentional decisions—where design serves purpose, engineering enables possibility, and every detail has a reason."
 
     [params.hero.primary]
       label = "See the work"

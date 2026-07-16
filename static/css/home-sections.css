@@ -42,6 +42,14 @@ html {
   margin: 0 0 1.25rem;
 }
 
+.home-intro__tagline {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+  line-height: 1.4;
+  color: var(--color-text);
+  margin: 0 0 1rem;
+}
+
 .home-intro__summary {
   font-family: var(--font-sans);
   font-size: 1.05rem;
@@ -72,6 +80,7 @@ html {
 .reveal-item--1 { transition-delay: 0ms; }
 .reveal-item--2 { transition-delay: 120ms; }
 .reveal-item--3 { transition-delay: 240ms; }
+.reveal-item--4 { transition-delay: 360ms; }
 
 .reveal-group.is-visible .reveal-item {
   opacity: 1;
