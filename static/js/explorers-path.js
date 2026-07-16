@@ -20,6 +20,7 @@
   var discoveryAudio = document.getElementById("ep-audio-discovery");
   var footstepAudio = document.getElementById("ep-audio-footstep");
   var controlsHint = document.getElementById("ep-controls-hint");
+  var scrollCue = document.querySelector(".ep-scroll-cue");
 
   var PROXIMITY_PX = 70;
   var LOOK_EASE = 0.08;
@@ -259,7 +260,16 @@
 
   function dismissControlsHint() {
     if (controlsHint) controlsHint.classList.add("is-dismissed");
+    if (scrollCue) scrollCue.classList.add("is-dismissed");
   }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (window.scrollY > 40) dismissControlsHint();
+    },
+    { passive: true }
+  );
 
   document.addEventListener("keydown", function (event) {
     if (event.target.closest && event.target.closest(".ep-hotspot")) return;

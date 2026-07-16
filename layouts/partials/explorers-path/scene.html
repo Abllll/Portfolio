@@ -24,6 +24,10 @@
     <span class="ep-key ep-key-wide">SPACE</span>
     <span class="ep-controls-sep">+</span> mouse to look
   </div>
+  <div class="ep-scroll-cue" aria-hidden="true">
+    <span class="ep-scroll-cue-label">Scroll down</span>
+    <span class="ep-scroll-cue-icon"></span>
+  </div>
 </section>
 
 <div class="ep-panel" id="ep-panel" hidden role="dialog" aria-modal="true">
@@ -48,22 +52,3 @@
 
 <audio id="ep-audio-footstep" src="{{ "audio/explorers-path/footstep.wav" | relURL }}" preload="auto" loop></audio>
 <audio id="ep-audio-discovery" src="{{ "audio/explorers-path/discovery.wav" | relURL }}" preload="auto"></audio>
-
-<section class="ep-fallback">
-  <div class="page-int section-stack">
-    <h2 class="heading-section">Prefer a plain list?</h2>
-    <div class="ep-fallback-items">
-      {{- range $data.hotspots }}
-      <details class="ep-fallback-item">
-        <summary>{{ .chapter }} — {{ .title }}</summary>
-        {{- if eq .type "case-study" }}
-        <p>{{ .teaser }}</p>
-        <a href="{{ if hasPrefix .workRef "#" }}{{ .workRef }}{{ else }}{{ .workRef | relURL }}{{ end }}" class="ep-panel-case-study-link">View the case study →</a>
-        {{- else }}
-        <p>{{ .body }}</p>
-        {{- end }}
-      </details>
-      {{- end }}
-    </div>
-  </div>
-</section>
