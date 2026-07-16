@@ -79,10 +79,24 @@
         // tracked section is centered" left a dead zone while scrolling
         // through #intro where dot-nav visibility never got
         // re-evaluated at all.
-        if (dotNav && illustrationEl) {
+        if (illustrationEl) {
           var illustrationRect = illustrationEl.getBoundingClientRect();
           var illustrationActive = illustrationRect.top <= centerY && illustrationRect.bottom > centerY;
-          dotNav.classList.toggle("is-visible", !illustrationActive);
+          if (dotNav) dotNav.classList.toggle("is-visible", !illustrationActive);
+
+          // The illustration's own onboarding hint (#ep-controls-hint,
+          // fixed-position) only dismisses itself on real wheel/touch/
+          // key input (see explorers-path.js) -- input that never fires
+          // for a dot-nav click's scrollIntoView() or any other
+          // programmatic navigation away from the illustration. Without
+          // this, the hint can be left showing (or, depending on
+          // whatever else is painted at that scroll position, hidden
+          // behind it inconsistently by sheer z-index luck) on top of
+          // whatever section the user actually landed on.
+          if (!illustrationActive) {
+            var hint = document.getElementById("ep-controls-hint");
+            if (hint) hint.classList.add("is-dismissed");
+          }
         }
       }
 

@@ -58,6 +58,14 @@
     var scrollableDistance = rect.height - window.innerHeight;
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
+    // 1 - progress: the page now reads bottom-up (bs-intro sits last in
+    // #bonheur, reached first when scrolling up from #intro below it),
+    // so this beat is entered via upward scroll -- which drives the
+    // *standard* formula above from 1 down to 0, backwards from the
+    // "0 at the beat's narrative start" every CSS formula below expects.
+    // Inverting the number here (not touching any CSS) keeps every
+    // existing calc()/clamp() in bonheur-story.css correct unchanged.
+    progress = 1 - progress;
     document.documentElement.style.setProperty("--bs-intro-progress", progress.toFixed(4));
     intro.classList.toggle("bs-intro--active", rect.bottom > 0 && rect.top <= 0);
 
@@ -217,6 +225,10 @@
     var scrollableDistance = rect.height - window.innerHeight;
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
+    // 1 - progress -- see the matching comment in bs-intro's
+    // updateProgress() above; same reasoning, this beat too is now
+    // entered via upward scroll.
+    progress = 1 - progress;
     document.documentElement.style.setProperty("--bs-ache-progress", progress.toFixed(4));
     ache.classList.toggle("bs-ache--active", rect.bottom > 0 && rect.top <= 0);
   }
@@ -379,6 +391,10 @@
     var scrollableDistance = rect.height - window.innerHeight;
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
+    // 1 - progress -- see the matching comment in bs-intro's
+    // updateProgress() above; same reasoning, this beat too is now
+    // entered via upward scroll.
+    progress = 1 - progress;
     document.documentElement.style.setProperty("--bs-turn-progress", progress.toFixed(4));
     turn.classList.toggle("bs-turn--active", rect.bottom > 0 && rect.top <= 0);
   }
@@ -412,6 +428,10 @@
     var scrollableDistance = rect.height - window.innerHeight;
     var progress = scrollableDistance > 0 ? (0 - rect.top) / scrollableDistance : 1;
     progress = Math.min(1, Math.max(0, progress));
+    // 1 - progress -- see the matching comment in bs-intro's
+    // updateProgress() above; same reasoning, this beat too is now
+    // entered via upward scroll.
+    progress = 1 - progress;
     document.documentElement.style.setProperty("--bs-spark-beat-progress", progress.toFixed(4));
     sparkBeat.classList.toggle("bs-spark-beat--active", rect.bottom > 0 && rect.top <= 0);
   }
