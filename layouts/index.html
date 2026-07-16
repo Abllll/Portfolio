@@ -30,7 +30,14 @@
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     (function () {
       var spacer = document.getElementById("ep-spacer");
-      if (!spacer) return;
+      if (!spacer) {
+        // Fail-safe: head.html hides <html> (via the ep-landing-pending
+        // class) specifically expecting this script to reveal it --
+        // without #ep-spacer there's nothing to position against, but
+        // the page must not stay invisible forever.
+        document.documentElement.classList.remove("ep-landing-pending");
+        return;
+      }
 
       // +2px, not the exact boundary -- #intro is content-sized (not
       // 100vh), so its bottom edge can land within a sub-pixel of
@@ -39,10 +46,25 @@
       // #intro still "intersecting", prematurely revealing the dot-nav
       // at load.
       function scrollToIllustration() {
+        // home-sections.css sets html{scroll-behavior:smooth} sitewide,
+        // which a plain window.scrollTo() silently inherits -- without
+        // this override, "landing" at the illustration was actually a
+        // multi-second smooth-scroll animation racing down through
+        // every section, i.e. exactly the visible top-to-bottom jump
+        // this script exists to prevent. Restored immediately after so
+        // real user-initiated scrolling/dot-nav clicks stay smooth.
+        var htmlEl = document.documentElement;
+        var previousScrollBehavior = htmlEl.style.scrollBehavior;
+        htmlEl.style.scrollBehavior = "auto";
         window.scrollTo(0, spacer.getBoundingClientRect().top + window.scrollY + 2);
+        htmlEl.style.scrollBehavior = previousScrollBehavior;
       }
 
       scrollToIllustration();
+      // Reveal only now, after the page is already positioned at the
+      // illustration -- not before, which is the entire point (see
+      // head.html's comment on ep-landing-pending).
+      document.documentElement.classList.remove("ep-landing-pending");
 
       // Images above this point (project placeholders, Bonheur's media,
       // the illustration's own layers) don't all have explicit

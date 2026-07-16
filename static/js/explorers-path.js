@@ -31,17 +31,26 @@
   // Camera-follow: WASD walking pans the camera to keep her on-screen,
   // independent of scroll (see tick()'s use of these, and scrollPanY
   // above). Only kicks in once she'd otherwise cross these fractions of
-  // the viewport height -- a wide dead zone (the middle 78%) where
-  // walking doesn't move the camera at all, same as a platformer camera.
-  // Deliberately loose, not the ~30%-70% a dead-zone camera might
-  // default to: sub-project #1 intentionally frames her very close to
-  // the bottom edge at load (the path's start), and a tighter margin
-  // would immediately fight that composition the moment the page loads,
-  // before she's taken a single step.
-  var FOLLOW_MARGIN_TOP = 0.11;
-  var FOLLOW_MARGIN_BOTTOM = 0.89;
+  // the viewport height -- a dead zone in the middle where walking
+  // doesn't move the camera at all, same as a platformer camera. Not
+  // fought by sub-project #1's load composition (her resting right at
+  // the bottom edge, nothing below her): at that position .ep-scene is
+  // already panned to its physical minimum (there's no more canvas
+  // below PATH index 0 to reveal), so the combined-pan clamp in tick()
+  // holds followOffset at 0 regardless of how generous these margins
+  // are -- margins only matter once she's away from either physical
+  // extreme of the path, where there's actual canvas room to pan into.
+  var FOLLOW_MARGIN_TOP = 0.2;
+  var FOLLOW_MARGIN_BOTTOM = 0.85;
   var FOLLOW_EASE = 0.08;
   var followOffset = 0;
+  // Canvas-percent distance from her drawn anchor (NATURAL_Y_PCT, close
+  // to her feet -- confirmed by inspecting girl.webp directly) up to the
+  // top of her head. Without this, the top-boundary check above was
+  // comparing her *feet* position against the margin, so her head could
+  // already be off-screen by the time the feet-based check reacted --
+  // exactly "almost disappear before the camera moves."
+  var HEAD_OFFSET_PCT = 11;
 
   // The path's own centerline, extracted from the real path artwork
   // (layer/IMG_6583.PNG) — percent-of-canvas coordinates on the shared
@@ -259,11 +268,20 @@
     // position. That one-frame lag reads as smooth follow at 60fps, not
     // a snap.
     var trueGirlScreenY = girlScreenY + rect.top;
+    // Her head, not her feet -- see HEAD_OFFSET_PCT above. Walking
+    // "forward" (toward smaller canvas y%, deeper into the forest) is
+    // what risks her going off the *top* of the screen, head first, so
+    // the top-boundary check needs her head's position specifically.
+    // The bottom-boundary check (walking back toward index 0) still uses
+    // her feet/anchor directly -- that's the part of her that would hit
+    // the bottom edge first.
+    var headOffsetPx = (HEAD_OFFSET_PCT / 100) * rect.height * scale;
+    var trueHeadScreenY = trueGirlScreenY - headOffsetPx;
     var viewportHeight = window.innerHeight;
     var topBound = viewportHeight * FOLLOW_MARGIN_TOP;
     var bottomBound = viewportHeight * FOLLOW_MARGIN_BOTTOM;
-    if (trueGirlScreenY < topBound) {
-      followOffset += (topBound - trueGirlScreenY) * FOLLOW_EASE;
+    if (trueHeadScreenY < topBound) {
+      followOffset += (topBound - trueHeadScreenY) * FOLLOW_EASE;
     } else if (trueGirlScreenY > bottomBound) {
       followOffset += (bottomBound - trueGirlScreenY) * FOLLOW_EASE;
     }

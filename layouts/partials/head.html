@@ -43,6 +43,13 @@
 <link rel="stylesheet" href="{{ "css/overrides.css" | relURL }}">
 <link rel="stylesheet" href="{{ "css/page-transitions.css" | relURL }}">
 {{ if .IsHome }}
+{{/* Hidden until layouts/index.html's load-scroll script has positioned
+     the page at the illustration and reveals it -- otherwise the
+     browser paints at its default scroll-to-top before that script
+     (deep in the document, after everything above the illustration)
+     runs, and the user sees a flash of the top of the page followed by
+     a jump to the bottom instead of landing there directly. */}}
+<style>html.ep-landing-pending{visibility:hidden}</style>
 <link rel="stylesheet" href="{{ "css/explorers-path.css" | relURL }}">
 <link rel="stylesheet" href="{{ "css/home-sections.css" | relURL }}">
 <link rel="stylesheet" href="{{ "css/dot-nav.css" | relURL }}">

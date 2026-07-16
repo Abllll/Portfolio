@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ .Site.Language.Lang }}"
+  {{ if .IsHome }}class="ep-landing-pending"{{ end }}
   data-cb-collapse-enabled="{{ .Site.Params.features.codeblock.collapse.enabled }}"
   data-cb-collapse-default="{{ .Site.Params.features.codeblock.collapse.defaultState }}"
   data-cb-collapse-lines="{{ .Site.Params.features.codeblock.collapse.autoCollapseLines }}"
