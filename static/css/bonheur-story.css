@@ -127,8 +127,15 @@
 }
 
 .bs-motif[data-motif="fading"] .bs-spark {
-  animation: bs-flicker 2.2s ease-in-out infinite;
-  opacity: 0.4;
+  /* bs-ache-flicker (not the shared bs-flicker -- see its definition)
+     reads --bs-ache-progress, which is still 0 at the instant data-motif
+     flips to "fading" (that flip is driven by Ache's section midpoint
+     crossing the viewport's center, which happens before the user has
+     scrolled far enough for --bs-ache-progress to leave 0) -- so there's
+     no more hard snap straight into a static 0.4 the moment the state
+     changes. The dimming only becomes visible as the user keeps
+     scrolling and the darkness actually starts forming. */
+  animation: bs-ache-flicker 2.2s ease-in-out infinite;
 }
 
 .bs-motif[data-motif="caught"] .bs-spark {
@@ -236,6 +243,16 @@
 @keyframes bs-flicker {
   0%, 100% { opacity: 0.15; }
   50% { opacity: 0.5; }
+}
+
+/* Distinct from bs-flicker above (shared by the scroll-cue's own fixed
+   pulse, which has no relationship to Ache) -- this one's amplitude is
+   driven by --bs-ache-progress, so the central spark's dimming grows in
+   step with the darkness actually forming instead of snapping straight
+   into a fixed range the instant data-motif switches to "fading". */
+@keyframes bs-ache-flicker {
+  0%, 100% { opacity: calc(1 - var(--bs-ache-progress, 0) * 0.85); }
+  50% { opacity: calc(1 - var(--bs-ache-progress, 0) * 0.5); }
 }
 
 @keyframes bs-orbit {
