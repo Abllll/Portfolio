@@ -28,6 +28,21 @@
   var LOOK_EASE = 0.08;
   var GIRL_LOOK_FACTOR = 4; // she still rides the ground plane's subtle mouse parallax
 
+  // Camera-follow: WASD walking pans the camera to keep her on-screen,
+  // independent of scroll (see tick()'s use of these, and scrollPanY
+  // above). Only kicks in once she'd otherwise cross these fractions of
+  // the viewport height -- a wide dead zone (the middle 78%) where
+  // walking doesn't move the camera at all, same as a platformer camera.
+  // Deliberately loose, not the ~30%-70% a dead-zone camera might
+  // default to: sub-project #1 intentionally frames her very close to
+  // the bottom edge at load (the path's start), and a tighter margin
+  // would immediately fight that composition the moment the page loads,
+  // before she's taken a single step.
+  var FOLLOW_MARGIN_TOP = 0.11;
+  var FOLLOW_MARGIN_BOTTOM = 0.89;
+  var FOLLOW_EASE = 0.08;
+  var followOffset = 0;
+
   // The path's own centerline, extracted from the real path artwork
   // (layer/IMG_6583.PNG) — percent-of-canvas coordinates on the shared
   // canvas every layer uses, ordered near (index 0, toward the viewer)
@@ -232,6 +247,39 @@
     var girlScreenY = naturalScreen.y + totalY;
     updateProximity(girlScreenX, girlScreenY);
 
+    // Camera-follow: if walking (via progress/lateral above, not scroll)
+    // has put her outside the dead zone, ease the camera to bring her
+    // back toward it -- independent of scrollPanY, which the user's own
+    // scrolling still controls separately. girlScreenY (used above for
+    // hotspot proximity) is relative to .ep-scene's own top-left, not
+    // the true viewport -- fine for proximity (a difference between two
+    // values computed the same way), but wrong here, where the check is
+    // against absolute viewport bounds; rect.top (already reflecting
+    // last frame's applied pan) converts it to a real on-screen
+    // position. That one-frame lag reads as smooth follow at 60fps, not
+    // a snap.
+    var trueGirlScreenY = girlScreenY + rect.top;
+    var viewportHeight = window.innerHeight;
+    var topBound = viewportHeight * FOLLOW_MARGIN_TOP;
+    var bottomBound = viewportHeight * FOLLOW_MARGIN_BOTTOM;
+    if (trueGirlScreenY < topBound) {
+      followOffset += (topBound - trueGirlScreenY) * FOLLOW_EASE;
+    } else if (trueGirlScreenY > bottomBound) {
+      followOffset += (bottomBound - trueGirlScreenY) * FOLLOW_EASE;
+    }
+
+    // Clamp the *combined* pan (not followOffset alone) to the canvas's
+    // real extent, then back-derive followOffset from that -- otherwise
+    // followOffset could keep growing while already fully clamped (e.g.
+    // holding W at the path's far end), and once she reversed direction
+    // the camera would lag behind unwinding that invisible backlog
+    // before visibly following her again.
+    var maxScrollableDistance = Math.max(0, canvasHeightPx - viewportHeight);
+    var combinedPan = scrollPanY + followOffset;
+    combinedPan = Math.max(-maxScrollableDistance, Math.min(0, combinedPan));
+    followOffset = combinedPan - scrollPanY;
+    scene.style.transform = "translateY(" + combinedPan + "px)";
+
     requestAnimationFrame(tick);
   }
 
@@ -387,18 +435,19 @@
   // to keep them in sync). At scroll progress 0 (page load, .ep-spacer
   // untouched) the window frames the canvas's bottom, where PATH index 0
   // (her new start) lives; at progress 1 it frames the canvas's top
-  // (index 27, "Now"). One translateY on .ep-scene does this -- every
-  // layer inside it (background, hotspots, girl) pans together for free,
-  // since CSS transforms compose through the DOM tree with no per-layer
-  // math needed here. Independent of WASD/mouse-look, which keep working
-  // exactly as before (both read .ep-scene's post-pan
-  // getBoundingClientRect(), which already reflects the current pan).
+  // (index 27, "Now"). This function only computes scrollPanY -- the
+  // *actual* translateY applied to .ep-scene is the sum of this and
+  // followCameraOffset (see tick()'s camera-follow logic below), applied
+  // once per frame in tick() so the two influences never fight over
+  // .ep-scene's transform on the same frame.
   var scrollPanTicking = false;
+  var scrollPanY = 0;
+  var canvasHeightPx = 0;
 
   function updateScrollPan() {
     scrollPanTicking = false;
     var spacerRect = spacer.getBoundingClientRect();
-    var canvasHeightPx = spacerRect.height;
+    canvasHeightPx = spacerRect.height;
     var viewportHeightPx = window.innerHeight;
     var scrollableDistance = canvasHeightPx - viewportHeightPx;
     var progress = scrollableDistance > 0 ? (0 - spacerRect.top) / scrollableDistance : 1;
@@ -410,8 +459,7 @@
     // actual rendered height.
     var viewportFraction = viewportHeightPx / canvasHeightPx;
     var frameTopPct = (1 - viewportFraction) * 100 * (1 - progress);
-    var panY = -(frameTopPct / 100) * canvasHeightPx;
-    scene.style.transform = "translateY(" + panY + "px)";
+    scrollPanY = -(frameTopPct / 100) * canvasHeightPx;
   }
 
   function onScrollPanTrigger() {

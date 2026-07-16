@@ -1,74 +1,28 @@
 <footer class="pb-6 pt-10">
   <div class="mx-auto max-w-7xl px-4 sm:px-6">
     <div class="footer-shell">
-      <!-- Site nav lives here, not in the header -->
-      <nav class="flex flex-wrap items-center justify-center gap-5 border-b border-border pb-6">
-        {{- $current := . -}}
-        {{- range .Site.Menus.main }}
-          {{- $external := strings.HasPrefix .URL "http" -}}
-          <a
-            href="{{ if $external }}{{ .URL }}{{ else }}{{ .URL | relURL }}{{ end }}"
-            {{ if $external }}target="_blank" rel="noopener noreferrer"{{ end }}
-            class="nav-link link-underline flex items-center gap-1 {{ if $current.IsMenuCurrent "main" . }}text-text{{ end }}"
-          >
-            {{ with .Params.icon }}
-              <i class="{{ . }} text-[0.75rem]"></i>
-            {{ end }}
-            <span>{{ .Name }}</span>
-          </a>
-        {{- end }}
-      </nav>
-
-      <div class="footer-inner mt-6">
+      <div class="footer-inner">
         <!-- Left -->
         <div class="space-y-1">
           <p class="footer-small">
             &copy; {{ now.Format "2006" }} {{ .Site.Title }} — All rights
             reserved.
           </p>
-
-          <p class="footer-small flex flex-wrap items-center gap-1">
-            <span>Built with</span>
-
-            <a
-              href="https://gohugo.io/"
-              class="footer-link footer-float link-underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span>Hugo</span>
-            </a>
-
-            <span>/</span>
-
-            <a
-              href="{{ .Site.Params.themeGit }}"
-              class="footer-link footer-float link-underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span>Minimal&nbsp;Black</span>
-            </a>
-          </p>
         </div>
 
-        <!-- Right: social links not already covered by the nav above -->
-        {{- $navNames := slice -}}
-        {{- range .Site.Menus.main }}{{ $navNames = $navNames | append .Name }}{{ end -}}
+        <!-- Right: social links -->
         {{ with .Site.Params.social }}
         <div class="footer-links">
           {{ range . }}
-            {{ if not (in $navNames .label) }}
-              <a
-                href="{{ .url }}"
-                class="footer-link footer-float link-underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <i class="{{ .icon }} text-[0.8rem]"></i>
-                <span>{{ .label }}</span>
-              </a>
-            {{ end }}
+            <a
+              href="{{ .url }}"
+              class="footer-link footer-float link-underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i class="{{ .icon }} text-[0.8rem]"></i>
+              <span>{{ .label }}</span>
+            </a>
           {{ end }}
         </div>
         {{ end }}
