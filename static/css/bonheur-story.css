@@ -45,6 +45,7 @@
 #bs-spark-beat.bs-spark-beat--active .bs-spark-beat-heading,
 #bs-spark-beat.bs-spark-beat--active .bs-spark-beat-dot,
 #bs-spark-beat.bs-spark-beat--active .bs-spark-beat-body,
+#bs-ache.bs-ache--active .bs-spark-beat-dot,
 #bs-ache.bs-ache--active .bs-ache-void,
 #bs-ache.bs-ache--active .bs-ache-ink,
 #bs-ache.bs-ache--active .bs-ache-text,
@@ -122,7 +123,7 @@
 }
 
 .bs-motif[data-motif="drifting"] .bs-spark {
-  animation: bs-drift 6s ease-in-out infinite;
+  animation: bs-organic-drift 8s ease-in-out infinite;
 }
 
 .bs-motif[data-motif="fading"] .bs-spark {
@@ -205,9 +206,31 @@
   transform: scale(1);
 }
 
-@keyframes bs-drift {
-  0%, 100% { transform: translateX(-12px); }
-  50% { transform: translateX(12px); }
+/* Organic wander -- irregular steps in both X and Y (not a symmetric
+   sine-like left-right slide) so it reads as a firefly meandering rather
+   than a metronome. Two variants: this one for .bs-spark, which is
+   centered by its flex parent (.bs-motif) rather than its own transform. */
+@keyframes bs-organic-drift {
+  0%   { transform: translate(0, 0); }
+  16%  { transform: translate(-7px, -9px); }
+  33%  { transform: translate(8px, -4px); }
+  50%  { transform: translate(5px, 8px); }
+  67%  { transform: translate(-9px, 5px); }
+  84%  { transform: translate(-3px, -7px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Same wander, but with the -50%/-50% self-centering baked into every
+   step -- for .bs-spark-beat-dot, which centers itself on its own
+   top/left point rather than via a flex parent. */
+@keyframes bs-organic-drift-dot {
+  0%   { transform: translate(-50%, -50%); }
+  16%  { transform: translate(calc(-50% - 7px), calc(-50% - 9px)); }
+  33%  { transform: translate(calc(-50% + 8px), calc(-50% - 4px)); }
+  50%  { transform: translate(calc(-50% + 5px), calc(-50% + 8px)); }
+  67%  { transform: translate(calc(-50% - 9px), calc(-50% + 5px)); }
+  84%  { transform: translate(calc(-50% - 3px), calc(-50% - 7px)); }
+  100% { transform: translate(-50%, -50%); }
 }
 
 @keyframes bs-flicker {
@@ -222,6 +245,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bs-spark,
+  .bs-spark-beat-dot,
   .bs-cluster::before,
   .bs-cluster::after {
     animation: none !important;
@@ -236,7 +260,8 @@
     display: none !important;
   }
 
-  .bs-spark {
+  .bs-spark,
+  .bs-spark-beat-dot {
     opacity: 1 !important;
   }
 
@@ -386,9 +411,16 @@
   backdrop-filter: blur(1px) saturate(1.15);
   -webkit-backdrop-filter: blur(1px) saturate(1.15);
   --bs-spark-beat-dot-in: clamp(0, calc((var(--bs-spark-beat-progress, 0) - var(--bs-spark-beat-dot-in-at, 0)) / 0.1), 1);
-  --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
-  opacity: calc(var(--bs-spark-beat-dot-in) * (1 - var(--bs-spark-beat-exit)));
-  transform: translate(-50%, -50%);
+  /* No longer exits at the end of the Sparks beat -- these stay lit all
+     the way through, and instead fade out exactly as --bs-ache-void (the
+     darkness layer) finishes covering the screen, using the same 0-0.2
+     ache-progress range as --bs-void-in in the Ache rules below. That's
+     what makes the ache read as darkness casting over the sparks rather
+     than the sparks vanishing beforehand and darkness arriving after. */
+  --bs-spark-beat-dot-covered: clamp(0, calc(var(--bs-ache-progress, 0) / 0.2), 1);
+  opacity: calc(var(--bs-spark-beat-dot-in) * (1 - var(--bs-spark-beat-dot-covered)));
+  animation: bs-organic-drift-dot var(--bs-spark-beat-dot-duration, 7s) ease-in-out infinite;
+  animation-delay: var(--bs-spark-beat-dot-delay, 0s);
 }
 
 .bs-spark-beat-body {
@@ -699,18 +731,20 @@
 .bs-intro-mist--purple { top: 34%; left: 62%; background: #C3A6EE; }
 .bs-intro-mist--teal { top: 68%; left: 30%; background: #C2E0E8; }
 
-/* ACHE BEAT — darkness casting directly over the screen, then the
-   negativity-bias text. Driven by --bs-ache-progress (0-1), written by
-   the scroll/rAF handler in bonheur-story.js -- a second, independent
-   instance of the same pattern --bs-intro-progress already uses for beat
-   1. No star-scatter-in phase here -- the Sparks beat immediately before
-   this one already establishes "many sparks appearing," so Ache jumps
-   straight to darkness casting over rather than repeating it. Shorter
-   (160vh, was 280vh) since there's less to get through. */
+/* ACHE BEAT — the Sparks beat's scattered dots (now persisting into this
+   beat, see .bs-spark-beat-dot) stay lit while darkness casts directly
+   over the screen and them, then the negativity-bias text. Driven by
+   --bs-ache-progress (0-1), written by the scroll/rAF handler in
+   bonheur-story.js -- a second, independent instance of the same pattern
+   --bs-intro-progress already uses for beat 1. Taller than a first pass
+   at 160vh -- that let the void-in growth (0-0.2 of progress) complete
+   within a single scroll-wheel tick, so darkness read as an instant flash
+   rather than a cast-over; 260vh gives the same 0-0.2 fraction enough
+   physical scroll distance to read as gradual. */
 
 .bs-ache {
   position: relative;
-  height: 160vh;
+  height: 260vh;
   display: block;
   padding: 0;
 }

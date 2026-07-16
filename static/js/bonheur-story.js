@@ -431,6 +431,8 @@
 // markup-free (JS-created since positions must be genuinely random) and
 // only needs a position and a staggered "in" threshold; all fade/exit
 // timing lives in bonheur-story.css reading --bs-spark-beat-progress.
+// Persistence into the Ache beat (fading only once covered by darkness)
+// and the organic-drift animation are also driven from bonheur-story.css.
 (function () {
   "use strict";
 
@@ -447,9 +449,18 @@
     // own fade-in) so the sparks visibly scatter in one after another as
     // the heading rises, rather than popping in all at once.
     var inAt = 0.1 + Math.random() * 0.45;
+    // Randomized drift duration + a negative delay (starts the animation
+    // already mid-cycle, at a random phase) so the 10 dots wander out of
+    // sync with each other instead of all breathing in lockstep -- that
+    // desync is what actually reads as "random" for a set of otherwise
+    // identical keyframes.
+    var driftDuration = 6 + Math.random() * 4;
+    var driftDelay = -(Math.random() * driftDuration);
     dot.style.setProperty("--bs-spark-beat-dot-x", x.toFixed(2) + "%");
     dot.style.setProperty("--bs-spark-beat-dot-y", y.toFixed(2) + "%");
     dot.style.setProperty("--bs-spark-beat-dot-in-at", inAt.toFixed(3));
+    dot.style.setProperty("--bs-spark-beat-dot-duration", driftDuration.toFixed(2) + "s");
+    dot.style.setProperty("--bs-spark-beat-dot-delay", driftDelay.toFixed(2) + "s");
     stage.appendChild(dot);
   }
 })();
