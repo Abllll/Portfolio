@@ -88,18 +88,30 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%,
+  /* Glass, not a shaded bead: the fill stays mostly transparent through the
+     whole body (only a faint amber tint by the rim, capped at 0.4 alpha --
+     previously ramped to 0.7, which read as a solid amber ring). Highlight
+     and shadow are asymmetric (top-left bright, bottom-right dark) rather
+     than a uniform border, matching how light actually wraps a sphere.
+     backdrop-filter is what actually sells "glass" -- without it, no alpha
+     tuning reads as anything but a painted gradient circle. */
+  background: radial-gradient(circle at 30% 26%,
     rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.4) 14%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(244, 200, 105, 0.22) 62%,
-    rgba(244, 200, 105, 0.55) 86%,
-    rgba(196, 136, 38, 0.7) 100%);
-  border: 1px solid rgba(196, 136, 38, 0.4);
+    rgba(255, 255, 255, 0.55) 8%,
+    rgba(255, 255, 255, 0.12) 22%,
+    rgba(244, 200, 105, 0.05) 45%,
+    rgba(244, 200, 105, 0.12) 68%,
+    rgba(196, 136, 38, 0.22) 88%,
+    rgba(196, 136, 38, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow:
-    inset -1px -2px 2px rgba(180, 120, 20, 0.25),
-    inset 1px 1px 1px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 3px rgba(140, 90, 15, 0.3),
+    inset 1.5px 1.5px 1px rgba(255, 255, 255, 0.95),
+    inset 0 0 3px rgba(255, 255, 255, 0.25),
+    0 1px 2px rgba(120, 80, 10, 0.2),
     0 0 12px 3px rgba(244, 200, 105, 0.35);
+  backdrop-filter: blur(1px) saturate(1.15);
+  -webkit-backdrop-filter: blur(1px) saturate(1.15);
   /* Starts at 0.95, not 0.65 -- this sits dead-center, the exact same
      spot as "Bonheur" itself (.bs-motif is centered), and the word's own
      exit fade (--bs-exit, on .bs-intro-stage) doesn't finish until 0.95.
@@ -354,20 +366,25 @@
   height: 8px;
   border-radius: 50%;
   pointer-events: none;
-  /* Same gradient/glow as the persistent .bs-spark motif -- deliberately
+  /* Same glass gradient/glow as the persistent .bs-spark motif -- deliberately
      consistent spark iconography across the page. */
-  background: radial-gradient(circle at 32% 28%,
+  background: radial-gradient(circle at 30% 26%,
     rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.4) 14%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(244, 200, 105, 0.22) 62%,
-    rgba(244, 200, 105, 0.55) 86%,
-    rgba(196, 136, 38, 0.7) 100%);
-  border: 1px solid rgba(196, 136, 38, 0.4);
+    rgba(255, 255, 255, 0.55) 8%,
+    rgba(255, 255, 255, 0.12) 22%,
+    rgba(244, 200, 105, 0.05) 45%,
+    rgba(244, 200, 105, 0.12) 68%,
+    rgba(196, 136, 38, 0.22) 88%,
+    rgba(196, 136, 38, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow:
-    inset -0.5px -1px 1.5px rgba(180, 120, 20, 0.25),
-    inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.9),
+    inset -1px -1px 1.5px rgba(140, 90, 15, 0.3),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 0 2px rgba(255, 255, 255, 0.25),
+    0 0.5px 1px rgba(120, 80, 10, 0.2),
     0 0 8px 2px rgba(244, 200, 105, 0.3);
+  backdrop-filter: blur(1px) saturate(1.15);
+  -webkit-backdrop-filter: blur(1px) saturate(1.15);
   --bs-spark-beat-dot-in: clamp(0, calc((var(--bs-spark-beat-progress, 0) - var(--bs-spark-beat-dot-in-at, 0)) / 0.1), 1);
   --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
   opacity: calc(var(--bs-spark-beat-dot-in) * (1 - var(--bs-spark-beat-exit)));
@@ -838,18 +855,23 @@
   height: 20px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 32% 28%,
+  background: radial-gradient(circle at 30% 26%,
     rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.4) 14%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(244, 200, 105, 0.22) 62%,
-    rgba(244, 200, 105, 0.55) 86%,
-    rgba(196, 136, 38, 0.7) 100%);
-  border: 1px solid rgba(196, 136, 38, 0.4);
+    rgba(255, 255, 255, 0.55) 8%,
+    rgba(255, 255, 255, 0.12) 22%,
+    rgba(244, 200, 105, 0.05) 45%,
+    rgba(244, 200, 105, 0.12) 68%,
+    rgba(196, 136, 38, 0.22) 88%,
+    rgba(196, 136, 38, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow:
-    inset -1px -2px 2px rgba(180, 120, 20, 0.25),
-    inset 1px 1px 1px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 3px rgba(140, 90, 15, 0.3),
+    inset 1.5px 1.5px 1px rgba(255, 255, 255, 0.95),
+    inset 0 0 3px rgba(255, 255, 255, 0.25),
+    0 1px 2px rgba(120, 80, 10, 0.2),
     0 0 12px 3px rgba(244, 200, 105, 0.35);
+  backdrop-filter: blur(1px) saturate(1.15);
+  -webkit-backdrop-filter: blur(1px) saturate(1.15);
 }
 
 .bs-turn-cutline {
@@ -907,18 +929,23 @@
   height: 20px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 32% 28%,
+  background: radial-gradient(circle at 30% 26%,
     rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.4) 14%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(244, 200, 105, 0.22) 62%,
-    rgba(244, 200, 105, 0.55) 86%,
-    rgba(196, 136, 38, 0.7) 100%);
-  border: 1px solid rgba(196, 136, 38, 0.4);
+    rgba(255, 255, 255, 0.55) 8%,
+    rgba(255, 255, 255, 0.12) 22%,
+    rgba(244, 200, 105, 0.05) 45%,
+    rgba(244, 200, 105, 0.12) 68%,
+    rgba(196, 136, 38, 0.22) 88%,
+    rgba(196, 136, 38, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow:
-    inset -1px -2px 2px rgba(180, 120, 20, 0.25),
-    inset 1px 1px 1px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 3px rgba(140, 90, 15, 0.3),
+    inset 1.5px 1.5px 1px rgba(255, 255, 255, 0.95),
+    inset 0 0 3px rgba(255, 255, 255, 0.25),
+    0 1px 2px rgba(120, 80, 10, 0.2),
     0 0 12px 3px rgba(244, 200, 105, 0.35);
+  backdrop-filter: blur(1px) saturate(1.15);
+  -webkit-backdrop-filter: blur(1px) saturate(1.15);
 }
 
 .bs-turn-caption {

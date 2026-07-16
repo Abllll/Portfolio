@@ -41,7 +41,7 @@ theme = "hugo-minimal-black"
     title = "Amber Li"
     badge = "Design Engineering"
     tagline = "Design driven by curiosity, balanced by engineering."
-    summary = "I believe the best products emerge from intentional decisions—where design serves purpose, engineering enables possibility, and every detail has a reason."
+    summary = "I believe the best products emerge from thoughtful decisions—where design engages people and shapes clarity, and engineering enables possibility. Every detail sparks delight."
 
     [params.hero.primary]
       label = "See the work"
