@@ -3,7 +3,9 @@
 
   var viewport = document.getElementById("ep-viewport");
   var girlLayer = document.getElementById("ep-layer-girl");
-  if (!viewport || !girlLayer) return;
+  var scene = document.getElementById("ep-scene");
+  var spacer = document.getElementById("ep-spacer");
+  if (!viewport || !girlLayer || !scene || !spacer) return;
 
   // Background layers parallax with the mouse only — WASD is reserved for
   // moving the girl herself, not the camera/world (she's a real character
@@ -48,7 +50,11 @@
   // layer renders her there "for free" with no transform at all.
   var NATURAL_X_PCT = 57.53;
   var NATURAL_Y_PCT = 47.23;
-  var START_PROGRESS = 17; // closest PATH index to her drawn spot
+  // 0 -- the very bottom of PATH (nearest the viewer) -- rather than her
+  // drawn spot's own index (17). She now starts at the true beginning of
+  // the trail, which .ep-scene's scroll-driven pan (see updateScrollPan
+  // below) puts on-screen at load, before any hotspot has been reached.
+  var START_PROGRESS = 0;
 
   // .ep-viewport's aspect-ratio matches the canvas exactly, and the girl's
   // own layer (unlike the background layers) has no oversize margin — see
@@ -112,7 +118,12 @@
   var lastFocusedHotspot = null;
 
   function hotspotPosition(hotspot) {
-    var rect = viewport.getBoundingClientRect();
+    // .ep-scene, not .ep-viewport -- .ep-scene is the full-canvas-height
+    // element that's actually panned (translateY) to show different
+    // slices of the canvas; getBoundingClientRect() on it already
+    // reflects the current pan, so percent-of-canvas math here needs no
+    // separate pan offset applied by hand.
+    var rect = scene.getBoundingClientRect();
     return {
       x: (parseFloat(hotspot.style.left) / 100) * rect.width,
       y: (parseFloat(hotspot.style.top) / 100) * rect.height,
@@ -140,7 +151,8 @@
   }
 
   function tick() {
-    var rect = viewport.getBoundingClientRect();
+    // .ep-scene here too -- see the comment in hotspotPosition() above.
+    var rect = scene.getBoundingClientRect();
 
     mouseCurrent.x += (mouseTarget.x - mouseCurrent.x) * LOOK_EASE;
     mouseCurrent.y += (mouseTarget.y - mouseCurrent.y) * LOOK_EASE;
@@ -364,6 +376,49 @@
       closePanel();
     }
   });
+
+  // Reversed-landing pan: .ep-viewport is a sticky 100vh crop window over
+  // .ep-scene, which is the full-canvas-height element (matches
+  // .ep-spacer's height via the same aspect-ratio, no measurement needed
+  // to keep them in sync). At scroll progress 0 (page load, .ep-spacer
+  // untouched) the window frames the canvas's bottom, where PATH index 0
+  // (her new start) lives; at progress 1 it frames the canvas's top
+  // (index 27, "Now"). One translateY on .ep-scene does this -- every
+  // layer inside it (background, hotspots, girl) pans together for free,
+  // since CSS transforms compose through the DOM tree with no per-layer
+  // math needed here. Independent of WASD/mouse-look, which keep working
+  // exactly as before (both read .ep-scene's post-pan
+  // getBoundingClientRect(), which already reflects the current pan).
+  var scrollPanTicking = false;
+
+  function updateScrollPan() {
+    scrollPanTicking = false;
+    var spacerRect = spacer.getBoundingClientRect();
+    var canvasHeightPx = spacerRect.height;
+    var viewportHeightPx = window.innerHeight;
+    var scrollableDistance = canvasHeightPx - viewportHeightPx;
+    var progress = scrollableDistance > 0 ? (0 - spacerRect.top) / scrollableDistance : 1;
+    progress = Math.max(0, Math.min(1, progress));
+    document.documentElement.style.setProperty("--ep-scroll-progress", progress.toFixed(4));
+
+    // Fraction of the canvas one screen covers -- live, not hardcoded,
+    // since it depends on the current viewport height vs. the canvas's
+    // actual rendered height.
+    var viewportFraction = viewportHeightPx / canvasHeightPx;
+    var frameTopPct = (1 - viewportFraction) * 100 * (1 - progress);
+    var panY = -(frameTopPct / 100) * canvasHeightPx;
+    scene.style.transform = "translateY(" + panY + "px)";
+  }
+
+  function onScrollPanTrigger() {
+    if (scrollPanTicking) return;
+    scrollPanTicking = true;
+    window.requestAnimationFrame(updateScrollPan);
+  }
+
+  window.addEventListener("scroll", onScrollPanTrigger, { passive: true });
+  window.addEventListener("resize", onScrollPanTrigger);
+  updateScrollPan();
 
   requestAnimationFrame(tick);
 })();

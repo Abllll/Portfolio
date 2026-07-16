@@ -10,17 +10,42 @@
    fight over the same property on the same node.
    ========================================================================== */
 
-.ep-viewport {
+/* .ep-spacer (normal flow, full canvas height via aspect-ratio) is what
+   actually reserves the scroll distance; .ep-viewport (inside it) is a
+   sticky 100vh crop window pinned for that whole distance -- same
+   sticky-stage pattern as .bs-ache/.bs-ache-stage etc. in
+   bonheur-story.css. .ep-scene (inside .ep-viewport) is the element
+   that's really full canvas height (same aspect-ratio, so it always
+   matches .ep-spacer's height with no JS measurement needed) and gets
+   panned via translateY -- see explorers-path.js's updateScrollPan --
+   so which slice of the canvas the crop window shows depends on scroll
+   position, without moving or resizing anything else. */
+.ep-spacer {
   position: relative;
   width: 100%;
-  /* Matches the source illustration's own canvas (1242×1660) exactly, so
-     object-fit: cover below never has to crop anything — the full
-     drawing is always visible, at the cost of the section running taller
-     than the viewport on most screens (intentional — scrolling is fine). */
   aspect-ratio: 1242 / 1660;
+}
+
+.ep-viewport {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
   outline: none;
   background: var(--color-surface);
+}
+
+.ep-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* Matches the source illustration's own canvas (1242×1660) exactly, so
+     object-fit: cover below never has to crop anything — the full
+     drawing always exists at full height, panned through via .ep-scene's
+     own translateY rather than revealed by page scroll directly. */
+  aspect-ratio: 1242 / 1660;
 }
 
 .ep-layer-wrap {
@@ -137,14 +162,13 @@
 }
 
 .ep-controls-hint {
-  /* fixed, not absolute -- .ep-viewport is taller than the viewport
-     itself (it shows the full illustration, scrolling is intentional),
-     so anchoring to *its* bottom edge would place this off-screen below
-     the fold instead of at the bottom of what's actually visible. */
+  /* fixed, not absolute -- .ep-viewport is a sticky 100vh crop window,
+     and this should stay centered on-screen regardless of which slice of
+     the (much taller) canvas is currently panned into view. */
   position: fixed;
+  top: 50%;
   left: 50%;
-  bottom: 1.5rem;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 10;
   display: flex;
   align-items: center;
@@ -157,10 +181,18 @@
   letter-spacing: 0.02em;
   pointer-events: none;
   transition: opacity 0.6s ease;
+  /* ep-flicker (defined below, already used by .ep-scroll-cue) runs
+     directly on this element -- .is-dismissed below cancels it
+     explicitly (animation: none) rather than relying on opacity: 0
+     alone, since a running animation keeps driving opacity every frame
+     and would otherwise fight the dismiss transition (the same bug
+     already hit and fixed once for Bonheur's central spark). */
+  animation: ep-flicker 2.2s ease-in-out infinite;
 }
 
 .ep-controls-hint.is-dismissed {
   opacity: 0;
+  animation: none;
 }
 
 .ep-key {
@@ -187,6 +219,7 @@
 @media (prefers-reduced-motion: reduce) {
   .ep-controls-hint {
     transition: none;
+    animation: none;
   }
 }
 

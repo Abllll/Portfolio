@@ -1,34 +1,40 @@
 {{- $data := .Site.Data.explorers_path -}}
+<div class="ep-spacer" id="ep-spacer">
 <section class="ep-viewport" id="ep-viewport" tabindex="0" aria-label="{{ .Site.Params.brand }}'s illustrated scene — move your cursor to look around, use W/A/S/D to walk her around the path, spacebar to jump, click a glowing point to open it">
-  {{- range $data.layers }}
-  <div class="ep-layer-wrap{{ if ne .idle "none" }} ep-idle-{{ .idle }}{{ end }}" id="ep-layer-{{ .id }}" data-factor="{{ .weight }}">
-    <img src="{{ printf "images/explorers-path/%s" .file | relURL }}" alt="" aria-hidden="true">
-  </div>
-  {{- end }}
-  <div class="ep-layer-wrap" id="ep-hotspot-layer" data-factor="4">
-    {{- range $data.hotspots }}
-    <button type="button"
-            class="ep-hotspot"
-            id="hotspot-{{ .id }}"
-            data-hotspot-id="{{ .id }}"
-            style="left: {{ .xPercent }}%; top: {{ .yPercent }}%;"
-            aria-label="{{ .title }} — {{ .teaser }}"
-            aria-controls="panel-{{ .id }}">
-      <span class="ep-hotspot-glow" aria-hidden="true"></span>
-      <span class="ep-hotspot-icon" aria-hidden="true">{{ (default "&#10022;" .icon) | safeHTML }}</span>
-    </button>
+  <div class="ep-scene" id="ep-scene">
+    {{- range $data.layers }}
+    <div class="ep-layer-wrap{{ if ne .idle "none" }} ep-idle-{{ .idle }}{{ end }}" id="ep-layer-{{ .id }}" data-factor="{{ .weight }}">
+      <img src="{{ printf "images/explorers-path/%s" .file | relURL }}" alt="" aria-hidden="true">
+    </div>
     {{- end }}
+    <div class="ep-layer-wrap" id="ep-hotspot-layer" data-factor="4">
+      {{- range $data.hotspots }}
+      <button type="button"
+              class="ep-hotspot"
+              id="hotspot-{{ .id }}"
+              data-hotspot-id="{{ .id }}"
+              style="left: {{ .xPercent }}%; top: {{ .yPercent }}%;"
+              aria-label="{{ .title }} — {{ .teaser }}"
+              aria-controls="panel-{{ .id }}">
+        <span class="ep-hotspot-glow" aria-hidden="true"></span>
+        <span class="ep-hotspot-icon" aria-hidden="true">{{ (default "&#10022;" .icon) | safeHTML }}</span>
+      </button>
+      {{- end }}
+    </div>
   </div>
   <div class="ep-controls-hint" id="ep-controls-hint" aria-hidden="true">
     <span class="ep-key">W</span><span class="ep-key">A</span><span class="ep-key">S</span><span class="ep-key">D</span>
+    <span>to move</span>
+    <span class="ep-controls-sep">·</span>
     <span class="ep-key ep-key-wide">SPACE</span>
-    <span class="ep-controls-sep">+</span> mouse to look
+    <span>to explore</span>
   </div>
   <div class="ep-scroll-cue" aria-hidden="true">
     <span class="ep-scroll-cue-label">Scroll down</span>
     <span class="ep-scroll-cue-icon"></span>
   </div>
 </section>
+</div>
 
 <div class="ep-panel" id="ep-panel" hidden role="dialog" aria-modal="true">
   <div class="ep-panel-inner card card-pad">
