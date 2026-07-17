@@ -23,6 +23,28 @@
   var footstepAudio = document.getElementById("ep-audio-footstep");
   var controlsHint = document.getElementById("ep-controls-hint");
   var scrollCue = document.querySelector(".ep-scroll-cue");
+  var startScreen = document.getElementById("ep-start-screen");
+  var startButton = document.getElementById("ep-start-button");
+
+  // Gates WASD/jump (see the keydown handler and tick()'s WASD block
+  // below) until the start screen is dismissed -- teaching controls
+  // that don't do anything yet would be confusing, and the first
+  // impression should be the calm title card, not an already-moving
+  // scene. Mouse-look isn't separately gated: .ep-start-screen is a
+  // fixed, full-viewport element sitting on top of #ep-viewport, so it
+  // already intercepts mousemove before it reaches the parallax
+  // listener for free.
+  var started = !startScreen;
+
+  if (startButton) {
+    startButton.addEventListener("click", function () {
+      started = true;
+      scene.classList.remove("ep-scene--dimmed");
+      startScreen.classList.add("is-dismissed");
+      if (controlsHint) controlsHint.classList.remove("ep-controls-hint--pending");
+      if (scrollCue) scrollCue.classList.remove("ep-scroll-cue--pending");
+    });
+  }
 
   var PROXIMITY_PX = 70;
   var LOOK_EASE = 0.08;
@@ -302,6 +324,11 @@
   }
 
   viewport.addEventListener("mousemove", function (event) {
+    // Gated on `started` too -- mousemove bubbles up from
+    // .ep-start-screen (a child of #ep-viewport) regardless of it
+    // sitting visually on top, so without this check mouse-look parallax
+    // would already be live behind the start screen.
+    if (!started) return;
     var rect = viewport.getBoundingClientRect();
     mouseTarget.x = (event.clientX - rect.left) / rect.width - 0.5;
     mouseTarget.y = (event.clientY - rect.top) / rect.height - 0.5;
@@ -354,6 +381,7 @@
   window.addEventListener("touchmove", dismissControlsHint, { passive: true });
 
   document.addEventListener("keydown", function (event) {
+    if (!started) return;
     if (event.target.closest && event.target.closest(".ep-hotspot")) return;
     if (panel && !panel.hidden) return;
 

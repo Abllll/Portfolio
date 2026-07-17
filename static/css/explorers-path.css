@@ -46,6 +46,14 @@
      drawing always exists at full height, panned through via .ep-scene's
      own translateY rather than revealed by page scroll directly. */
   aspect-ratio: 1242 / 1660;
+  transition: filter 0.8s ease;
+}
+
+/* Grayed out while the start screen is up -- she stays visible (this
+   dims/desaturates the whole scene including her, doesn't hide
+   anything), removed by JS the moment "start" is clicked. */
+.ep-scene--dimmed {
+  filter: grayscale(1) brightness(0.55);
 }
 
 .ep-layer-wrap {
@@ -195,6 +203,15 @@
   animation: none;
 }
 
+/* Not shown at all until the start screen is dismissed -- teaching
+   controls that don't work yet (WASD/Space are inert pre-start) would
+   be confusing. Overrides the flicker-in from the base rule; JS removes
+   this class on start, letting that animation play from then on. */
+.ep-controls-hint--pending {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
 .ep-key {
   display: inline-flex;
   align-items: center;
@@ -246,6 +263,12 @@
   opacity: 0;
 }
 
+/* Same reasoning as .ep-controls-hint--pending above -- hidden until
+   start is clicked. */
+.ep-scroll-cue--pending {
+  opacity: 0 !important;
+}
+
 .ep-scroll-cue-label {
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -281,6 +304,107 @@
   .ep-scroll-cue-label,
   .ep-scroll-cue-icon {
     animation: none;
+  }
+}
+
+/* START SCREEN — a Wayfinder-style title card over the already-live
+   scene (she's visible underneath, dimmed via .ep-scene--dimmed, not
+   hidden), dismissed by the "start" button. WASD/jump stay inert until
+   then (see explorers-path.js's `started` gate). */
+.ep-start-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  /* A soft central wash, not a flat scrim -- keeps the illustration's
+     own edges/corners readable while still lifting the text enough to
+     read over a busy, textured background. */
+  background: radial-gradient(ellipse at center, rgba(20, 18, 14, 0.4) 0%, rgba(20, 18, 14, 0.15) 55%, transparent 80%);
+  transition: opacity 0.6s ease;
+}
+
+.ep-start-screen.is-dismissed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ep-start-screen-inner {
+  max-width: 34rem;
+  text-align: center;
+}
+
+.ep-start-screen-badge {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  margin: 0 0 1rem;
+}
+
+.ep-start-screen-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.75rem, 7vw, 4.5rem);
+  color: #fff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+  margin: 0 0 1rem;
+}
+
+.ep-start-screen-tagline {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+  margin: 0 0 1rem;
+}
+
+.ep-start-screen-summary {
+  font-family: var(--font-sans);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  margin: 0 0 2.25rem;
+}
+
+.ep-start-button {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--color-accent);
+  border: none;
+  border-radius: 0.6rem;
+  padding: 1rem 3rem;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.ep-start-button:hover,
+.ep-start-button:focus-visible {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.ep-start-button:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-start-screen {
+    transition: none;
+  }
+
+  .ep-start-button {
+    transition: none;
   }
 }
 
