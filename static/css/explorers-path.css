@@ -51,9 +51,11 @@
 
 /* Grayed out while the start screen is up -- she stays visible (this
    dims/desaturates the whole scene including her, doesn't hide
-   anything), removed by JS the moment "start" is clicked. */
+   anything), removed by JS the moment "start" is clicked. Partial
+   grayscale, not full -- 100% read as flat black-and-white; this keeps
+   a muted wash of the illustration's actual color showing through. */
 .ep-scene--dimmed {
-  filter: grayscale(1) brightness(0.55);
+  filter: grayscale(0.55) brightness(0.7);
 }
 
 .ep-layer-wrap {
