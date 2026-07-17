@@ -1,7 +1,30 @@
 <footer class="pb-6 pt-10{{ if .IsHome }} ep-footer-top{{ end }}">
   <div class="mx-auto max-w-7xl px-4 sm:px-6">
     <div class="footer-shell">
-      <div class="footer-inner">
+      {{/* Restored after being removed once before -- it turned out to be
+           the site's only page-navigation (Work/About/Experiments/Resume/
+           LinkedIn), so removing it left no way to reach those pages from
+           the homepage. Lives in the same <footer> that's already pushed
+           to the top of the reversed home page (see .ep-footer-top in
+           home-sections.css), so it doesn't need its own positioning. */}}
+      <nav class="flex flex-wrap items-center justify-center gap-5 border-b border-border pb-6">
+        {{- $current := . -}}
+        {{- range .Site.Menus.main }}
+          {{- $external := strings.HasPrefix .URL "http" -}}
+          <a
+            href="{{ if $external }}{{ .URL }}{{ else }}{{ .URL | relURL }}{{ end }}"
+            {{ if $external }}target="_blank" rel="noopener noreferrer"{{ end }}
+            class="nav-link link-underline flex items-center gap-1 {{ if $current.IsMenuCurrent "main" . }}text-text{{ end }}"
+          >
+            {{ with .Params.icon }}
+              <i class="{{ . }} text-[0.75rem]"></i>
+            {{ end }}
+            <span>{{ .Name }}</span>
+          </a>
+        {{- end }}
+      </nav>
+
+      <div class="footer-inner mt-6">
         <!-- Left -->
         <div class="space-y-1">
           <p class="footer-small">
@@ -10,19 +33,23 @@
           </p>
         </div>
 
-        <!-- Right: social links -->
+        <!-- Right: social links not already covered by the nav above -->
+        {{- $navNames := slice -}}
+        {{- range .Site.Menus.main }}{{ $navNames = $navNames | append .Name }}{{ end -}}
         {{ with .Site.Params.social }}
         <div class="footer-links">
           {{ range . }}
-            <a
-              href="{{ .url }}"
-              class="footer-link footer-float link-underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i class="{{ .icon }} text-[0.8rem]"></i>
-              <span>{{ .label }}</span>
-            </a>
+            {{ if not (in $navNames .label) }}
+              <a
+                href="{{ .url }}"
+                class="footer-link footer-float link-underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i class="{{ .icon }} text-[0.8rem]"></i>
+                <span>{{ .label }}</span>
+              </a>
+            {{ end }}
           {{ end }}
         </div>
         {{ end }}

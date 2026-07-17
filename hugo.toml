@@ -39,7 +39,7 @@ theme = "hugo-minimal-black"
 
   [params.hero]
     title = "Amber Li"
-    badge = "Design Engineering"
+    badge = "Design Engineer"
     tagline = "Design driven by curiosity, balanced by engineering."
     summary = "I believe the best products emerge from thoughtful decisions—where design engages people and shapes clarity, and engineering enables possibility. Every detail sparks delight."
 

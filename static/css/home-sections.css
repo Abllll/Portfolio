@@ -28,47 +28,9 @@ html {
   min-height: 100vh;
 }
 
-.home-intro {
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-}
-
-.home-intro__inner,
 .home-placeholder__inner {
   max-width: 42rem;
   text-align: center;
-}
-
-.home-intro__name {
-  font-family: var(--font-serif);
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  color: var(--color-text);
-  margin: 0 0 0.75rem;
-}
-
-.home-intro__badge {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  margin: 0 0 1.25rem;
-}
-
-.home-intro__tagline {
-  font-family: var(--font-serif);
-  font-size: clamp(1.15rem, 2.4vw, 1.4rem);
-  line-height: 1.4;
-  color: var(--color-text);
-  margin: 0 0 1rem;
-}
-
-.home-intro__summary {
-  font-family: var(--font-sans);
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: var(--color-text-muted);
-  margin: 0;
 }
 
 .home-placeholder__title {
