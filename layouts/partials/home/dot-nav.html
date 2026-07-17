@@ -1,8 +1,14 @@
 <nav class="dot-nav" id="dot-nav" aria-label="Section navigation">
-  {{ range $index, $section := .Site.Data.home_sections }}
-  <a href="#{{ $section.id }}" class="dot-nav__dot" data-dot-target="{{ $section.id }}" data-dot-kind="{{ $section.kind }}" aria-label="{{ $section.label }}">
+  {{/* .number (explicit per entry, matching the actual project number --
+       Bonheur is Project 1) rather than the loop's own $index, which
+       only reflected DOM position and had no relationship to which
+       project a section actually was (Bonheur showed as "03" simply
+       because of where it sits in the reversed page order). Not every
+       entry has a number -- the illustration doesn't need one. */}}
+  {{ range .Site.Data.home_sections }}
+  <a href="#{{ .id }}" class="dot-nav__dot" data-dot-target="{{ .id }}" data-dot-kind="{{ .kind }}" aria-label="{{ .label }}">
     <span class="dot-nav__marker" aria-hidden="true"></span>
-    <span class="dot-nav__label" aria-hidden="true">{{ printf "%02d" $index }} · {{ $section.label }}</span>
+    <span class="dot-nav__label" aria-hidden="true">{{ with .number }}{{ printf "%02d" . }} · {{ end }}{{ .label }}</span>
   </a>
   {{ end }}
 </nav>

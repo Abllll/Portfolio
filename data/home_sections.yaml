@@ -1,15 +1,19 @@
 - id: project-4
   kind: placeholder
   label: "Project 4"
+  number: 4
 - id: project-3
   kind: placeholder
   label: "Project 3"
+  number: 3
 - id: project-2
   kind: placeholder
   label: "Project 2"
+  number: 2
 - id: bonheur
   kind: bonheur
   label: "Bonheur"
+  number: 1
 - id: ep-viewport
   kind: illustration
   label: "Explorer's Path"
