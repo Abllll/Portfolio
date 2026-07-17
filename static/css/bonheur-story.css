@@ -442,7 +442,7 @@
 
 .bs-spark-beat-body {
   position: fixed;
-  top: 68%;
+  top: 60%;
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
