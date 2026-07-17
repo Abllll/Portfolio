@@ -4,6 +4,19 @@ html {
   scroll-behavior: smooth;
 }
 
+/* The page reads bottom-up now (landing at the illustration, scrolling
+   up through Bonheur/projects to Project 4 at the very top) -- so the
+   footer's copyright/social-links content belongs at the *top* of the
+   page, ahead of Project 4, matching where the reading direction now
+   ends. <footer> stays a sibling of <main> in the DOM (both direct
+   children of the same flex-column wrapper in baseof.html), so a visual
+   reorder is enough -- no template restructuring, and every other page
+   (not reversed) keeps its footer at the bottom untouched, since this
+   class is only added when .IsHome. */
+.ep-footer-top {
+  order: -1;
+}
+
 .home-section {
   display: flex;
   align-items: center;
