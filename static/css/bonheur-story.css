@@ -62,23 +62,31 @@
   visibility: visible;
 }
 
-/* .bs-ache-void is a SIBLING of #bs-turn (both direct children of the
-   beats loop), not a descendant of it, so it needs the general sibling
-   combinator here rather than joining the descendant-selector list above.
-   Kept visible through Turn's own active window too (not just Ache's) --
-   Ache's and Turn's --active classes are toggled by two fully independent
-   scroll/rAF handlers, and empirically there's a real few-pixel scroll
-   range right at their shared boundary where NEITHER class is set (each
-   handler's own rect-based check lags the other by a frame), which
-   hard-cut the void to invisible before Turn's own solid stage physically
-   arrived underneath -- exposing the page's actual homepage hero section
-   for that stretch. Staying visible through Turn too costs nothing (its
-   own opacity is already pinned at 1 by then, and Turn's stage is the
-   exact same #0a0816, so this just redundantly paints the same solid
-   black) and fully closes the gap. DOM order is #bs-turn before #bs-ache
-   (see bonheur-section.html's reversed beats loop), so `~` reaches
-   forward from turn to ache correctly. */
-#bs-turn.bs-turn--active ~ #bs-ache .bs-ache-void {
+/* .bs-ache-void/.bs-ache-ink are SIBLINGS of #bs-turn (both direct
+   children of the beats loop), not descendants of it, so they need the
+   general sibling combinator here rather than joining the descendant-
+   selector list above. Kept visible through Turn's own active window too
+   (not just Ache's) for two reasons:
+   1. Ache's and Turn's --active classes are toggled by two fully
+      independent scroll/rAF handlers, and empirically there's a real
+      few-pixel scroll range right at their shared boundary where NEITHER
+      class is set (each handler's own rect-based check lags the other by
+      a frame), which hard-cut the void to invisible before Turn's own
+      solid stage physically arrived underneath -- exposing the page's
+      actual homepage hero section for that stretch.
+   2. The ink blobs are the actual source of the soft organic darkness
+      texture the whole beat reads as -- Turn's black-hold opening (before
+      its own spark ignites) is meant to read as a continuation of that
+      same textured darkness, not a flatter/different-looking black, so
+      the ink persists as Turn's opening backdrop too, not just the void.
+   Both cost nothing to keep here (their own opacity is already pinned at
+   1 by then -- see the removed --bs-ink-fade-out below -- and Turn's
+   stage is the exact same #0a0816, so the void is a harmless redundant
+   repaint of the same solid black under the ink). DOM order is #bs-turn
+   before #bs-ache (see bonheur-section.html's reversed beats loop), so
+   `~` reaches forward from turn to ache correctly. */
+#bs-turn.bs-turn--active ~ #bs-ache .bs-ache-void,
+#bs-turn.bs-turn--active ~ #bs-ache .bs-ache-ink {
   visibility: visible;
 }
 
@@ -809,14 +817,12 @@
   background: #0a0816;
   filter: blur(70px);
   pointer-events: none;
-  /* Grows 0-0.20 (matching --bs-void-in), holds, then fades back to
-     fully transparent 0.92-1.0 -- without this fade-out,
-     --bs-ache-progress (which clamps at 1 forever once you scroll past
-     this beat, same as --bs-intro-progress) would leave the blob
-     permanently covering the page. */
+  /* Grows 0-0.20 (matching --bs-void-in) and holds -- deliberately no
+     fade-out (see .bs-ache-void's comment above: this persists as Turn's
+     opening backdrop texture too, hidden only once the outer visibility
+     rule takes over past Turn). */
   --bs-ink-grow: clamp(0, calc(var(--bs-ache-progress, 0) / 0.2), 1);
-  --bs-ink-fade-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
-  opacity: calc(1 - var(--bs-ink-fade-out));
+  opacity: 1;
   transform: translate(
     calc(-50% + var(--bs-ink-wobble-x, 0px)),
     calc(-50% + var(--bs-ink-wobble-y, 0px))
