@@ -1204,16 +1204,18 @@
   opacity: calc(var(--bs-turn-caption-in) * (1 - var(--bs-turn-exit)));
 }
 
-/* MOCKUP DISPLAY BEAT ("The Jar") — a static (not scroll-scrubbed) beat:
-   a phone-frame mockup holding a placeholder for a future screen-recording
-   GIF, with body copy underneath, on the exact same pastel backdrop
-   Turn's finale ends on -- picking up visually right where Turn left off
-   rather than cutting to a different background. The GIF itself isn't in
-   yet; .bs-mockup-screen just holds .bs-media-placeholder (this file's
-   existing generic-beat placeholder styling) until one is supplied. */
-/* .bs-mockup already inherits .bs-beat's own min-height:100vh, flex
-   centering, and padding -- this only adds the vertical phone+text
-   stacking and the full-bleed background on top of that. */
+/* MOCKUP DISPLAY BEAT ("The Jar") — a static (not scroll-scrubbed) beat: a
+   horizontal carousel of four real screen-recording GIFs (converted from
+   the source videos, see docs/superpowers/specs -- mockup-carousel.js
+   drives which one is active), with body copy underneath, on the exact
+   same pastel backdrop Turn's finale ends on -- picking up visually right
+   where Turn left off rather than cutting to a different background.
+
+   Each card sits in one of four "slots" (0 = front/active, 1 and 3 =
+   flanking, 2 = directly behind, mostly hidden) via a data-slot attribute
+   mockup-carousel.js rotates every card through as it advances -- the
+   CSS only needs to know how each slot looks, not which specific clip is
+   in it. */
 .bs-mockup {
   background: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
 }
@@ -1226,14 +1228,14 @@
   width: 100%;
 }
 
-.bs-mockup-phone,
+.bs-mockup-carousel,
 .bs-mockup-text {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.bs-mockup.is-visible .bs-mockup-phone,
+.bs-mockup.is-visible .bs-mockup-carousel,
 .bs-mockup.is-visible .bs-mockup-text {
   opacity: 1;
   transform: translateY(0);
@@ -1243,38 +1245,83 @@
   transition-delay: 0.15s;
 }
 
-.bs-mockup-phone {
+.bs-mockup-carousel {
   position: relative;
-  width: 260px;
-  height: 540px;
-  padding: 14px;
-  border-radius: 44px;
+  width: 100%;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bs-mockup-card {
+  position: absolute;
+  width: 150px;
+  height: 326px;
+  padding: 10px;
+  border-radius: 32px;
   background: #1c1a22;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  /* transform/opacity/z-index below are all driven purely by data-slot --
+     mockup-carousel.js only ever toggles that attribute, never touches
+     style directly. */
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.7s ease;
+}
+
+.bs-mockup-card img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 24px;
+  display: block;
 }
 
 .bs-mockup-notch {
   position: absolute;
-  top: 14px;
+  top: 10px;
   left: 50%;
-  width: 90px;
-  height: 22px;
-  border-radius: 0 0 14px 14px;
+  width: 52px;
+  height: 14px;
+  border-radius: 0 0 10px 10px;
   background: #1c1a22;
   transform: translateX(-50%);
   z-index: 1;
 }
 
-.bs-mockup-screen {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 32px;
-  overflow: hidden;
-  background: #efe7fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Slot 0: front and center, fully lit, playing. */
+.bs-mockup-card[data-slot="0"] {
+  transform: translateX(0) scale(1.55);
+  opacity: 1;
+  z-index: 5;
+}
+
+/* Slots 1/3: flanking, smaller, receding to either side. */
+.bs-mockup-card[data-slot="1"] {
+  transform: translateX(150px) scale(1);
+  opacity: 0.55;
+  z-index: 2;
+}
+
+.bs-mockup-card[data-slot="3"] {
+  transform: translateX(-150px) scale(1);
+  opacity: 0.55;
+  z-index: 2;
+}
+
+/* Slot 2: directly behind the front card, smallest, mostly hidden --
+   reads as "further from the screen" per the requested motion. */
+.bs-mockup-card[data-slot="2"] {
+  transform: translateX(0) scale(0.8);
+  opacity: 0.3;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-mockup-card {
+    transition: none;
+  }
 }
 
 .bs-mockup-text {

@@ -39,15 +39,21 @@
     {{ else if eq .id "jar" }}
     <section class="bs-beat bs-mockup" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-mockup-jar">
       <div class="bs-mockup-stage">
-        <div class="bs-mockup-phone" aria-hidden="true">
-          <div class="bs-mockup-notch"></div>
-          <div class="bs-mockup-screen">
-            <div class="bs-media-placeholder">Screen recording pending — {{ .title }}</div>
+        {{/* Each clip's real duration in ms (measured from the source
+             recordings) drives how long it stays the front/active card
+             before the carousel advances -- see mockup-carousel.js. */}}
+        <div class="bs-mockup-carousel" data-durations="8100,13550,8750,9700" data-pause="3500" aria-hidden="true">
+          {{ range $i, $gif := slice "mockup-2.gif" "mockup-3.gif" "mockup-4.gif" "mockup-5.gif" }}
+          <div class="bs-mockup-card" data-index="{{ $i }}">
+            <div class="bs-mockup-notch"></div>
+            <img src="{{ printf "images/bonheur-mockup/%s" $gif | relURL }}" alt="" loading="lazy">
           </div>
+          {{ end }}
         </div>
         <p class="bs-mockup-text">{{ .body }}</p>
       </div>
     </section>
+    <script src="{{ "js/mockup-carousel.js" | relURL }}" defer></script>
     {{ else if eq .id "turn" }}
     <section class="bs-beat bs-turn" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-turn">
       <div class="bs-turn-stage">
