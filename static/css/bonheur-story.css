@@ -29,9 +29,9 @@
 .bs-ache-void,
 .bs-ache-ink,
 .bs-ache-text,
-.bs-turn-photo,
-.bs-turn-cutline,
-.bs-turn-sticker,
+.bs-turn-jar,
+.bs-turn-spark,
+.bs-turn-hand,
 .bs-turn-caption {
   visibility: hidden;
 }
@@ -57,9 +57,9 @@
 #bs-ache.bs-ache--active .bs-ache-void,
 #bs-ache.bs-ache--active .bs-ache-ink,
 #bs-ache.bs-ache--active .bs-ache-text,
-#bs-turn.bs-turn--active .bs-turn-photo,
-#bs-turn.bs-turn--active .bs-turn-cutline,
-#bs-turn.bs-turn--active .bs-turn-sticker,
+#bs-turn.bs-turn--active .bs-turn-jar,
+#bs-turn.bs-turn--active .bs-turn-spark,
+#bs-turn.bs-turn--active .bs-turn-hand,
 #bs-turn.bs-turn--active .bs-turn-caption {
   visibility: visible;
 }
@@ -292,19 +292,18 @@
     display: none !important;
   }
 
-  .bs-turn-photo,
-  .bs-turn-cutline {
+  .bs-turn-spark,
+  .bs-turn-hand {
     display: none !important;
   }
 
-  .bs-turn-sticker {
+  .bs-turn-jar {
     opacity: 1 !important;
-    transform:
-      translate(-50%, calc(-50% - 18px))
-      translate(40px, -40px)
-      rotate(8deg)
-      scale(1.1) !important;
-    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.5)) !important;
+  }
+
+  .bs-turn-jar-glow,
+  .bs-turn-jar-spark {
+    opacity: 1 !important;
   }
 
   .bs-turn-caption {
@@ -821,14 +820,14 @@
   opacity: calc(var(--bs-ache-text-in) * (1 - var(--bs-ache-text-out)));
 }
 
-/* TURN BEAT — a polaroid fades in from Ache's black, a cut-line traces
-   itself around the spark, the spark peels free as a sticker, then the
-   caption appears. Driven entirely by --bs-turn-progress (0-1), written by
-   the scroll/rAF handler in bonheur-story.js -- a third, independent
-   instance of the same pattern --bs-intro-progress and --bs-ache-progress
-   already use. Unlike Ache, nothing here is JS-generated: every element is
-   static markup, and all motion is CSS calc()/clamp() reading the single
-   progress value. */
+/* TURN BEAT — a mason jar sits dim at the bottom of Ache's blackness, a
+   spark ignites center-screen, a sketchy pencil-linework hand rises up to
+   catch it, carries it back down, and drops it into the jar, which lights
+   up gold. Driven entirely by --bs-turn-progress (0-1), written by the
+   scroll/rAF handler in bonheur-story.js -- a third, independent instance
+   of the same pattern --bs-intro-progress and --bs-ache-progress already
+   use. Nothing here is JS-generated: every element is static markup, and
+   all motion is CSS calc()/clamp() reading the single progress value. */
 
 .bs-turn {
   position: relative;
@@ -845,120 +844,153 @@
   background: #0a0816;
 }
 
-.bs-turn-photo {
-  --bs-turn-enter: clamp(0, calc(var(--bs-turn-progress, 0) / 0.15), 1);
-  --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
+/* Shared exit-fade window so fixed elements don't hard-pop the instant
+   #bs-turn's outer --active class snaps off at the beat's bottom edge --
+   same convention as --bs-ache-progress's own void/ink/text-out windows. */
+.bs-turn-jar,
+.bs-turn-caption {
   --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.9) / 0.1), 1);
+}
+
+.bs-turn-jar {
+  --bs-turn-jar-in: clamp(0, calc(var(--bs-turn-progress, 0) / 0.12), 1);
   position: fixed;
-  top: 50%;
+  bottom: 6vh;
   left: 50%;
   z-index: 1;
-  width: 260px;
-  padding: 14px 14px 50px;
-  background: #faf6ef;
-  border-radius: 2px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  opacity: calc(var(--bs-turn-enter) * (1 - 0.45 * var(--bs-turn-peel)) * (1 - var(--bs-turn-exit)));
-  transform: translate(-50%, -50%) scale(calc(0.9 + 0.1 * var(--bs-turn-enter)));
+  width: 130px;
+  height: 190px;
+  transform: translateX(-50%);
+  opacity: calc(var(--bs-turn-jar-in) * (1 - var(--bs-turn-exit)));
   pointer-events: none;
 }
 
-.bs-turn-photo-image {
-  position: relative;
-  width: 232px;
-  height: 232px;
-  overflow: hidden;
-  border-radius: 1px;
+.bs-turn-jar-glass {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.bs-turn-photo-image::before {
-  content: "";
+/* Fills the jar's lower two-thirds with a warm gold glow once the spark
+   has dropped in -- grown from 0, not just faded in, so the glass visibly
+   goes from dim to lit rather than an instant color swap. */
+.bs-turn-jar-glow {
+  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.75) / 0.1), 1);
   position: absolute;
-  inset: -20px;
-  background: radial-gradient(circle at 40% 35%, #fff3d6 0%, #f4c869 45%, #f2a879 75%, #f4c869 100%);
-  filter: blur(10px);
+  left: 8%;
+  right: 8%;
+  bottom: 8%;
+  height: 60%;
+  border-radius: 0 0 40px 40px;
+  background: radial-gradient(circle at 50% 100%, rgba(244, 200, 105, 0.55), transparent 70%);
+  opacity: calc(var(--bs-turn-jar-lit) * (1 - var(--bs-turn-exit)));
+  pointer-events: none;
 }
 
-.bs-turn-photo-spark {
+.bs-turn-jar-spark {
+  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.75) / 0.1), 1);
   position: absolute;
-  top: 50%;
   left: 50%;
-  z-index: 1;
-  width: 20px;
-  height: 20px;
+  bottom: 22%;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background: #F4C869;
   box-shadow: 0 0 8px 5px rgba(244, 200, 105, 0.22);
+  opacity: calc(var(--bs-turn-jar-lit) * (1 - var(--bs-turn-exit)));
+  pointer-events: none;
 }
 
-.bs-turn-cutline {
-  --bs-turn-draw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.15) / 0.3), 1);
-  --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
+/* The free-floating spark that ignites center-screen and gets caught --
+   stays put at its ignition point the whole time (the hand travels to
+   meet it, not the other way around); fades out once the closing fingers
+   have fully covered it rather than needing to travel anywhere itself. */
+.bs-turn-spark {
+  --bs-turn-spark-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.12) / 0.18), 1);
+  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.1), 1);
   position: fixed;
-  top: 50%;
+  top: 38vh;
   left: 50%;
   z-index: 2;
-  width: 120px;
-  height: 120px;
-  transform: translate(-50%, calc(-50% - 18px));
-  opacity: calc(1 - var(--bs-turn-peel));
-  pointer-events: none;
-}
-
-.bs-turn-cutline circle {
-  fill: none;
-  stroke: rgba(244, 200, 105, 0.8);
-  stroke-width: 2;
-  /* Circumference of r=54: 2 * PI * 54 ≈ 339.29 */
-  stroke-dasharray: 339.29px;
-  stroke-dashoffset: calc(339.29px * (1 - var(--bs-turn-draw)));
-}
-
-.bs-turn-sticker {
-  --bs-turn-fade: clamp(0, calc((var(--bs-turn-progress, 0) - 0.35) / 0.1), 1);
-  --bs-turn-peel: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.2), 1);
-  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.9) / 0.1), 1);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 3;
-  width: 108px;
-  height: 108px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid #faf6ef;
-  opacity: calc(var(--bs-turn-fade) * (1 - var(--bs-turn-exit)));
-  transform:
-    translate(-50%, calc(-50% - 18px))
-    translate(calc(var(--bs-turn-peel) * 40px), calc(var(--bs-turn-peel) * -40px))
-    rotate(calc(var(--bs-turn-peel) * 8deg))
-    scale(calc(1 + var(--bs-turn-peel) * 0.1));
-  filter: drop-shadow(0 calc(var(--bs-turn-peel) * 16px) calc(var(--bs-turn-peel) * 24px) rgba(0, 0, 0, 0.5));
-  background: radial-gradient(circle at 40% 35%, #fff3d6 0%, #f4c869 50%, #f2a879 100%);
-  pointer-events: none;
-}
-
-.bs-turn-sticker-spark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   background: #F4C869;
   box-shadow: 0 0 8px 5px rgba(244, 200, 105, 0.22);
+  opacity: calc(var(--bs-turn-spark-in) * (1 - var(--bs-turn-spark-out)));
+  animation: bs-organic-drift 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* The hand's own vertical position is one running total across three
+   non-overlapping progress windows -- rise up to the spark, lower to the
+   jar, then exit back off-screen -- added onto a 135vh (guaranteed
+   off-screen below any real viewport) base. Same "sum of clamped ramps"
+   technique this beat's earlier sticker-peel design used for its transform. */
+.bs-turn-hand {
+  --bs-turn-hand-rise: clamp(0, calc((var(--bs-turn-progress, 0) - 0.3) / 0.15), 1);
+  --bs-turn-hand-lower: clamp(0, calc((var(--bs-turn-progress, 0) - 0.55) / 0.2), 1);
+  --bs-turn-hand-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.85) / 0.15), 1);
+  position: fixed;
+  top: calc(135vh - (97vh * var(--bs-turn-hand-rise)) + (40vh * var(--bs-turn-hand-lower)) + (57vh * var(--bs-turn-hand-exit)));
+  left: 50%;
+  z-index: 3;
+  width: 90px;
+  height: 128px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.bs-turn-hand-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.bs-turn-hand-line-a,
+.bs-turn-hand-line-b {
+  fill: none;
+  stroke: #E8E4DA;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bs-turn-hand-line-a {
+  stroke-width: 2.5;
+}
+
+.bs-turn-hand-line-b {
+  stroke-width: 1.6;
+  opacity: 0.5;
+}
+
+/* Open/closed pose crossfade -- fingers open while rising to the spark
+   (0.30-0.45), curl closed over it (0.45-0.55), stay closed through the
+   lower (0.55-0.75), then open again releasing it into the jar
+   (0.75-0.85). Two full poses cross-faded rather than a single morphed
+   path -- simpler, and avoids interpolating mismatched path point counts. */
+.bs-turn-hand-pose--closed {
+  --bs-turn-hand-closed-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.1), 1);
+  --bs-turn-hand-closed-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.75) / 0.1), 1);
+  opacity: calc(var(--bs-turn-hand-closed-in) * (1 - var(--bs-turn-hand-closed-out)));
+}
+
+.bs-turn-hand-pose--open {
+  --bs-turn-hand-closed-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.45) / 0.1), 1);
+  --bs-turn-hand-closed-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.75) / 0.1), 1);
+  opacity: calc(1 - (var(--bs-turn-hand-closed-in) * (1 - var(--bs-turn-hand-closed-out))));
 }
 
 .bs-turn-caption {
-  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.65) / 0.1), 1);
-  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.9) / 0.1), 1);
+  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.85) / 0.1), 1);
   position: fixed;
-  top: calc(50% + 130px);
+  bottom: 24vh;
   left: 50%;
   z-index: 3;
-  transform: translate(-50%, 0);
+  transform: translateX(-50%);
   max-width: 30rem;
   padding: 0 1.5rem;
   margin: 0;
