@@ -31,7 +31,6 @@
 .bs-ache-text,
 .bs-turn-jar,
 .bs-turn-spark,
-.bs-turn-hand,
 .bs-turn-caption {
   visibility: hidden;
 }
@@ -59,8 +58,27 @@
 #bs-ache.bs-ache--active .bs-ache-text,
 #bs-turn.bs-turn--active .bs-turn-jar,
 #bs-turn.bs-turn--active .bs-turn-spark,
-#bs-turn.bs-turn--active .bs-turn-hand,
 #bs-turn.bs-turn--active .bs-turn-caption {
+  visibility: visible;
+}
+
+/* .bs-ache-void is a SIBLING of #bs-turn (both direct children of the
+   beats loop), not a descendant of it, so it needs the general sibling
+   combinator here rather than joining the descendant-selector list above.
+   Kept visible through Turn's own active window too (not just Ache's) --
+   Ache's and Turn's --active classes are toggled by two fully independent
+   scroll/rAF handlers, and empirically there's a real few-pixel scroll
+   range right at their shared boundary where NEITHER class is set (each
+   handler's own rect-based check lags the other by a frame), which
+   hard-cut the void to invisible before Turn's own solid stage physically
+   arrived underneath -- exposing the page's actual homepage hero section
+   for that stretch. Staying visible through Turn too costs nothing (its
+   own opacity is already pinned at 1 by then, and Turn's stage is the
+   exact same #0a0816, so this just redundantly paints the same solid
+   black) and fully closes the gap. DOM order is #bs-turn before #bs-ache
+   (see bonheur-section.html's reversed beats loop), so `~` reaches
+   forward from turn to ache correctly. */
+#bs-turn.bs-turn--active ~ #bs-ache .bs-ache-void {
   visibility: visible;
 }
 
@@ -292,8 +310,7 @@
     display: none !important;
   }
 
-  .bs-turn-spark,
-  .bs-turn-hand {
+  .bs-turn-spark {
     display: none !important;
   }
 
@@ -755,10 +772,20 @@
   overflow: hidden;
 }
 
-/* A guaranteed full-bleed dark layer, same grow/hold/fade-out timing as
-   the organic ink blobs below -- the blobs add liquid texture on top of
-   it, but coverage itself doesn't depend on luck getting 4 randomly
-   positioned blobs to fully tile the viewport. */
+/* A guaranteed full-bleed dark layer -- the ink blobs below add liquid
+   texture on top of it, but coverage itself doesn't depend on luck
+   getting 4 randomly positioned blobs to fully tile the viewport.
+   Deliberately has NO fade-out: unlike the ink/text, which can afford to
+   clear before the beat ends, this is the ONLY thing keeping the screen
+   dark for the beat's entire active window -- .bs-ache-stage itself has
+   no background of its own. A previous version faded this back out over
+   0.92-1.0 as an "exit" transition, but Ache stays the on-screen active
+   section for that whole window (Turn doesn't take over until scroll has
+   actually passed Ache's bottom edge), so that fade-out exposed the site's
+   actual homepage hero underneath for a real, visible stretch of scroll.
+   Fully opaque black all the way to progress 1.0 costs nothing to keep
+   here -- Turn's own stage is the exact same #0a0816, so the handoff
+   already reads as seamless once the outer --active class hides this. */
 .bs-ache-void {
   position: fixed;
   inset: 0;
@@ -768,8 +795,7 @@
   /* Starts immediately -- darkness casts over from the very top of the
      beat rather than waiting for anything to establish first. */
   --bs-void-in: clamp(0, calc(var(--bs-ache-progress, 0) / 0.2), 1);
-  --bs-void-out: clamp(0, calc((var(--bs-ache-progress, 0) - 0.92) / 0.08), 1);
-  opacity: calc(var(--bs-void-in) * (1 - var(--bs-void-out)));
+  opacity: var(--bs-void-in);
 }
 
 .bs-ache-ink {
@@ -822,15 +848,14 @@
 }
 
 /* TURN BEAT — after Ache's black holds, a spark ignites center-screen,
-   two solid-silhouette hands enter from opposite corners and cradle it,
-   a soft rounded jar rises from the bottom while the cradled spark
-   travels down to meet it, the hands open to drop the spark in and the
-   jar lights up gold, then the hands retreat and fade as the caption
-   appears. Driven entirely by --bs-turn-progress (0-1), written by the
-   scroll/rAF handler in bonheur-story.js -- a third, independent instance
-   of the same pattern --bs-intro-progress and --bs-ache-progress already
-   use. Nothing here is JS-generated: every element is static markup, and
-   all motion is CSS calc()/clamp() reading the single progress value. */
+   then a soft rounded jar rises up from the bottom of the screen while
+   the spark travels down to meet it, drops in, and lights the jar up
+   gold, before the caption appears. Driven entirely by --bs-turn-progress
+   (0-1), written by the scroll/rAF handler in bonheur-story.js -- a
+   third, independent instance of the same pattern --bs-intro-progress and
+   --bs-ache-progress already use. Nothing here is JS-generated: every
+   element is static markup, and all motion is CSS calc()/clamp() reading
+   the single progress value. */
 
 .bs-turn {
   position: relative;
@@ -847,14 +872,13 @@
   background: #0a0816;
 }
 
-/* Shared "lower toward jar" travel distance (0.50-0.68) — the cradled
-   spark and both hands all move down by the same amount, in step with
-   the jar rising from below over the same window, so the whole group
-   reads as one connected motion rather than three independent ones. */
+/* Shared "lower toward jar" travel distance (0.35-0.60) — the spark and
+   the jar's own rise happen over the same window, so they read as one
+   connected motion (spark descending to meet the rising jar) rather than
+   two independent ones. */
 .bs-turn-jar,
-.bs-turn-spark,
-.bs-turn-hand {
-  --bs-turn-lower: clamp(0, calc((var(--bs-turn-progress, 0) - 0.5) / 0.18), 1);
+.bs-turn-spark {
+  --bs-turn-lower: clamp(0, calc((var(--bs-turn-progress, 0) - 0.35) / 0.25), 1);
 }
 
 /* Shared exit-fade window so fixed elements don't hard-pop the instant
@@ -873,7 +897,7 @@
   width: 140px;
   height: 190px;
   /* Rises from fully below the viewport (140vh down) to its resting spot
-     across the same 0.50-0.68 window the hands lower into -- the rise
+     across the same 0.35-0.60 window the spark lowers into -- the rise
      itself is the reveal, no separate opacity fade-in needed. */
   transform: translateX(-50%) translateY(calc(140vh * (1 - var(--bs-turn-lower))));
   opacity: calc(1 - var(--bs-turn-exit));
@@ -899,14 +923,14 @@
   bottom: 0;
   border-radius: 22px;
   overflow: hidden;
-  background: linear-gradient(180deg, #fff3d6 0%, #f4c869 45%, #b87f45 100%);
+  background: linear-gradient(180deg, #eaab9e 0%, #b8a0c8 50%, #8ca0d8 100%);
 }
 
 /* Fills the jar's lower two-thirds with a warm gold glow once the spark
    has dropped in -- grown from 0, not just faded in, so the glass visibly
    goes from dim to lit rather than an instant color swap. */
 .bs-turn-jar-glow {
-  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.7) / 0.1), 1);
+  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.62) / 0.1), 1);
   position: absolute;
   left: 8%;
   right: 8%;
@@ -919,7 +943,7 @@
 }
 
 .bs-turn-jar-spark {
-  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.7) / 0.1), 1);
+  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.62) / 0.1), 1);
   position: absolute;
   left: 50%;
   bottom: 22%;
@@ -933,14 +957,13 @@
   pointer-events: none;
 }
 
-/* The free-floating spark: ignites at a fixed anchor point and holds
-   there through the cradle-forming phase, then travels down together
-   with the hands (via the shared --bs-turn-lower ramp) once they start
-   lowering toward the jar, fading out just as the jar-interior spark
+/* The free-floating spark: ignites at a fixed anchor point, holds there
+   briefly, then travels down on its own (via the shared --bs-turn-lower
+   ramp) to meet the rising jar, fading out just as the jar-interior spark
    above fades in. */
 .bs-turn-spark {
-  --bs-turn-spark-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.15) / 0.17), 1);
-  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.68) / 0.06), 1);
+  --bs-turn-spark-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.15) / 0.2), 1);
+  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.6) / 0.08), 1);
   position: fixed;
   top: 38vh;
   left: 50%;
@@ -953,74 +976,6 @@
   box-shadow: 0 0 8px 5px rgba(244, 200, 105, 0.22);
   opacity: calc(var(--bs-turn-spark-in) * (1 - var(--bs-turn-spark-out)));
   pointer-events: none;
-}
-
-/* One hand shape, authored once and reused for both corners --
-   .bs-turn-hand--upper is the same markup as --lower, just rotated 180deg
-   (see its rule below), which is why every offset here is written from
-   the "enters from bottom-left, reaches up-right" hand's point of view. */
-.bs-turn-hand {
-  --bs-turn-hand-enter: clamp(0, calc((var(--bs-turn-progress, 0) - 0.32) / 0.18), 1);
-  --bs-turn-hand-open: clamp(0, calc((var(--bs-turn-progress, 0) - 0.68) / 0.06), 1);
-  --bs-turn-hand-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.8) / 0.2), 1);
-  position: fixed;
-  top: 38vh;
-  left: 50%;
-  z-index: 4;
-  width: 150px;
-  height: 200px;
-  opacity: calc(1 - var(--bs-turn-hand-exit));
-  pointer-events: none;
-}
-
-.bs-turn-hand--lower {
-  /* Off-screen bottom-left at rest, converges to a resting offset just
-     below-left of the cradle point as --bs-turn-hand-enter goes 0->1,
-     then lowers with the group, opens away from center, and finally
-     retreats further down-left while fading. */
-  transform:
-    translate(-50%, -50%)
-    translate(calc(-42vw * (1 - var(--bs-turn-hand-enter)) - 6%), calc(42vh * (1 - var(--bs-turn-hand-enter)) + 10%))
-    translateY(calc(40vh * var(--bs-turn-lower)))
-    translate(calc(-14% * var(--bs-turn-hand-open)), calc(10% * var(--bs-turn-hand-open)))
-    translate(calc(-30vw * var(--bs-turn-hand-exit)), calc(30vh * var(--bs-turn-hand-exit)));
-}
-
-.bs-turn-hand--upper {
-  /* Mirror of --lower: same magnitudes, opposite signs, plus a 180deg
-     rotation (applied last, so it spins the hand's own local geometry
-     first -- everything to its left in this list then moves that
-     already-rotated shape around in ordinary, unrotated screen space). */
-  transform:
-    translate(-50%, -50%)
-    translate(calc(42vw * (1 - var(--bs-turn-hand-enter)) + 6%), calc(-42vh * (1 - var(--bs-turn-hand-enter)) - 10%))
-    translateY(calc(40vh * var(--bs-turn-lower)))
-    translate(calc(14% * var(--bs-turn-hand-open)), calc(-10% * var(--bs-turn-hand-open)))
-    translate(calc(30vw * var(--bs-turn-hand-exit)), calc(30vh * var(--bs-turn-hand-exit)))
-    rotate(180deg);
-}
-
-.bs-turn-hand-svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-/* Solid flat silhouette -- arm, palm, fingers and thumb are separate
-   primitive shapes (a tapered capsule, an ellipse, four fan-spread
-   capsules, one more capsule) all sharing one fill with no stroke, so
-   the overlaps merge seamlessly into a single hand shape. */
-.bs-turn-hand-arm,
-.bs-turn-hand-palm,
-.bs-turn-hand-finger,
-.bs-turn-hand-thumb {
-  fill: #F0E6D2;
-}
-
-.bs-turn-hand-crease {
-  stroke: rgba(120, 95, 60, 0.35);
-  stroke-width: 2;
-  stroke-linecap: round;
 }
 
 .bs-turn-caption {
