@@ -1,7 +1,3 @@
-- id: project-4
-  kind: placeholder
-  label: "Project 4"
-  number: 4
 - id: project-3
   kind: placeholder
   label: "Project 3"
