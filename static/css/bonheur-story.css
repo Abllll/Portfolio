@@ -328,7 +328,9 @@
 
   .bs-turn-jar {
     opacity: 1 !important;
-    transform: translate(-50%, -50%) !important;
+    /* Final, recentered resting position (see .bs-turn-jar's own
+       --bs-turn-recenter comment) -- skips straight to that end state. */
+    transform: translate(-50%, -50%) translateX(9vw) !important;
   }
 
   .bs-turn-jar-lid {
@@ -407,15 +409,6 @@
   --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
   transform: translate(-50%, calc(-50% - var(--bs-spark-beat-rise) * 22vh));
   opacity: calc(var(--bs-spark-beat-heading-in) * (1 - var(--bs-spark-beat-exit)));
-}
-
-.bs-spark-beat-number {
-  margin: 0 0 0.5rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  opacity: 0.6;
 }
 
 .bs-spark-beat-title {
@@ -948,7 +941,7 @@
 .bs-turn-jar,
 .bs-turn-daylight,
 .bs-turn-caption {
-  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.94) / 0.06), 1);
+  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.97) / 0.03), 1);
 }
 
 /* The pastel sky the page opens on (.bs-intro-sky's exact gradient). This
@@ -966,12 +959,19 @@
    comment), so without this it would unconditionally cover Ache's void
    from the very start of the beat regardless of the void's own opacity. */
 .bs-turn-daylight {
-  --bs-turn-daylight-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.56) / 0.3), 1);
+  --bs-turn-daylight-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.62) / 0.3), 1);
   position: fixed;
   inset: 0;
   z-index: 0;
   background: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
-  opacity: calc(var(--bs-turn-daylight-in) * (1 - var(--bs-turn-exit)));
+  /* No exit fade here (unlike .bs-turn-jar/.bs-turn-caption below) --
+     the beat right after this one (the mockup-display "Jar" beat) uses
+     this exact same pastel gradient as its own background, so this
+     should stay fully lit all the way to the handoff rather than fading
+     back to dark first. The outer visibility toggle still hides this
+     cleanly once scroll actually passes Turn -- a hard cut is invisible
+     here since both beats show the identical color underneath it. */
+  opacity: var(--bs-turn-daylight-in);
   pointer-events: none;
 }
 
@@ -1002,6 +1002,12 @@
   --bs-turn-swivel-back-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.64) / 0.12), 1);
   --bs-turn-swivel-back: calc(var(--bs-turn-swivel-back-raw) * var(--bs-turn-swivel-back-raw) * (3 - 2 * var(--bs-turn-swivel-back-raw)));
   --bs-turn-lid-close: clamp(0, calc((var(--bs-turn-progress, 0) - 0.72) / 0.1), 1);
+  /* Once the lid has sealed, the jar drifts back to dead-center (the
+     resting spot was deliberately off-center at 41% so the swivel could
+     land the opening exactly on the spark -- that's no longer needed
+     once the catch is done) before the caption appears. */
+  --bs-turn-recenter-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.82) / 0.06), 1);
+  --bs-turn-recenter: calc(var(--bs-turn-recenter-raw) * var(--bs-turn-recenter-raw) * (3 - 2 * var(--bs-turn-recenter-raw)));
   position: fixed;
   top: 47vh;
   left: 41%;
@@ -1021,6 +1027,7 @@
   transform:
     translate(-50%, -50%)
     translateY(calc(90vh * (1 - var(--bs-turn-jar-float))))
+    translateX(calc(9vw * var(--bs-turn-recenter)))
     rotate(calc(36deg * var(--bs-turn-swivel-in) * (1 - var(--bs-turn-swivel-back))));
   opacity: calc(var(--bs-turn-jar-fade-in) * (1 - var(--bs-turn-exit)));
   pointer-events: none;
@@ -1083,10 +1090,16 @@
 /* .bs-turn-jar-glow-blob (purple + gold, JS-generated in bonheur-story.js)
    are the jar's actual lit glow -- see that file for the simplex-noise
    drift/breathe driving each blob's position and opacity. This dot is
-   the light source itself, unchanged from the earlier flat-gold version. */
+   the light source itself, unchanged from the earlier flat-gold version.
+   Starts at 0.62, deliberately AFTER .bs-turn-spark's own --bs-turn-spark-out
+   window (0.56-0.62) finishes rather than the same window -- both fading
+   at once read as two sparks visible simultaneously (one outside fading,
+   one inside fading in) instead of one spark arriving. Sequential, not a
+   crossfade: the outside spark is fully gone before the inside one ever
+   starts appearing. */
 .bs-turn-jar-spark,
 .bs-turn-jar-glow-blob {
-  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.56) / 0.06), 1);
+  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.62) / 0.06), 1);
 }
 
 .bs-turn-jar-spark {
@@ -1171,7 +1184,7 @@
 }
 
 .bs-turn-caption {
-  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.82) / 0.1), 1);
+  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.88) / 0.08), 1);
   position: fixed;
   top: 64vh;
   left: 50%;
