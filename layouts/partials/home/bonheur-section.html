@@ -40,18 +40,39 @@
     {{ else if eq .id "turn" }}
     <section class="bs-beat bs-turn" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-turn">
       <div class="bs-turn-stage">
-        <div class="bs-turn-photo">
-          <div class="bs-turn-photo-image">
-            <div class="bs-turn-photo-spark"></div>
-          </div>
+        <div class="bs-turn-jar" aria-hidden="true">
+          <svg class="bs-turn-jar-glass" viewBox="0 0 110 170" preserveAspectRatio="xMidYMax meet">
+            <defs>
+              <linearGradient id="bsTurnJarGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
+                <stop offset="0.25" stop-color="#F4C869" stop-opacity="0.12"/>
+                <stop offset="0.6" stop-color="#F4C869" stop-opacity="0.08"/>
+                <stop offset="1" stop-color="#ffffff" stop-opacity="0.25"/>
+              </linearGradient>
+            </defs>
+            <rect x="30" y="8" width="50" height="16" rx="3" fill="#8a8f9a" stroke="#c8cdd6" stroke-width="1.5"></rect>
+            <rect x="34" y="22" width="42" height="8" rx="2" fill="#6f7480"></rect>
+            <path d="M32,30 L32,140 Q32,158 55,158 Q78,158 78,140 L78,30 Z" fill="url(#bsTurnJarGrad)" stroke="rgba(244,200,105,0.7)" stroke-width="2"></path>
+            <line x1="32" y1="36" x2="78" y2="36" stroke="rgba(244,200,105,0.4)" stroke-width="1"></line>
+            <line x1="32" y1="42" x2="78" y2="42" stroke="rgba(244,200,105,0.4)" stroke-width="1"></line>
+          </svg>
+          <div class="bs-turn-jar-glow" aria-hidden="true"></div>
+          <div class="bs-turn-jar-spark" aria-hidden="true"></div>
         </div>
-        <svg class="bs-turn-cutline" viewBox="0 0 120 120" aria-hidden="true">
-          <circle cx="60" cy="60" r="54"></circle>
-        </svg>
-        <div class="bs-turn-sticker">
-          <div class="bs-turn-sticker-spark"></div>
+        <div class="bs-turn-spark" aria-hidden="true"></div>
+        <div class="bs-turn-hand" aria-hidden="true">
+          <svg class="bs-turn-hand-svg" viewBox="0 0 120 170">
+            <g class="bs-turn-hand-pose bs-turn-hand-pose--open">
+              <path class="bs-turn-hand-line-a" d="M34,170 L34,120 C34,108 30,100 26,88 C22,76 24,64 32,58 C38,54 46,56 48,64 L50,92 L54,60 C55,50 63,48 68,56 L70,92 L74,58 C76,48 84,48 86,58 L86,94 L90,66 C93,58 100,60 100,70 L98,108 C97,122 92,132 84,138 L84,170 Z"></path>
+              <path class="bs-turn-hand-line-b" d="M34,170 L34,120 C34,108 30,100 26,88 C22,76 24,64 32,58 C38,54 46,56 48,64 L50,92 L54,60 C55,50 63,48 68,56 L70,92 L74,58 C76,48 84,48 86,58 L86,94 L90,66 C93,58 100,60 100,70 L98,108 C97,122 92,132 84,138 L84,170 Z" transform="translate(1.5,1)"></path>
+            </g>
+            <g class="bs-turn-hand-pose bs-turn-hand-pose--closed">
+              <path class="bs-turn-hand-line-a" d="M34,170 L34,118 C34,96 48,82 65,80 C84,78 102,90 100,108 C100,124 90,136 78,140 L84,170 Z"></path>
+              <path class="bs-turn-hand-line-b" d="M34,170 L34,118 C34,96 48,82 65,80 C84,78 102,90 100,108 C100,124 90,136 78,140 L84,170 Z" transform="translate(-1.2,1.3)"></path>
+            </g>
+          </svg>
         </div>
-        <p class="bs-turn-caption">So: catch it before it fades. A photo, a word for what it was — a breeze, a small win, someone's laugh. Bonheur cuts the moment out of its own photo and keeps it as a spark — a little sticker of the thing itself.</p>
+        <p class="bs-turn-caption">So: catch it before it fades. A photo, a word for what it was — a breeze, a small win, someone's laugh. Bonheur stores the moments.</p>
       </div>
     </section>
     {{ else }}
