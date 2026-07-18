@@ -19,6 +19,10 @@ layers:
     file: glow.webp
     weight: 4
     idle: none
+  - id: girl
+    file: girl.webp
+    weight: 50
+    idle: none
   - id: foliage-b
     file: foliage-b.webp
     weight: 38
@@ -31,10 +35,6 @@ layers:
     file: sparkle.webp
     weight: 46
     idle: sparkle
-  - id: girl
-    file: girl.webp
-    weight: 50
-    idle: none
 
 hotspots:
   - id: roots-note-1
