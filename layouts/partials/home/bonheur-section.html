@@ -40,10 +40,10 @@
     {{ else if eq .id "turn" }}
     <section class="bs-beat bs-turn" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-turn">
       <div class="bs-turn-stage">
+        <div class="bs-turn-daylight" aria-hidden="true"></div>
         <div class="bs-turn-jar" aria-hidden="true">
           <div class="bs-turn-jar-lid"></div>
           <div class="bs-turn-jar-body">
-            <div class="bs-turn-jar-glow" aria-hidden="true"></div>
             <div class="bs-turn-jar-spark" aria-hidden="true"></div>
           </div>
         </div>
