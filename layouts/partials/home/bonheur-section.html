@@ -37,6 +37,18 @@
         <p class="bs-ache-text">But our minds are wired with a negativity bias, so what captures our attention isn't always what truly mattered.<br>What moved us most is often forgotten first.</p>
       </div>
     </section>
+    {{ else if eq .id "jar" }}
+    <section class="bs-beat bs-mockup" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-mockup-jar">
+      <div class="bs-mockup-stage">
+        <div class="bs-mockup-phone" aria-hidden="true">
+          <div class="bs-mockup-notch"></div>
+          <div class="bs-mockup-screen">
+            <div class="bs-media-placeholder">Screen recording pending — {{ .title }}</div>
+          </div>
+        </div>
+        <p class="bs-mockup-text">{{ .body }}</p>
+      </div>
+    </section>
     {{ else if eq .id "turn" }}
     <section class="bs-beat bs-turn" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-turn">
       <div class="bs-turn-stage">

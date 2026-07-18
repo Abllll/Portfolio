@@ -1190,3 +1190,85 @@
   pointer-events: none;
   opacity: calc(var(--bs-turn-caption-in) * (1 - var(--bs-turn-exit)));
 }
+
+/* MOCKUP DISPLAY BEAT ("The Jar") — a static (not scroll-scrubbed) beat:
+   a phone-frame mockup holding a placeholder for a future screen-recording
+   GIF, with body copy underneath, on the exact same pastel backdrop
+   Turn's finale ends on -- picking up visually right where Turn left off
+   rather than cutting to a different background. The GIF itself isn't in
+   yet; .bs-mockup-screen just holds .bs-media-placeholder (this file's
+   existing generic-beat placeholder styling) until one is supplied. */
+/* .bs-mockup already inherits .bs-beat's own min-height:100vh, flex
+   centering, and padding -- this only adds the vertical phone+text
+   stacking and the full-bleed background on top of that. */
+.bs-mockup {
+  background: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
+}
+
+.bs-mockup-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.bs-mockup-phone,
+.bs-mockup-text {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bs-mockup.is-visible .bs-mockup-phone,
+.bs-mockup.is-visible .bs-mockup-text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bs-mockup-text {
+  transition-delay: 0.15s;
+}
+
+.bs-mockup-phone {
+  position: relative;
+  width: 260px;
+  height: 540px;
+  padding: 14px;
+  border-radius: 44px;
+  background: #1c1a22;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+}
+
+.bs-mockup-notch {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 90px;
+  height: 22px;
+  border-radius: 0 0 14px 14px;
+  background: #1c1a22;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.bs-mockup-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #efe7fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bs-mockup-text {
+  max-width: 30rem;
+  margin: 0;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #463452;
+}
