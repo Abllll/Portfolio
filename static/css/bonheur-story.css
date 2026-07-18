@@ -327,13 +327,11 @@
 
   .bs-turn-jar {
     opacity: 1 !important;
-    /* Final, centered resting position -- skips straight to the finale
-       state rather than the earlier bottom-resting spot. */
-    transform: translateX(-50%) translateY(-34vh) !important;
+    transform: translate(-50%, -50%) !important;
   }
 
   .bs-turn-jar-lid {
-    transform: translateX(-50%) translateY(16px) !important;
+    transform: translateX(-50%) translateY(10px) !important;
   }
 
   .bs-turn-daylight {
@@ -873,18 +871,23 @@
   opacity: calc(var(--bs-ache-text-in) * (1 - var(--bs-ache-text-out)));
 }
 
-/* TURN BEAT — after Ache's black holds, a spark ignites center-screen,
-   then a soft rounded jar rises up from the bottom of the screen while
-   the spark travels down to meet it, drops in, and lights the jar up.
-   The lid then seals shut and the jar rises a second time to
-   screen-center while the dark backdrop lifts to reveal the same pastel
-   sky the page opens on, before the caption appears underneath. Driven
-   entirely by --bs-turn-progress (0-1), written by the scroll/rAF
+/* TURN BEAT — after Ache's black holds, a spark ignites center-screen and
+   settles, a glass jar slowly materializes at screen-center, the spark
+   flies into it and lights it up, the lid slides closed (leaving a small
+   gap, not a full seal), the dark backdrop lifts to reveal the same
+   pastel sky the page opens on, and the caption fades in underneath.
+   Driven entirely by --bs-turn-progress (0-1), written by the scroll/rAF
    handler in bonheur-story.js -- a third, independent instance of the
    same pattern --bs-intro-progress and --bs-ache-progress already use.
    The jar's glow blobs are the only JS-generated part (see
    bonheur-story.js); everything else is static markup animated via CSS
-   calc()/clamp() reading the single progress value. */
+   calc()/clamp() reading the single progress value.
+
+   Several transitions below use a smoothstep ease (x*x*(3-2*x) applied to
+   a raw linear clamp() ramp) instead of the raw ramp directly -- a flat
+   linear fade/move reads mechanically, whereas smoothstep's gentle
+   ease-in/ease-out is what actually gives the ignite, jar materialization,
+   and spark's flight their organic, unhurried quality. */
 
 .bs-turn {
   position: relative;
@@ -914,27 +917,18 @@
   background: #0a0816;
 }
 
-/* Shared "lower toward jar" travel distance (0.22-0.40) — the spark and
-   the jar's own first rise happen over the same window, so they read as
-   one connected motion (spark descending to meet the rising jar) rather
-   than two independent ones. */
-.bs-turn-jar,
-.bs-turn-spark {
-  --bs-turn-lower: clamp(0, calc((var(--bs-turn-progress, 0) - 0.22) / 0.18), 1);
-}
-
 /* Shared exit-fade window so fixed elements don't hard-pop the instant
    #bs-turn's outer --active class snaps off at the beat's bottom edge --
    same convention as --bs-ache-progress's own void/ink/text-out windows. */
 .bs-turn-jar,
 .bs-turn-daylight,
 .bs-turn-caption {
-  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.92) / 0.08), 1);
+  --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.94) / 0.06), 1);
 }
 
 /* The pastel sky the page opens on (.bs-intro-sky's exact gradient).
-   Fades in on its OWN progress-driven opacity during the finale (0.58+)
-   rather than just sitting permanently opaque behind a fading void: since
+   Fades in on its OWN progress-driven opacity during the finale rather
+   than just sitting permanently opaque behind a fading void: since
    #bs-turn's whole section now sits above #bs-ache's (see .bs-turn's own
    z-index comment), this element would otherwise unconditionally cover
    Ache's void from the very start of the beat if it had no fade-in of its
@@ -942,7 +936,7 @@
    alongside this for a two-sided crossfade, but this side is what
    actually keeps the daylight hidden during the dark catch sequence. */
 .bs-turn-daylight {
-  --bs-turn-daylight-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.58) / 0.2), 1);
+  --bs-turn-daylight-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.76) / 0.18), 1);
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -952,30 +946,26 @@
 }
 
 .bs-turn-jar {
-  --bs-turn-lid-close: clamp(0, calc((var(--bs-turn-progress, 0) - 0.5) / 0.08), 1);
-  --bs-turn-jar-rise2: clamp(0, calc((var(--bs-turn-progress, 0) - 0.58) / 0.17), 1);
+  --bs-turn-jar-in-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.24) / 0.16), 1);
+  --bs-turn-jar-in: calc(var(--bs-turn-jar-in-raw) * var(--bs-turn-jar-in-raw) * (3 - 2 * var(--bs-turn-jar-in-raw)));
+  --bs-turn-lid-close: clamp(0, calc((var(--bs-turn-progress, 0) - 0.64) / 0.1), 1);
   position: fixed;
-  bottom: 6vh;
+  /* Materializes once, at its permanent resting spot just below
+     screen-center (leaving room for the caption beneath it) -- no more
+     rising from off-screen or a second rise to center; "slowly appear in
+     the middle" is now the jar's only entrance. */
+  top: 48vh;
   left: 50%;
   /* Must beat .bs-ache-void's z-index:2 -- the void stays fully opaque
-     until the finale's daylight fade (0.58+), and without this the jar,
-     spark, and lid-close were all rendering invisibly behind it for the
-     entire catch sequence, only appearing once the void had already
-     started fading away. */
+     until the finale's daylight fade, and without this the jar, spark,
+     and lid-close were all rendering invisibly behind it for the entire
+     catch sequence, only appearing once the void had already started
+     fading away. */
   z-index: 3;
   width: 140px;
   height: 190px;
-  /* Two independent rises stacked in one transform: the first (140vh,
-     from fully below the viewport) brings it to its bottom-resting spot
-     across the 0.22-0.40 window the spark lowers into; the second
-     (-34vh) carries it from that resting spot up to screen-center across
-     0.58-0.75. The rise itself is the reveal, no separate opacity
-     fade-in needed. */
-  transform:
-    translateX(-50%)
-    translateY(calc(140vh * (1 - var(--bs-turn-lower))))
-    translateY(calc(-34vh * var(--bs-turn-jar-rise2)));
-  opacity: calc(1 - var(--bs-turn-exit));
+  transform: translate(-50%, -50%) scale(calc(0.85 + 0.15 * var(--bs-turn-jar-in)));
+  opacity: calc(var(--bs-turn-jar-in) * (1 - var(--bs-turn-exit)));
   pointer-events: none;
 }
 
@@ -983,18 +973,23 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: 62%;
+  /* Nearly as wide as the body itself (not much narrower), matching the
+     body's own rounded top rather than reading as a separate small cap. */
+  width: 86%;
   height: 14px;
   border-radius: 7px;
-  /* Slides down to sit flush against (slightly overlapping) the body's
-     rim, reading as sealing the jar shut. */
-  transform: translateX(-50%) translateY(calc(16px * var(--bs-turn-lid-close)));
+  /* Slides partway down toward the body's rim but deliberately stops
+     short of it -- a visible gap always remains between lid and jar,
+     even once "closed", rather than sealing flush. */
+  transform: translateX(-50%) translateY(calc(10px * var(--bs-turn-lid-close)));
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.15));
 }
 
 .bs-turn-jar-body {
   position: absolute;
-  top: 24px;
+  /* Starts further from the lid than before (30px vs. the old 24px) so
+     the resting/open gap itself reads more clearly before closing. */
+  top: 30px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -1009,7 +1004,7 @@
    the light source itself, unchanged from the earlier flat-gold version. */
 .bs-turn-jar-spark,
 .bs-turn-jar-glow-blob {
-  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.42) / 0.08), 1);
+  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.56) / 0.08), 1);
 }
 
 .bs-turn-jar-spark {
@@ -1047,23 +1042,28 @@
   background: radial-gradient(circle, rgba(244, 200, 105, 0.55), transparent 70%);
 }
 
-/* The free-floating spark: ignites at a fixed anchor point, holds there
-   briefly, then travels down on its own (via the shared --bs-turn-lower
-   ramp) to meet the rising jar, fading out just as the jar-interior spark
-   above fades in. */
+/* The free-floating spark: ignites at a fixed anchor point above where
+   the jar will appear, settles, then once the jar has materialized,
+   flies the short remaining distance down into it (a gentle 8vh drop,
+   not a long descent -- the jar no longer moves to meet it, it's already
+   sitting at its resting spot), fading out just as the jar-interior spark
+   fades in to read as the same spark arriving inside. */
 .bs-turn-spark {
-  --bs-turn-spark-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.1) / 0.12), 1);
-  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.4) / 0.06), 1);
+  --bs-turn-spark-in-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.1) / 0.16), 1);
+  --bs-turn-spark-in: calc(var(--bs-turn-spark-in-raw) * var(--bs-turn-spark-in-raw) * (3 - 2 * var(--bs-turn-spark-in-raw)));
+  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.55) / 0.06), 1);
+  --bs-turn-fly-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.4) / 0.18), 1);
+  --bs-turn-fly: calc(var(--bs-turn-fly-raw) * var(--bs-turn-fly-raw) * (3 - 2 * var(--bs-turn-fly-raw)));
   position: fixed;
-  top: 38vh;
+  top: 40vh;
   left: 50%;
   /* Must beat .bs-ache-void's z-index:2 (same reasoning as .bs-turn-jar
-     above) and sit above the jar (z-index:3) it's descending toward. */
+     above) and sit above the jar (z-index:3) it's flying toward. */
   z-index: 4;
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  transform: translate(-50%, -50%) translateY(calc(40vh * var(--bs-turn-lower)));
+  transform: translate(-50%, -50%) scale(calc(0.5 + 0.5 * var(--bs-turn-spark-in))) translateY(calc(8vh * var(--bs-turn-fly)));
   background: #F4C869;
   box-shadow: 0 0 8px 5px rgba(244, 200, 105, 0.22);
   opacity: calc(var(--bs-turn-spark-in) * (1 - var(--bs-turn-spark-out)));
@@ -1071,7 +1071,7 @@
 }
 
 .bs-turn-caption {
-  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.8) / 0.1), 1);
+  --bs-turn-caption-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.82) / 0.1), 1);
   position: fixed;
   top: 64vh;
   left: 50%;
