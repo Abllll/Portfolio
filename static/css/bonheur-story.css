@@ -25,7 +25,6 @@
 .bs-intro-word,
 .bs-intro-signature,
 .bs-spark-beat-heading,
-.bs-spark-beat-dot,
 .bs-spark-beat-body,
 .bs-ache-void,
 .bs-ache-ink,
@@ -37,15 +36,24 @@
   visibility: hidden;
 }
 
+/* .bs-spark-beat-dot is deliberately NOT in the list above: unlike the
+   other beat elements, it needs to stay visible continuously across the
+   Sparks -> Ache handoff, and its own opacity math (--bs-spark-beat-dot-in
+   / --bs-spark-beat-dot-covered, see the Sparks-beat rules below) already
+   fully controls when it's shown. Gating it behind --active too created a
+   dead zone: once #bs-spark-beat's rect stopped intersecting the viewport
+   but before #bs-ache's rect started, neither --active class was set, so
+   this default visibility:hidden won and hard-cut the dots to invisible
+   regardless of their opacity -- they'd vanish well before Ache's
+   darkness actually reached them. */
+
 #bs-intro.bs-intro--active .bs-intro-sky,
 #bs-intro.bs-intro--active .bs-intro-sunshine,
 #bs-intro.bs-intro--active .bs-intro-mist,
 #bs-intro.bs-intro--active .bs-intro-word,
 #bs-intro.bs-intro--active .bs-intro-signature,
 #bs-spark-beat.bs-spark-beat--active .bs-spark-beat-heading,
-#bs-spark-beat.bs-spark-beat--active .bs-spark-beat-dot,
 #bs-spark-beat.bs-spark-beat--active .bs-spark-beat-body,
-#bs-ache.bs-ache--active .bs-spark-beat-dot,
 #bs-ache.bs-ache--active .bs-ache-void,
 #bs-ache.bs-ache--active .bs-ache-ink,
 #bs-ache.bs-ache--active .bs-ache-text,
