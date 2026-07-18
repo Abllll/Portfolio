@@ -285,7 +285,8 @@
   .bs-spark,
   .bs-spark-beat-dot,
   .bs-cluster::before,
-  .bs-cluster::after {
+  .bs-cluster::after,
+  .bs-turn-spark-dot {
     animation: none !important;
   }
 
@@ -793,24 +794,27 @@
 /* A guaranteed full-bleed dark layer -- the ink blobs below add liquid
    texture on top of it, but coverage itself doesn't depend on luck
    getting 4 randomly positioned blobs to fully tile the viewport.
-   Deliberately has NO fade-out tied to --bs-ache-progress: unlike the
-   ink/text, which can afford to clear before the beat ends, this is the
-   ONLY thing keeping the screen dark for the beat's entire active window
-   -- .bs-ache-stage itself has no background of its own. A previous
-   version faded this back out over 0.92-1.0 of --bs-ache-progress as an
-   "exit" transition, but Ache stays the on-screen active section for
-   that whole window (Turn doesn't take over until scroll has actually
-   passed Ache's bottom edge), so that fade-out exposed the site's actual
-   homepage hero underneath for a real, visible stretch of scroll.
-   --bs-ache-progress clamps at 1 forever once past Ache, so this stays
-   fully opaque through the handoff (Turn's own stage is the exact same
-   #0a0816, seamless) -- the ONLY fade-out this has is --bs-turn-daylight
-   below, gated on Turn's OWN progress instead, which is pinned at 0 for
-   the entire time the user is actually looking at Ache (the JS handler
-   only advances it once #bs-turn itself is in view), so it can't
-   reintroduce the same early-exposure bug -- it only ever engages deep
-   into Turn's finale, long after this has already done its job covering
-   the Ache/Turn handoff. */
+   Deliberately has NO fade-out at all (not even tied to Turn's finale):
+   unlike the ink, which can afford to clear before the beat ends, this is
+   the ONLY thing keeping the screen dark for the beat's entire active
+   window -- .bs-ache-stage/.bs-turn-stage have no background of their
+   own. A previous version faded this back out over 0.92-1.0 of
+   --bs-ache-progress as an "exit" transition, but Ache stays the
+   on-screen active section for that whole window (Turn doesn't take over
+   until scroll has actually passed Ache's bottom edge), so that fade-out
+   exposed the site's actual homepage hero underneath for a real, visible
+   stretch of scroll. A later version faded this via --bs-turn-progress
+   instead (safe from that specific bug, since --bs-turn-progress stays
+   pinned at 0 for as long as the user is actually looking at Ache) --
+   but that reintroduced the SAME class of exposure a different way: with
+   this fading out at the same time .bs-turn-daylight fades in, there's a
+   stretch in the middle where BOTH are only partially opaque
+   simultaneously (e.g. both at 50%), and two 50%-opacity layers over the
+   real page do NOT add up to full coverage -- 25% of the actual page
+   still shows through. Only .bs-turn-daylight fades now (0 -> 1); this
+   stays permanently opaque as the solid floor underneath it, so there is
+   always at least one fully-opaque layer covering the real page no
+   matter how far into that crossfade you are. */
 .bs-ache-void {
   position: fixed;
   inset: 0;
@@ -820,8 +824,7 @@
   /* Starts immediately -- darkness casts over from the very top of the
      beat rather than waiting for anything to establish first. */
   --bs-void-in: clamp(0, calc(var(--bs-ache-progress, 0) / 0.2), 1);
-  --bs-turn-daylight: clamp(0, calc((var(--bs-turn-progress, 0) - 0.58) / 0.2), 1);
-  opacity: calc(var(--bs-void-in) * (1 - var(--bs-turn-daylight)));
+  opacity: var(--bs-void-in);
 }
 
 .bs-ache-ink {
@@ -839,7 +842,14 @@
      Turn's opening, then fades with the same --bs-turn-daylight term
      .bs-ache-void uses above, for the finale's daylight reveal. */
   --bs-ink-grow: clamp(0, calc(var(--bs-ache-progress, 0) / 0.2), 1);
-  --bs-turn-daylight: clamp(0, calc((var(--bs-turn-progress, 0) - 0.58) / 0.2), 1);
+  /* Same window .bs-turn-daylight's own fade-in uses below -- syncing the
+     two exactly (rather than two independently-timed windows) is part of
+     what keeps this reading as one continuous whole-screen fade instead
+     of two visibly offset transitions. Starts right as the spark lands
+     ("saved") rather than after the jar's whole rotate-back/lid-close
+     finishes, so the world brightens while that's still happening, not
+     only once it's done. */
+  --bs-turn-daylight: clamp(0, calc((var(--bs-turn-progress, 0) - 0.6) / 0.26), 1);
   opacity: calc(1 - var(--bs-turn-daylight));
   transform: translate(
     calc(-50% + var(--bs-ink-wobble-x, 0px)),
@@ -872,16 +882,19 @@
 }
 
 /* TURN BEAT — after Ache's black holds, a spark ignites center-screen and
-   settles, a glass jar slowly materializes at screen-center, the spark
-   flies into it and lights it up, the lid slides closed (leaving a small
-   gap, not a full seal), the dark backdrop lifts to reveal the same
-   pastel sky the page opens on, and the caption fades in underneath.
-   Driven entirely by --bs-turn-progress (0-1), written by the scroll/rAF
-   handler in bonheur-story.js -- a third, independent instance of the
-   same pattern --bs-intro-progress and --bs-ache-progress already use.
-   The jar's glow blobs are the only JS-generated part (see
-   bonheur-story.js); everything else is static markup animated via CSS
-   calc()/clamp() reading the single progress value.
+   idles/wanders there a while, then a glass jar floats in from off-screen
+   left (a slow, weightless drift) and swivels ~35deg to the right to tilt
+   its opening toward the spark; the spark flies the rest of the way in,
+   lighting the jar up as it lands; the jar swivels back straight while
+   the lid slides closed (leaving a small gap, not a full seal); and, in
+   the same stretch, the dark backdrop lifts to reveal the same pastel sky
+   the page opens on, before the caption fades in underneath. Driven
+   entirely by --bs-turn-progress (0-1), written by the scroll/rAF handler
+   in bonheur-story.js -- a third, independent instance of the same
+   pattern --bs-intro-progress and --bs-ache-progress already use. The
+   jar's glow blobs are the only JS-generated part (see bonheur-story.js);
+   everything else is static markup animated via CSS calc()/clamp()
+   reading the single progress value.
 
    Several transitions below use a smoothstep ease (x*x*(3-2*x) applied to
    a raw linear clamp() ramp) instead of the raw ramp directly -- a flat
@@ -909,12 +922,24 @@
   padding: 0;
 }
 
+/* Deliberately has NO background of its own (a previous version hardcoded
+   #0a0816 here) -- .bs-turn-stage is width-constrained to the page's
+   content column, while .bs-ache-void/.bs-turn-daylight are full-viewport
+   position:fixed layers that also cover the gutters outside that column.
+   A permanent dark background here, sitting only under the center column,
+   combined with the finale's void-out/daylight-in crossfade, meant the
+   center (dark stage bg showing through the partially-transparent
+   daylight) and the gutters (light page bg showing through that same
+   partial daylight) resolved to visibly different colors throughout the
+   whole transition -- reading as two uneven "stretches" instead of one
+   uniform fade. Ache's void (already guaranteed full-viewport opaque for
+   this beat's entire dark stretch, see that section's own comment) is
+   sufficient on its own; this doesn't need to double up on it. */
 .bs-turn-stage {
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: hidden;
-  background: #0a0816;
 }
 
 /* Shared exit-fade window so fixed elements don't hard-pop the instant
@@ -926,17 +951,22 @@
   --bs-turn-exit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.94) / 0.06), 1);
 }
 
-/* The pastel sky the page opens on (.bs-intro-sky's exact gradient).
-   Fades in on its OWN progress-driven opacity during the finale rather
-   than just sitting permanently opaque behind a fading void: since
-   #bs-turn's whole section now sits above #bs-ache's (see .bs-turn's own
-   z-index comment), this element would otherwise unconditionally cover
-   Ache's void from the very start of the beat if it had no fade-in of its
-   own -- .bs-ache-void's matching fade-out (see below) still runs
-   alongside this for a two-sided crossfade, but this side is what
-   actually keeps the daylight hidden during the dark catch sequence. */
+/* The pastel sky the page opens on (.bs-intro-sky's exact gradient). This
+   is the ONLY thing that fades during the finale -- see .bs-ache-void's
+   comment for why that stays permanently opaque instead of also fading
+   in a complementary direction (two independently-fading semi-transparent
+   layers don't add up to full coverage in the middle of the crossfade,
+   letting the real page bleed through). Fading in from 0 here, sitting on
+   top of the permanently-opaque void, means there's always at least one
+   fully-opaque layer no matter how far into the transition you are --
+   dark while this is still near 0, progressively lighter as it rises,
+   fully daylight once it reaches 1. Also needs its own fade-in (rather
+   than just sitting permanently opaque) for a second reason: #bs-turn's
+   whole section now sits above #bs-ache's (see .bs-turn's own z-index
+   comment), so without this it would unconditionally cover Ache's void
+   from the very start of the beat regardless of the void's own opacity. */
 .bs-turn-daylight {
-  --bs-turn-daylight-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.76) / 0.18), 1);
+  --bs-turn-daylight-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.6) / 0.26), 1);
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -946,14 +976,26 @@
 }
 
 .bs-turn-jar {
-  --bs-turn-jar-in-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.24) / 0.16), 1);
-  --bs-turn-jar-in: calc(var(--bs-turn-jar-in-raw) * var(--bs-turn-jar-in-raw) * (3 - 2 * var(--bs-turn-jar-in-raw)));
-  --bs-turn-lid-close: clamp(0, calc((var(--bs-turn-progress, 0) - 0.64) / 0.1), 1);
+  /* Floats in from off-screen left (a slow, weightless drift -- "space
+     effect" -- not a hard slide), fading in quickly right at the start of
+     that drift rather than popping in fully-formed at the edge. */
+  --bs-turn-jar-float-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.28) / 0.16), 1);
+  --bs-turn-jar-float: calc(var(--bs-turn-jar-float-raw) * var(--bs-turn-jar-float-raw) * (3 - 2 * var(--bs-turn-jar-float-raw)));
+  --bs-turn-jar-fade-in: clamp(0, calc((var(--bs-turn-progress, 0) - 0.28) / 0.04), 1);
+  /* Swivels right ~35deg once it arrives (tilting the opening to meet the
+     incoming spark), holds through the catch, then swivels back straight
+     as the spark lands -- two independent eased ramps combined into one
+     rotation value, same "sum of ramps" technique used elsewhere on this
+     page (e.g. .bs-turn-hand's old translate chain). */
+  --bs-turn-swivel-in-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.44) / 0.12), 1);
+  --bs-turn-swivel-in: calc(var(--bs-turn-swivel-in-raw) * var(--bs-turn-swivel-in-raw) * (3 - 2 * var(--bs-turn-swivel-in-raw)));
+  --bs-turn-swivel-back-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.64) / 0.12), 1);
+  --bs-turn-swivel-back: calc(var(--bs-turn-swivel-back-raw) * var(--bs-turn-swivel-back-raw) * (3 - 2 * var(--bs-turn-swivel-back-raw)));
+  --bs-turn-lid-close: clamp(0, calc((var(--bs-turn-progress, 0) - 0.72) / 0.1), 1);
   position: fixed;
-  /* Materializes once, at its permanent resting spot just below
-     screen-center (leaving room for the caption beneath it) -- no more
-     rising from off-screen or a second rise to center; "slowly appear in
-     the middle" is now the jar's only entrance. */
+  /* Permanent resting spot just below screen-center (leaving room for the
+     caption beneath it) -- the float-in only ever approaches this point
+     from the left, it doesn't relocate afterward. */
   top: 48vh;
   left: 50%;
   /* Must beat .bs-ache-void's z-index:2 -- the void stays fully opaque
@@ -964,8 +1006,16 @@
   z-index: 3;
   width: 140px;
   height: 190px;
-  transform: translate(-50%, -50%) scale(calc(0.85 + 0.15 * var(--bs-turn-jar-in)));
-  opacity: calc(var(--bs-turn-jar-in) * (1 - var(--bs-turn-exit)));
+  /* Pivoting at the base (not the center) is what makes the swivel read
+     as "tilting the opening toward the spark" -- the bottom stays roughly
+     anchored while the top swings out, like tipping a cup rather than
+     spinning the whole object in place. */
+  transform-origin: 50% 100%;
+  transform:
+    translate(-50%, -50%)
+    translateX(calc(-60vw * (1 - var(--bs-turn-jar-float))))
+    rotate(calc(35deg * var(--bs-turn-swivel-in) * (1 - var(--bs-turn-swivel-back))));
+  opacity: calc(var(--bs-turn-jar-fade-in) * (1 - var(--bs-turn-exit)));
   pointer-events: none;
 }
 
@@ -1004,7 +1054,7 @@
    the light source itself, unchanged from the earlier flat-gold version. */
 .bs-turn-jar-spark,
 .bs-turn-jar-glow-blob {
-  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.56) / 0.08), 1);
+  --bs-turn-jar-lit: clamp(0, calc((var(--bs-turn-progress, 0) - 0.6) / 0.06), 1);
 }
 
 .bs-turn-jar-spark {
@@ -1042,17 +1092,24 @@
   background: radial-gradient(circle, rgba(244, 200, 105, 0.55), transparent 70%);
 }
 
-/* The free-floating spark: ignites at a fixed anchor point above where
-   the jar will appear, settles, then once the jar has materialized,
-   flies the short remaining distance down into it (a gentle 8vh drop,
-   not a long descent -- the jar no longer moves to meet it, it's already
-   sitting at its resting spot), fading out just as the jar-interior spark
-   fades in to read as the same spark arriving inside. */
+/* The free-floating spark: ignites at a fixed anchor point, then idles
+   there for a while (the inner .bs-turn-spark-dot's own continuous
+   organic-drift animation, not gated to any window -- it's what makes
+   the idle read as "moving around" rather than sitting frozen) before the
+   jar has even appeared. Once the jar has floated in and swiveled to
+   meet it, it flies the remaining distance toward the now-tilted opening
+   -- angled up and to the right to aim at where the swivel moved the
+   mouth, not just straight down -- fading out just as the jar-interior
+   spark fades in to read as the same spark arriving inside. The outer
+   element here handles the fixed anchor position, ignite scale-in, and
+   fly translate (all progress-driven); the inner dot handles the actual
+   visible circle plus the wobble, so the two motions compose instead of
+   one CSS animation overwriting the other's transform. */
 .bs-turn-spark {
-  --bs-turn-spark-in-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.1) / 0.16), 1);
+  --bs-turn-spark-in-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.08) / 0.12), 1);
   --bs-turn-spark-in: calc(var(--bs-turn-spark-in-raw) * var(--bs-turn-spark-in-raw) * (3 - 2 * var(--bs-turn-spark-in-raw)));
-  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.55) / 0.06), 1);
-  --bs-turn-fly-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.4) / 0.18), 1);
+  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.6) / 0.06), 1);
+  --bs-turn-fly-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.48) / 0.16), 1);
   --bs-turn-fly: calc(var(--bs-turn-fly-raw) * var(--bs-turn-fly-raw) * (3 - 2 * var(--bs-turn-fly-raw)));
   position: fixed;
   top: 40vh;
@@ -1062,12 +1119,21 @@
   z-index: 4;
   width: 14px;
   height: 14px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(calc(0.5 + 0.5 * var(--bs-turn-spark-in))) translateY(calc(8vh * var(--bs-turn-fly)));
-  background: #F4C869;
-  box-shadow: 0 0 8px 5px rgba(244, 200, 105, 0.22);
+  transform:
+    translate(-50%, -50%)
+    scale(calc(0.5 + 0.5 * var(--bs-turn-spark-in)))
+    translate(calc(6vw * var(--bs-turn-fly)), calc(6vh * var(--bs-turn-fly)));
   opacity: calc(var(--bs-turn-spark-in) * (1 - var(--bs-turn-spark-out)));
   pointer-events: none;
+}
+
+.bs-turn-spark-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #F4C869;
+  box-shadow: 0 0 8px 5px rgba(244, 200, 105, 0.22);
+  animation: bs-organic-drift 5s ease-in-out infinite;
 }
 
 .bs-turn-caption {
