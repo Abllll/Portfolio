@@ -762,38 +762,61 @@
 .bs-intro-mist--purple { top: 34%; left: 62%; background: #C3A6EE; }
 .bs-intro-mist--teal { top: 68%; left: 30%; background: #C2E0E8; }
 
-/* The bridge/path + girl carried over from Explorer's Path, fading away
+/* The bridge/path + human carried over from Explorer's Path, fading away
    early in the intro's own scroll (well before the Bon/heur word reveal
    builds up) rather than sticking around for the whole beat -- "duplicate
    the bridge, let it fade into the background as a connection, and have
    her fade together with it" per the source request. Both images share
-   the exact same source canvas (1242x1660), so the girl needs no manual
+   the exact same source canvas (1242x1660), so the human needs no manual
    position offset -- she already sits correctly relative to the bridge
    just by filling the same box. */
 .bs-intro-bridge {
   position: fixed;
-  bottom: 0;
+  /* Scale from the shared 1242×1660 canvas so its lower curve meets the
+     Explorer's Path trail at the frame edge, while the far end continues
+     into the upper-right of the Bonheur frame. */
+  /* Written from the live Explorer's Path frame in bonheur-story.js. This
+     keeps the bridge's lower edge locked to that frame as it scrolls. */
+  bottom: var(--bs-bridge-frame-gap, 8vh);
+  /* Double the previous scale and shift the whole bridge left so its
+     curve enters directly from Explorer's Path instead of sitting to the
+     right of the handoff. */
   left: 50%;
   z-index: 0;
-  width: 46vw;
-  max-width: 420px;
+  width: clamp(1400px, 88vw, 1720px);
   transform: translateX(-50%);
   --bs-bridge-out: clamp(0, calc(var(--bs-intro-progress, 0) / 0.22), 1);
   opacity: calc(1 - var(--bs-bridge-out));
   pointer-events: none;
 }
 
-.bs-intro-bridge img {
+@media (max-width: 700px) {
+  .bs-intro-bridge {
+    bottom: var(--bs-bridge-frame-gap, 0px);
+    left: 50%;
+    width: 90vw;
+  }
+}
+
+.bs-intro-bridge-art,
+.bs-intro-bridge-human {
   display: block;
   width: 100%;
 }
 
-.bs-intro-bridge-girl {
+.bs-intro-bridge-human {
   position: absolute;
   inset: 0;
-  /* "Walk up into this page" -- a gentle upward drift as she fades,
-     rather than just sitting still while disappearing. */
-  transform: translateY(calc(var(--bs-bridge-out) * -70px));
+  z-index: 1;
+  /* The human remains above the bridge, while Explorer's Path's foliage
+     layers stay in front of her on the landing scene. Cursor movement is
+     eased by bonheur-story.js; the scroll-driven lift continues beneath
+     it, so she appears to walk up the bridge as it fades. */
+  transform: translate(
+    var(--bs-human-cursor-x, 0px),
+    calc(var(--bs-human-cursor-y, 0px) + var(--bs-bridge-out) * -70px)
+  );
+  will-change: transform;
 }
 
 /* ACHE BEAT — the Sparks beat's scattered dots (now persisting into this

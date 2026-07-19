@@ -37,6 +37,43 @@
   });
 })();
 
+// Carries the landing-scene human through Bonheur's bridge transition.
+// Pointer movement is deliberately small and eased, so she follows the
+// cursor while remaining planted on the illustrated bridge. Her upward
+// travel and fade remain CSS scroll effects (see .bs-intro-bridge-human).
+(function () {
+  "use strict";
+
+  var intro = document.getElementById("bs-intro");
+  var human = document.querySelector(".bs-intro-bridge-human");
+  if (!intro || !human) return;
+
+  var targetX = 0;
+  var targetY = 0;
+  var currentX = 0;
+  var currentY = 0;
+  var MAX_X = 24;
+  var MAX_Y = 14;
+  var EASE = 0.1;
+
+  window.addEventListener("pointermove", function (event) {
+    var rect = intro.getBoundingClientRect();
+    if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+    targetX = ((event.clientX / window.innerWidth) - 0.5) * MAX_X * 2;
+    targetY = ((event.clientY / window.innerHeight) - 0.5) * MAX_Y * 2;
+  }, { passive: true });
+
+  function animateHuman() {
+    currentX += (targetX - currentX) * EASE;
+    currentY += (targetY - currentY) * EASE;
+    human.style.setProperty("--bs-human-cursor-x", currentX.toFixed(2) + "px");
+    human.style.setProperty("--bs-human-cursor-y", currentY.toFixed(2) + "px");
+    window.requestAnimationFrame(animateHuman);
+  }
+
+  window.requestAnimationFrame(animateHuman);
+})();
+
 // Drives --bs-intro-progress (0-1) from how far the user has scrolled
 // through #bs-intro. All visual behavior lives in bonheur-story.css as
 // calc()/clamp() expressions reading this one property -- this script only
@@ -46,6 +83,10 @@
 
   var intro = document.getElementById("bs-intro");
   if (!intro) return;
+
+  var explorerSpacer = document.getElementById("ep-spacer");
+  var explorerViewport = document.getElementById("ep-viewport");
+  var bridge = document.querySelector(".bs-intro-bridge");
 
   var tagline = document.querySelector(".bs-intro-tagline");
   var taglineFlickered = false;
@@ -67,7 +108,25 @@
     // existing calc()/clamp() in bonheur-story.css correct unchanged.
     progress = 1 - progress;
     document.documentElement.style.setProperty("--bs-intro-progress", progress.toFixed(4));
-    intro.classList.toggle("bs-intro--active", rect.bottom > 0 && rect.top <= 0);
+    var introIsActive = rect.bottom > 0 && rect.top <= 0;
+    intro.classList.toggle("bs-intro--active", introIsActive);
+    // Both scenes can occupy the edge of the viewport during the sticky
+    // handoff. Bonheur owns the one shared human at that moment.
+    if (explorerSpacer) explorerSpacer.classList.toggle("ep-human--handoff", introIsActive);
+
+    // The Explorer's Path viewport is the visible illustration frame. At
+    // the overlap, pin this bridge's lower edge to that frame's top edge
+    // every scroll frame, instead of letting the fixed Bonheur bridge drift
+    // independently from the illustrated path.
+    if (bridge && explorerViewport && introIsActive) {
+      var frameTop = explorerViewport.getBoundingClientRect().top;
+      if (frameTop >= 0 && frameTop <= window.innerHeight) {
+        bridge.style.setProperty(
+          "--bs-bridge-frame-gap",
+          Math.max(0, window.innerHeight - frameTop).toFixed(2) + "px"
+        );
+      }
+    }
 
     if (!taglineFlickered && tagline && progress >= 0.4) {
       taglineFlickered = true;

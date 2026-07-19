@@ -20,7 +20,7 @@ layers:
     weight: 4
     idle: none
   - id: girl
-    file: girl.webp
+    file: human.png
     weight: 50
     idle: none
   - id: foliage-b

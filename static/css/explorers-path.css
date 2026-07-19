@@ -88,6 +88,13 @@
   inset: 0;
 }
 
+/* At the Explorer's Path → Bonheur handoff, the same human asset is
+   carried by Bonheur's bridge. Hide this instance for the overlap so she
+   never appears twice on the screen. */
+#ep-spacer.ep-human--handoff #ep-layer-girl {
+  opacity: 0;
+}
+
 .ep-idle-sway img {
   animation: ep-sway 10s ease-in-out infinite;
 }
@@ -461,4 +468,3 @@
   font-family: var(--font-serif);
   margin-bottom: 0.5rem;
 }
-
