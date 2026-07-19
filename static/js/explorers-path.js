@@ -35,16 +35,69 @@
   // already intercepts mousemove before it reaches the parallax
   // listener for free.
   var started = !startScreen;
+  var lockedScrollY = 0;
+  var previousBodyPosition = "";
+  var previousBodyTop = "";
+  var previousBodyWidth = "";
+
+  function lockLandingScroll() {
+    lockedScrollY = window.scrollY;
+    previousBodyPosition = document.body.style.position;
+    previousBodyTop = document.body.style.top;
+    previousBodyWidth = document.body.style.width;
+    document.documentElement.classList.add("ep-start-locked");
+    document.body.style.position = "fixed";
+    document.body.style.top = -lockedScrollY + "px";
+    document.body.style.width = "100%";
+  }
+
+  function unlockLandingScroll() {
+    document.documentElement.classList.remove("ep-start-locked");
+    document.body.style.position = previousBodyPosition;
+    document.body.style.top = previousBodyTop;
+    document.body.style.width = previousBodyWidth;
+
+    /* Sitewide smooth scrolling must not animate this restoration—the
+       screen should remain on the exact same illustration frame as the
+       lock is removed. */
+    var previousBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, lockedScrollY);
+    document.documentElement.style.scrollBehavior = previousBehavior;
+  }
+
+  if (startScreen) {
+    lockLandingScroll();
+  }
 
   if (startButton) {
     startButton.addEventListener("click", function () {
       started = true;
+      unlockLandingScroll();
       scene.classList.remove("ep-scene--dimmed");
       startScreen.classList.add("is-dismissed");
       if (controlsHint) controlsHint.classList.remove("ep-controls-hint--pending");
       if (scrollCue) scrollCue.classList.remove("ep-scroll-cue--pending");
     });
   }
+
+  // The landing screen is a real entry gate: the illustrated journey and
+  // upward project scroll begin only after Start is chosen. Prevent native
+  // wheel/touch scrolling from slipping behind the overlay beforehand.
+  window.addEventListener("wheel", function (event) {
+    if (!started) event.preventDefault();
+  }, { passive: false });
+
+  var preStartTouchY = null;
+  window.addEventListener("touchstart", function (event) {
+    if (!started && event.touches.length) preStartTouchY = event.touches[0].clientY;
+  }, { passive: true });
+  window.addEventListener("touchmove", function (event) {
+    if (!started && preStartTouchY !== null) event.preventDefault();
+  }, { passive: false });
+  window.addEventListener("touchend", function () {
+    preStartTouchY = null;
+  }, { passive: true });
 
   var PROXIMITY_PX = 70;
   var LOOK_EASE = 0.08;
@@ -364,6 +417,7 @@
   };
 
   function dismissControlsHint() {
+    if (!started) return;
     if (controlsHint) controlsHint.classList.add("is-dismissed");
     if (scrollCue) scrollCue.classList.add("is-dismissed");
   }
@@ -381,7 +435,13 @@
   window.addEventListener("touchmove", dismissControlsHint, { passive: true });
 
   document.addEventListener("keydown", function (event) {
-    if (!started) return;
+    if (!started) {
+      var scrollKeys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " ", "Spacebar"];
+      if (scrollKeys.indexOf(event.key) !== -1 && event.target !== startButton) {
+        event.preventDefault();
+      }
+      return;
+    }
     if (event.target.closest && event.target.closest(".ep-hotspot")) return;
     if (panel && !panel.hidden) return;
 

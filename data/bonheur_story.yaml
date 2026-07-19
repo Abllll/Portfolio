@@ -17,20 +17,10 @@ beats:
     number: 4
     title: "The Jar"
     body: "Every day gets its own jar. Drop a spark in and it glows — brighter with every good hour you caught that day. Up to three a day; some days the jar stays dim, and that's allowed to just be true."
-    motif: jar-fill
+    motif: none
     media: null
 
-  - id: star-cloud
+  - id: outro
     number: 5
-    title: "The Star Cloud"
-    body: "Zoom out to a year, and every spark you've kept becomes a point of light. The ones that repeat — the same person, the same small ritual, the same word — drift together into their own cluster, orbiting a sun at the center. Not a mood board. A map of what actually moves you, drawn by you without meaning to."
-    motif: cloud
-    media: null
-
-  - id: keeping
-    number: 6
-    title: "The Keeping"
-    body: "No streaks. No feed. No score to keep. Just the good hours, kept — however many there turn out to be."
-    motif: settled
-    media: null
-    video: null
+    title: "Let your Bonheur journey begin…"
+    motif: none

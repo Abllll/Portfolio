@@ -6,6 +6,28 @@
 
 .bs-page {
   position: relative;
+  --bs-daylight-backdrop: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
+  /* Break out of the site's centered content column so every Bonheur beat
+     carries its backdrop cleanly to both viewport edges. */
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  overflow: clip;
+  background: var(--bs-daylight-backdrop);
+  background-attachment: fixed;
+  background-size: 100vw 100vh;
+}
+
+/* Keep body copy readable and prevent typographic orphans (a single word
+   stranded on the final line) across every Bonheur story frame. Colors,
+   positioning, and animation remain owned by each individual selector. */
+.bs-intro-tagline,
+.bs-spark-beat-body,
+.bs-ache-text,
+.bs-turn-caption,
+.bs-mockup-copy-item p,
+.bs-beat-inner > p:not(.bs-beat-number) {
+  text-wrap: pretty;
 }
 
 /* Several beats use position:fixed for full-viewport-width travel (see
@@ -162,16 +184,19 @@
 }
 
 .bs-motif[data-motif="caught"] .bs-spark {
-  transform: scale(1.3);
-  box-shadow: 0 0 0 2px rgba(244, 200, 105, 0.8), 0 0 24px 8px rgba(244, 200, 105, 0.55);
+  opacity: 0;
+  animation: none;
 }
 
 .bs-motif[data-motif="caught"] .bs-spark::after {
-  content: "";
-  position: absolute;
-  inset: -14px;
-  border: 1px dashed rgba(244, 200, 105, 0.7);
-  border-radius: 50%;
+  content: none;
+}
+
+.bs-motif[data-motif="jar-fill"] .bs-spark,
+.bs-motif[data-motif="cloud"] .bs-spark,
+.bs-motif[data-motif="none"] .bs-spark {
+  opacity: 0;
+  animation: none;
 }
 
 .bs-jar {
@@ -416,11 +441,12 @@
 
 .bs-spark-beat-title {
   margin: 0;
-  /* Same handwritten face as the "Bonheur" wordmark, but in black rather
-     than gold -- ties the two headings together typographically. */
-  font-family: "Caveat", var(--font-script);
-  font-weight: 700;
-  color: #000;
+  /* Geometric and clear with a subtle aerospace character; shared with
+     the Bonheur wordmark to keep the two moments connected. */
+  font-family: "Space Grotesk", var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  color: #35233f;
   font-size: clamp(2.5rem, 7vw, 4.5rem);
 }
 
@@ -457,14 +483,14 @@
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
-  max-width: 30rem;
+  max-width: 34rem;
   padding: 0 1.5rem;
   margin: 0;
   text-align: center;
-  font-family: "Literata", var(--font-serif);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #463452;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #3b2847;
   pointer-events: none;
   --bs-spark-beat-body-in: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.55) / 0.15), 1);
   --bs-spark-beat-exit: clamp(0, calc((var(--bs-spark-beat-progress, 0) - 0.85) / 0.15), 1);
@@ -560,11 +586,11 @@
   top: 50%;
   left: 50%;
   z-index: 1;
-  font-family: "Caveat", var(--font-script);
+  font-family: "Space Grotesk", var(--font-sans);
   font-style: normal;
   font-size: clamp(4rem, 14vw, 10rem);
-  font-weight: 700;
-  letter-spacing: 0;
+  font-weight: 500;
+  letter-spacing: -0.055em;
   line-height: 1;
   white-space: nowrap;
   pointer-events: none;
@@ -677,13 +703,13 @@
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
-  max-width: 32rem;
+  max-width: 34rem;
   padding: 0 1.5rem;
   margin: 0;
   text-align: center;
-  font-family: "Literata", var(--font-serif);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.7;
   color: #463452;
   pointer-events: none;
   --bs-tagline-in: clamp(0, calc((var(--bs-intro-progress, 0) - 0.30) / 0.10), 1);
@@ -701,7 +727,7 @@
   left: 50%;
   z-index: 1;
   transform: translate(-50%, -50%);
-  width: 112px;
+  width: 145.6px;
   height: auto;
   pointer-events: none;
   /* Fades in/out together with the tagline right above it -- same
@@ -920,7 +946,8 @@
   padding: 0 1.5rem;
   margin: 0;
   text-align: center;
-  font-size: 1.1rem;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
   line-height: 1.7;
   color: #f4c869;
   pointer-events: none;
@@ -1023,7 +1050,7 @@
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
+  background: var(--bs-daylight-backdrop);
   /* No exit fade here (unlike .bs-turn-jar/.bs-turn-caption below) --
      the beat right after this one (the mockup-display "Jar" beat) uses
      this exact same pastel gradient as its own background, so this
@@ -1120,10 +1147,10 @@
   width: 86%;
   height: 14px;
   border-radius: 7px;
-  /* Slides partway down toward the body's rim but deliberately stops
-     short of it -- a visible gap always remains between lid and jar,
-     even once "closed", rather than sealing flush. */
-  transform: translateX(-50%) translateY(calc(22px * var(--bs-turn-lid-close)));
+  /* Starts lifted clear of the incoming spark, then travels 44px during
+     closing to preserve the previous final position. A visible gap still
+     remains between lid and jar rather than sealing flush. */
+  transform: translateX(-50%) translateY(calc(-22px + 44px * var(--bs-turn-lid-close)));
   /* Solid mid-tone lavender-grey, not the earlier translucent near-white
      -- that read fine against the dark backdrop but nearly disappeared
      once the finale's daylight fade lightened the background underneath
@@ -1250,7 +1277,7 @@
   left: 50%;
   z-index: 5;
   transform: translateX(-50%);
-  max-width: 30rem;
+  max-width: 34rem;
   padding: 0 1.5rem;
   margin: 0;
   text-align: center;
@@ -1276,77 +1303,98 @@
    rotates every card through as it advances -- the CSS only needs to
    know how each slot looks, not which specific clip is in it. */
 .bs-mockup {
-  background: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
+  position: relative;
+  overflow: hidden;
+  background: transparent;
 }
 
 .bs-mockup-stage {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 4rem;
   width: 100%;
 }
 
 .bs-mockup-carousel,
-.bs-mockup-text {
+.bs-mockup-copy {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .bs-mockup.is-visible .bs-mockup-carousel,
-.bs-mockup.is-visible .bs-mockup-text {
+.bs-mockup.is-visible .bs-mockup-copy {
   opacity: 1;
   transform: translateY(0);
 }
 
-.bs-mockup-text {
+.bs-mockup-copy {
   transition-delay: 0.15s;
 }
 
 .bs-mockup-carousel {
   position: relative;
   width: 100%;
-  height: 420px;
+  height: 650px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.bs-mockup-carousel.is-dragging {
+  cursor: grabbing;
+}
+
+.bs-mockup-carousel.is-dragging .bs-mockup-card[data-slot="0"] {
+  transition: none;
 }
 
 .bs-mockup-card {
   position: absolute;
-  width: 150px;
-  height: 326px;
-  padding: 10px;
-  border-radius: 32px;
-  background: #1c1a22;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
-  overflow: hidden;
+  /* 50% larger than the previous 330px presentation. */
+  width: 495px;
+  height: 495px;
   /* transform/opacity/z-index below are all driven purely by data-slot --
      mockup-carousel.js only ever toggles that attribute, never touches
      style directly. */
   transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.7s ease;
 }
 
-.bs-mockup-card img {
-  position: relative;
-  width: 100%;
-  height: 100%;
+.bs-mockup-screen {
+  position: absolute;
+  top: 6.9%;
+  left: 30%;
+  z-index: 1;
+  width: 40%;
+  height: 86.2%;
   object-fit: cover;
-  border-radius: 24px;
+  border-radius: 22px;
   display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.bs-mockup-notch {
+.bs-mockup-frame {
   position: absolute;
-  top: 10px;
-  left: 50%;
-  width: 52px;
-  height: 14px;
-  border-radius: 0 0 10px 10px;
-  background: #1c1a22;
-  transform: translateX(-50%);
-  z-index: 1;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  /* White screen pixels become neutral while the black bezel/status
+     details remain visible over the mapped video. */
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 /* Five cards now (five clips) -- an even 2-per-side fan around the front
@@ -1354,31 +1402,31 @@
    center" slot. Slot 0 is always front/active; 1 and 4 are the near
    flanks; 2 and 3 are the far flanks, smallest and dimmest. */
 .bs-mockup-card[data-slot="0"] {
-  transform: translateX(0) scale(1.55);
+  transform: translateX(var(--bs-active-drag-x, 0px)) scale(1.55);
   opacity: 1;
   z-index: 5;
 }
 
 .bs-mockup-card[data-slot="1"] {
-  transform: translateX(150px) scale(1);
+  transform: translateX(300px) scale(1);
   opacity: 0.55;
   z-index: 2;
 }
 
 .bs-mockup-card[data-slot="4"] {
-  transform: translateX(-150px) scale(1);
+  transform: translateX(-300px) scale(1);
   opacity: 0.55;
   z-index: 2;
 }
 
 .bs-mockup-card[data-slot="2"] {
-  transform: translateX(230px) scale(0.7);
+  transform: translateX(500px) scale(0.7);
   opacity: 0.3;
   z-index: 1;
 }
 
 .bs-mockup-card[data-slot="3"] {
-  transform: translateX(-230px) scale(0.7);
+  transform: translateX(-500px) scale(0.7);
   opacity: 0.3;
   z-index: 1;
 }
@@ -1389,11 +1437,127 @@
   }
 }
 
-.bs-mockup-text {
-  max-width: 30rem;
+.bs-mockup-copy {
+  position: relative;
+  width: min(100%, 40rem);
+  min-height: 10rem;
+}
+
+.bs-mockup-copy-item {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.35s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+
+.bs-mockup-copy-item.is-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bs-mockup-copy-item h3 {
   margin: 0;
   text-align: center;
+  font-family: "Space Grotesk", var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: #35233f;
+}
+
+.bs-mockup-copy-item p {
+  max-width: 34rem;
+  margin: 0 auto;
+  text-align: center;
+  text-wrap: pretty;
   font-size: 1.05rem;
   line-height: 1.7;
   color: #463452;
+}
+
+.bs-mockup-copy-item p:first-of-type {
+  font-weight: 600;
+  color: #3b2847;
+}
+
+/* FINAL BONHEUR OUTRO — one quiet frame after the mockups. The text
+   arrives, holds, then fades before the normal document flow reaches
+   Project 02 above it. */
+.bs-outro {
+  position: relative;
+  height: 180vh;
+  display: block;
+  padding: 0;
+  background: transparent;
+}
+
+.bs-outro-stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  --bs-outro-in: clamp(0, calc(var(--bs-outro-progress, 0) / 0.22), 1);
+  --bs-outro-out: clamp(0, calc((var(--bs-outro-progress, 0) - 0.68) / 0.22), 1);
+  overflow: hidden;
+}
+
+.bs-outro-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 72%, rgba(240, 190, 222, 0.52) 0%, rgba(240, 190, 222, 0) 52%),
+    linear-gradient(225deg, rgba(255, 226, 160, 0.62) 0%, rgba(255, 217, 160, 0.28) 28%, transparent 62%);
+  opacity: calc(var(--bs-outro-in) * (1 - var(--bs-outro-out)));
+  transform: scale(calc(1.06 - var(--bs-outro-in) * 0.06));
+  pointer-events: none;
+}
+
+.bs-outro-text {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+  padding: 0 1.5rem;
+  margin: 0;
+  text-align: center;
+  text-wrap: balance;
+  font-family: "Space Grotesk", var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: #6f6279;
+  opacity: calc(var(--bs-outro-in) * (1 - var(--bs-outro-out)));
+  transform:
+    translateY(calc(22px * (1 - var(--bs-outro-in))))
+    scale(calc(0.96 + var(--bs-outro-in) * 0.04));
+}
+
+.bs-outro-text span {
+  display: inline-block;
+  animation: bs-outro-glimmer 4.6s ease-in-out infinite;
+}
+
+@keyframes bs-outro-glimmer {
+  0%, 14%, 22%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+    text-shadow: 0 0 0 rgba(244, 200, 105, 0);
+  }
+  16% {
+    opacity: 0.52;
+    filter: brightness(1.14);
+    text-shadow: 0 0 12px rgba(244, 200, 105, 0.18);
+  }
+  19% {
+    opacity: 0.78;
+    filter: brightness(0.94);
+    text-shadow: 0 0 4px rgba(244, 200, 105, 0.08);
+  }
 }

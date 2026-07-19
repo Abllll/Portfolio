@@ -37,6 +37,68 @@
   });
 })();
 
+// Prevent short typographic orphans in every Bonheur body-copy block.
+// CSS text-wrap:pretty improves the overall rag, but cannot guarantee a
+// minimum word count at every viewport width. Binding the final five words
+// keeps them together, so the last line always contains at least five.
+(function () {
+  "use strict";
+
+  var selectors = [
+    ".bs-intro-tagline",
+    ".bs-spark-beat-body",
+    ".bs-ache-text",
+    ".bs-turn-caption",
+    ".bs-mockup-copy-item p",
+    ".bs-beat-inner > p:not(.bs-beat-number)",
+  ].join(",");
+
+  Array.prototype.forEach.call(document.querySelectorAll(selectors), function (paragraph) {
+    var walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+    var textNode = null;
+    var candidate;
+    while ((candidate = walker.nextNode())) {
+      if (candidate.nodeValue.trim()) textNode = candidate;
+    }
+    if (!textNode) return;
+
+    var match = textNode.nodeValue.match(/(\S+(?:\s+\S+){4})(\s*)$/);
+    if (!match) return;
+    var start = match.index;
+    var boundEnding = match[1].replace(/\s+/g, "\u00a0");
+    textNode.nodeValue = textNode.nodeValue.slice(0, start) + boundEnding + match[2];
+  });
+})();
+
+// Drives the final Bonheur message: fade in, hold, then fade away before
+// Project 02 enters in normal document flow.
+(function () {
+  "use strict";
+
+  var outro = document.getElementById("bs-outro");
+  if (!outro) return;
+  var ticking = false;
+
+  function updateOutro() {
+    ticking = false;
+    var rect = outro.getBoundingClientRect();
+    var scrollable = rect.height - window.innerHeight;
+    var progress = scrollable > 0 ? (0 - rect.top) / scrollable : 1;
+    progress = Math.max(0, Math.min(1, progress));
+    document.documentElement.style.setProperty("--bs-outro-progress", progress.toFixed(4));
+  }
+
+  function requestOutroUpdate() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(updateOutro);
+  }
+
+  window.addEventListener("scroll", requestOutroUpdate, { passive: true });
+  window.addEventListener("resize", requestOutroUpdate);
+  updateOutro();
+})();
+
 // Carries the landing-scene human through Bonheur's bridge transition.
 // Pointer movement is deliberately small and eased, so she follows the
 // cursor while remaining planted on the illustrated bridge. Her upward

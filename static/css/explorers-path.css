@@ -10,6 +10,16 @@
    fight over the same property on the same node.
    ========================================================================== */
 
+/* The illustrated landing screen is an intentional entry gate. Until the
+   user chooses Start, lock the entire document—not just wheel events—so
+   scrollbar dragging, keyboard scrolling, touch, and trackpad overscroll
+   cannot bypass the opening frame. explorers-path.js removes this class. */
+html.ep-start-locked,
+html.ep-start-locked body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 /* .ep-spacer (normal flow, full canvas height via aspect-ratio) is what
    actually reserves the scroll distance; .ep-viewport (inside it) is a
    sticky 100vh crop window pinned for that whole distance -- same

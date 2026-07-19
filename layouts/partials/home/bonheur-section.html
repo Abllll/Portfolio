@@ -4,8 +4,8 @@
      is now read bottom-up (see docs/superpowers/specs/
      2026-07-16-explorers-path-reversed-landing-design.md), and Bonheur
      sits between #intro (below it) and project-2 (above it), so
-     scrolling up must reach bs-intro first and "keeping" (the story's
-     actual end) last. `index .Site.Data.bonheur_story.beats 0` below
+     scrolling up must reach bs-intro first and the mockup display (the
+     story's current end) last. `index .Site.Data.bonheur_story.beats 0` below
      deliberately still reads the *unreversed* first entry (spark,
      motif: drifting) -- that's .bs-motif's correct default the instant
      bs-intro finishes, regardless of render order. */}}
@@ -45,15 +45,47 @@
         <div class="bs-mockup-carousel" data-durations="8100,13550,16820,8750,9700" data-pause="3500" aria-hidden="true">
           {{ range $i, $gif := slice "mockup-2.gif" "mockup-3.gif" "mockup-3.5.gif" "mockup-4.gif" "mockup-5.gif" }}
           <div class="bs-mockup-card" data-index="{{ $i }}">
-            <div class="bs-mockup-notch"></div>
-            <img src="{{ printf "images/bonheur-mockup/%s" $gif | relURL }}" alt="" loading="lazy">
+            <img class="bs-mockup-screen" src="{{ printf "images/bonheur-mockup/%s" $gif | relURL }}" alt="" loading="lazy" draggable="false">
+            <img class="bs-mockup-frame" src="{{ "images/bonheur-mockup/iphone-frame-transparent.png" | relURL }}" alt="" loading="lazy" draggable="false">
           </div>
           {{ end }}
         </div>
-        <p class="bs-mockup-text">{{ .body }}</p>
+        <div class="bs-mockup-copy" aria-live="polite">
+          <div class="bs-mockup-copy-item" data-copy-index="0">
+            <h3>Explore Your Jars</h3>
+            <p>Organise memories around the moments that matter.</p>
+            <p>Browse your collection of Memory Jars, each representing a different chapter of your life, and preview the sparks you’ve gathered over time.</p>
+          </div>
+          <div class="bs-mockup-copy-item" data-copy-index="1">
+            <h3>Capture a Spark</h3>
+            <p>Turn everyday moments into meaningful memories.</p>
+            <p>Capture a photo, describe what sparked you, and let Bonheur quietly uncover the meaning behind the moment before placing it into your Memory Jar.</p>
+          </div>
+          <div class="bs-mockup-copy-item" data-copy-index="2">
+            <h3>Rediscover a Memory</h3>
+            <p>Revisit the stories behind every spark.</p>
+            <p>Step inside a Memory Jar and explore your moments through a circular carousel. Flip each card to reveal the memory and the spark it represents.</p>
+          </div>
+          <div class="bs-mockup-copy-item" data-copy-index="3">
+            <h3>Year in Review</h3>
+            <p>Reveal the patterns behind your happiness.</p>
+            <p>Bonheur brings similar sparks together, revealing the themes that naturally emerge throughout your year. Rotate the visualization to explore the moments that shaped your happiness.</p>
+          </div>
+          <div class="bs-mockup-copy-item" data-copy-index="4">
+            <h3>Spark Constellation</h3>
+            <p>See the bigger picture through your memories.</p>
+            <p>Switch to a constellation view where every spark becomes part of a living map. Zoom in from the bigger picture to rediscover the photos behind each moment.</p>
+          </div>
+        </div>
       </div>
     </section>
     <script src="{{ "js/mockup-carousel.js" | relURL }}" defer></script>
+    {{ else if eq .id "outro" }}
+    <section class="bs-beat bs-outro" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-outro">
+      <div class="bs-outro-stage">
+        <p class="bs-outro-text"><span>{{ .title }}</span></p>
+      </div>
+    </section>
     {{ else if eq .id "turn" }}
     <section class="bs-beat bs-turn" data-beat-id="{{ .id }}" data-motif="{{ .motif }}" id="bs-turn">
       <div class="bs-turn-stage">
@@ -124,9 +156,6 @@
         </div>
         <span class="bs-intro-word bs-intro-word--bon" aria-hidden="true">Bon</span>
         <span class="bs-intro-word bs-intro-word--heur" aria-hidden="true">heur</span>
-        <svg class="bs-intro-signature" viewBox="0 0 300 20" aria-hidden="true">
-          <path d="M6,14 C 60,2 100,20 150,10 C 200,0 240,18 294,8"></path>
-        </svg>
         <p class="bs-intro-tagline">A personal memory companion that helps people cultivate happiness by collecting meaningful everyday moments.</p>
         <img class="bs-intro-logo" src="{{ "images/bonheur-story/logo.png" | relURL }}" alt="" aria-hidden="true">
       </div>
