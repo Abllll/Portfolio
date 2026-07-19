@@ -42,8 +42,8 @@
         {{/* Each clip's real duration in ms (measured from the source
              recordings) drives how long it stays the front/active card
              before the carousel advances -- see mockup-carousel.js. */}}
-        <div class="bs-mockup-carousel" data-durations="8100,13550,8750,9700" data-pause="3500" aria-hidden="true">
-          {{ range $i, $gif := slice "mockup-2.gif" "mockup-3.gif" "mockup-4.gif" "mockup-5.gif" }}
+        <div class="bs-mockup-carousel" data-durations="8100,13550,16820,8750,9700" data-pause="3500" aria-hidden="true">
+          {{ range $i, $gif := slice "mockup-2.gif" "mockup-3.gif" "mockup-3.5.gif" "mockup-4.gif" "mockup-5.gif" }}
           <div class="bs-mockup-card" data-index="{{ $i }}">
             <div class="bs-mockup-notch"></div>
             <img src="{{ printf "images/bonheur-mockup/%s" $gif | relURL }}" alt="" loading="lazy">
@@ -106,6 +106,15 @@
         <div class="bs-intro-mist bs-intro-mist--pink" aria-hidden="true"></div>
         <div class="bs-intro-mist bs-intro-mist--purple" aria-hidden="true"></div>
         <div class="bs-intro-mist bs-intro-mist--teal" aria-hidden="true"></div>
+        {{/* Continuation of Explorer's Path's own bridge/path and girl,
+             carried into the very start of the intro so the two scenes
+             read as connected rather than a hard cut -- fades away early
+             (see --bs-bridge-out in bonheur-story.css) as the Bon/heur
+             reveal itself takes over. */}}
+        <div class="bs-intro-bridge" aria-hidden="true">
+          <img src="{{ "images/bonheur-story/intro-bridge.webp" | relURL }}" alt="">
+          <img class="bs-intro-bridge-girl" src="{{ "images/bonheur-story/intro-girl.webp" | relURL }}" alt="">
+        </div>
         <div class="bs-scroll-cue" aria-hidden="true">
           <span class="bs-scroll-cue-label">Scroll up</span>
           <span class="bs-scroll-cue-icon"></span>

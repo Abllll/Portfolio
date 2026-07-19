@@ -22,6 +22,7 @@
 .bs-intro-sky,
 .bs-intro-sunshine,
 .bs-intro-mist,
+.bs-intro-bridge,
 .bs-intro-word,
 .bs-intro-signature,
 .bs-spark-beat-heading,
@@ -50,6 +51,7 @@
 #bs-intro.bs-intro--active .bs-intro-sky,
 #bs-intro.bs-intro--active .bs-intro-sunshine,
 #bs-intro.bs-intro--active .bs-intro-mist,
+#bs-intro.bs-intro--active .bs-intro-bridge,
 #bs-intro.bs-intro--active .bs-intro-word,
 #bs-intro.bs-intro--active .bs-intro-signature,
 #bs-spark-beat.bs-spark-beat--active .bs-spark-beat-heading,
@@ -307,7 +309,8 @@
   .bs-scroll-cue,
   .bs-intro-sky,
   .bs-intro-sunshine,
-  .bs-intro-mist {
+  .bs-intro-mist,
+  .bs-intro-bridge {
     display: none !important;
   }
 
@@ -759,6 +762,40 @@
 .bs-intro-mist--purple { top: 34%; left: 62%; background: #C3A6EE; }
 .bs-intro-mist--teal { top: 68%; left: 30%; background: #C2E0E8; }
 
+/* The bridge/path + girl carried over from Explorer's Path, fading away
+   early in the intro's own scroll (well before the Bon/heur word reveal
+   builds up) rather than sticking around for the whole beat -- "duplicate
+   the bridge, let it fade into the background as a connection, and have
+   her fade together with it" per the source request. Both images share
+   the exact same source canvas (1242x1660), so the girl needs no manual
+   position offset -- she already sits correctly relative to the bridge
+   just by filling the same box. */
+.bs-intro-bridge {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  z-index: 0;
+  width: 46vw;
+  max-width: 420px;
+  transform: translateX(-50%);
+  --bs-bridge-out: clamp(0, calc(var(--bs-intro-progress, 0) / 0.22), 1);
+  opacity: calc(1 - var(--bs-bridge-out));
+  pointer-events: none;
+}
+
+.bs-intro-bridge img {
+  display: block;
+  width: 100%;
+}
+
+.bs-intro-bridge-girl {
+  position: absolute;
+  inset: 0;
+  /* "Walk up into this page" -- a gentle upward drift as she fades,
+     rather than just sitting still while disappearing. */
+  transform: translateY(calc(var(--bs-bridge-out) * -70px));
+}
+
 /* ACHE BEAT — the Sparks beat's scattered dots (now persisting into this
    beat, see .bs-spark-beat-dot) stay lit while darkness casts directly
    over the screen and them, then the negativity-bias text. Driven by
@@ -1205,17 +1242,16 @@
 }
 
 /* MOCKUP DISPLAY BEAT ("The Jar") — a static (not scroll-scrubbed) beat: a
-   horizontal carousel of four real screen-recording GIFs (converted from
+   horizontal carousel of five real screen-recording GIFs (converted from
    the source videos, see docs/superpowers/specs -- mockup-carousel.js
    drives which one is active), with body copy underneath, on the exact
    same pastel backdrop Turn's finale ends on -- picking up visually right
    where Turn left off rather than cutting to a different background.
 
-   Each card sits in one of four "slots" (0 = front/active, 1 and 3 =
-   flanking, 2 = directly behind, mostly hidden) via a data-slot attribute
-   mockup-carousel.js rotates every card through as it advances -- the
-   CSS only needs to know how each slot looks, not which specific clip is
-   in it. */
+   Each card sits in one of five "slots" (0 = front/active, 1/4 = near
+   flanks, 2/3 = far flanks) via a data-slot attribute mockup-carousel.js
+   rotates every card through as it advances -- the CSS only needs to
+   know how each slot looks, not which specific clip is in it. */
 .bs-mockup {
   background: radial-gradient(circle at 50% 20%, #F8EFFB 0%, #EFE7FA 55%, #F6E2EE 100%);
 }
@@ -1290,30 +1326,36 @@
   z-index: 1;
 }
 
-/* Slot 0: front and center, fully lit, playing. */
+/* Five cards now (five clips) -- an even 2-per-side fan around the front
+   card rather than the old odd 4-card layout's single "directly behind
+   center" slot. Slot 0 is always front/active; 1 and 4 are the near
+   flanks; 2 and 3 are the far flanks, smallest and dimmest. */
 .bs-mockup-card[data-slot="0"] {
   transform: translateX(0) scale(1.55);
   opacity: 1;
   z-index: 5;
 }
 
-/* Slots 1/3: flanking, smaller, receding to either side. */
 .bs-mockup-card[data-slot="1"] {
   transform: translateX(150px) scale(1);
   opacity: 0.55;
   z-index: 2;
 }
 
-.bs-mockup-card[data-slot="3"] {
+.bs-mockup-card[data-slot="4"] {
   transform: translateX(-150px) scale(1);
   opacity: 0.55;
   z-index: 2;
 }
 
-/* Slot 2: directly behind the front card, smallest, mostly hidden --
-   reads as "further from the screen" per the requested motion. */
 .bs-mockup-card[data-slot="2"] {
-  transform: translateX(0) scale(0.8);
+  transform: translateX(230px) scale(0.7);
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.bs-mockup-card[data-slot="3"] {
+  transform: translateX(-230px) scale(0.7);
   opacity: 0.3;
   z-index: 1;
 }
