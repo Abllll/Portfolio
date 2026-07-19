@@ -1,0 +1,34 @@
+<section id="{{ .id }}" class="tide-project" aria-labelledby="tide-title">
+  {{/* The homepage reads upward, so these are intentionally written in
+       reverse DOM order: the visitor reaches 02 first, then 03. */}}
+  <figure class="tide-motion-frame tide-motion-frame--03 reveal-group">
+    <img class="tide-motion-frame__image reveal-item reveal-item--1" src="{{ "images/tide/tide-03.gif" | relURL }}" alt="Tide earpiece file-sync experience in motion">
+  </figure>
+
+  <figure class="tide-motion-frame tide-motion-frame--02 reveal-group">
+    <img class="tide-motion-frame__image reveal-item reveal-item--1" src="{{ "images/tide/tide-02.gif" | relURL }}" alt="Tide video-to-audio conversion interface in motion">
+  </figure>
+
+  <div class="tide-landing">
+    <div class="tide-landing__media" aria-hidden="true">
+      <img
+        class="tide-landing__video"
+        src="{{ "images/tide/tide-01.gif" | relURL }}"
+        alt=""
+      >
+    </div>
+
+    <div class="tide-landing__content reveal-group">
+      <h2 class="tide-landing__title reveal-item reveal-item--1" id="tide-title">Tide</h2>
+      <div class="tide-landing__concept reveal-item reveal-item--2">
+        <p>Tide is a desktop app designed for swimmers who want to take the videos on their Watch Later list into the water as audio.</p>
+        <p>Paste a video link to convert it into swim-ready audio and save it locally. When a compatible earpiece is connected, Tide seamlessly transitions into a dedicated sync experience, using flowing water, subtle motion, and intuitive folder interactions to make the transfer feel tangible and intuitive.</p>
+        <p>Designed as a cinematic product concept, Tide combines a clean, editorial interface with responsive water-based transitions, transforming a practical file management workflow into a calm, immersive pre-swim ritual.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tide-project-transition" aria-hidden="true">
+    <div class="tide-project-transition__water"></div>
+  </div>
+</section>

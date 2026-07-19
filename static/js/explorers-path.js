@@ -39,6 +39,18 @@
   var previousBodyPosition = "";
   var previousBodyTop = "";
   var previousBodyWidth = "";
+  var restoringLandingScroll = false;
+
+  function restoreLandingScroll() {
+    if (started || restoringLandingScroll) return;
+    if (window.scrollY === lockedScrollY) return;
+    restoringLandingScroll = true;
+    var previousBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, lockedScrollY);
+    document.documentElement.style.scrollBehavior = previousBehavior;
+    restoringLandingScroll = false;
+  }
 
   function lockLandingScroll() {
     lockedScrollY = window.scrollY;
@@ -68,6 +80,9 @@
 
   if (startScreen) {
     lockLandingScroll();
+    // Covers scrollbar dragging, browser scroll restoration, accessibility
+    // scrolling, and any site script that attempts to move the window.
+    window.addEventListener("scroll", restoreLandingScroll, { passive: true });
   }
 
   if (startButton) {

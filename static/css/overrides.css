@@ -109,3 +109,8 @@ h1, h2, h3,
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }
+/* Give the primary navigation slightly more presence without changing the
+   compact floating-bar proportions. */
+.nav-link {
+  font-size: 0.88rem;
+}

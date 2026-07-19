@@ -46,6 +46,155 @@ html {
   margin: 0;
 }
 
+/* Project 02 — Tide ------------------------------------------------------- */
+.tide-project {
+  --tide-ink: #163b4d;
+  --tide-muted: #607783;
+  position: relative;
+  background: #fbfcfc;
+}
+
+.tide-landing {
+  position: relative;
+  display: block;
+  min-height: 120vh;
+  padding: 0;
+  overflow: hidden;
+  background: #fbfcfc;
+  color: var(--tide-ink);
+}
+
+.tide-landing__media {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(67vw, 76vh);
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, rgba(0, 0, 0, 0.72) 79%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 68%, rgba(0, 0, 0, 0.72) 79%, transparent 100%);
+}
+
+.tide-landing__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: saturate(0.86) contrast(0.96) brightness(1.04);
+}
+
+.tide-landing__content {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: clamp(58vh, 61vw, 68vh) 0 clamp(9rem, 16vh, 13rem);
+}
+
+.tide-landing__title {
+  margin: 0;
+  font-family: "Space Grotesk", var(--font-sans);
+  font-size: clamp(4.5rem, 10vw, 9rem);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.065em;
+  color: var(--tide-ink);
+}
+
+.tide-landing__concept {
+  display: grid;
+  gap: 1.35rem;
+  width: min(880px, 100%);
+  margin: clamp(2.25rem, 4vw, 3.75rem) 0 0;
+  font-family: "Space Grotesk", var(--font-sans);
+  font-size: clamp(0.98rem, 1.18vw, 1.1rem);
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: -0.012em;
+  color: var(--tide-muted);
+  text-wrap: pretty;
+}
+
+.tide-landing__concept p {
+  margin: 0;
+}
+
+.tide-landing__concept p:first-child {
+  width: min(720px, 100%);
+  margin-bottom: 0.35rem;
+  font-size: clamp(1.22rem, 1.65vw, 1.55rem);
+  line-height: 1.52;
+  letter-spacing: -0.025em;
+  color: var(--tide-ink);
+}
+
+.tide-motion-frame {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(2rem, 5vw, 5rem) 1.5rem;
+  background: #f4f8f9;
+}
+
+.tide-motion-frame--03 {
+  background: linear-gradient(180deg, #e9f2f4 0%, #f4f8f9 100%);
+}
+
+.tide-motion-frame--02 {
+  background: linear-gradient(180deg, #f4f8f9 0%, #fbfcfc 100%);
+}
+
+.tide-motion-frame__image {
+  display: block;
+  width: min(1320px, 100%);
+  height: auto;
+}
+
+.tide-project-transition {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 74% 84%, rgba(251, 217, 148, 0.52), transparent 31%),
+    radial-gradient(circle at 20% 77%, rgba(225, 194, 235, 0.58), transparent 37%),
+    linear-gradient(to bottom, #fbfcfc 0%, #f6f7f7 35%, #f4ecf6 72%, #fbf0e1 100%);
+}
+
+.tide-project-transition__water {
+  position: absolute;
+  inset: -15%;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(139, 205, 219, 0.22), transparent 43%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.72), transparent 58%);
+  filter: blur(24px);
+}
+
+@media (max-width: 720px) {
+  .tide-landing {
+    min-height: 100vh;
+  }
+
+  .tide-landing__media {
+    height: 52vh;
+  }
+
+  .tide-landing__content {
+    width: min(100% - 2rem, 34rem);
+    padding: 45vh 0 7rem;
+  }
+
+  .tide-landing__concept {
+    margin-top: 2rem;
+  }
+
+  .tide-motion-frame {
+    padding-inline: 0.75rem;
+  }
+}
+
 .reveal-item {
   opacity: 0;
   transform: translateY(12px);

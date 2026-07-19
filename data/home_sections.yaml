@@ -3,8 +3,8 @@
   label: "Project 3"
   number: 3
 - id: project-2
-  kind: placeholder
-  label: "Project 2"
+  kind: tide
+  label: "Tide"
   number: 2
 - id: bonheur
   kind: bonheur

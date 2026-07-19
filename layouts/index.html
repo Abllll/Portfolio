@@ -18,6 +18,8 @@
   {{ range .Site.Data.home_sections }}
     {{ if eq .kind "bonheur" }}
       {{ partial "home/bonheur-section.html" $ }}
+    {{ else if eq .kind "tide" }}
+      {{ partial "home/tide-section.html" . }}
     {{ else if eq .kind "placeholder" }}
       {{ partial "home/project-placeholder.html" . }}
     {{ end }}
@@ -67,6 +69,11 @@
       }
 
       scrollToIllustration();
+      // Lock before the page is revealed. The deferred interaction script
+      // reinforces this with a fixed-body lock, but adding the class here
+      // closes the brief gap in which a wheel/trackpad gesture could move
+      // the document before that script has executed.
+      document.documentElement.classList.add("ep-start-locked");
       // Reveal only now, after the page is already positioned at the
       // illustration -- not before, which is the entire point (see
       // head.html's comment on ep-landing-pending).
@@ -87,7 +94,12 @@
       window.addEventListener("touchstart", markInteracted, { passive: true, once: true });
       window.addEventListener("keydown", markInteracted, { once: true });
       window.addEventListener("load", function () {
-        if (!userInteracted) scrollToIllustration();
+        // Once the Start gate owns the viewport, its fixed-body lock keeps
+        // the opening frame stable. Repositioning here would bypass that
+        // lock when late-loading images finish.
+        if (!userInteracted && !document.documentElement.classList.contains("ep-start-locked")) {
+          scrollToIllustration();
+        }
       });
     })();
   </script>
