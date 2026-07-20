@@ -112,5 +112,5 @@ h1, h2, h3,
 /* Give the primary navigation slightly more presence without changing the
    compact floating-bar proportions. */
 .nav-link {
-  font-size: 0.88rem;
+  font-size: 0.96rem;
 }

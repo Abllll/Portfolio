@@ -1,34 +1,79 @@
-<section id="{{ .id }}" class="tide-project" aria-labelledby="tide-title">
-  {{/* The homepage reads upward, so these are intentionally written in
-       reverse DOM order: the visitor reaches 02 first, then 03. */}}
-  <figure class="tide-motion-frame tide-motion-frame--03 reveal-group">
-    <img class="tide-motion-frame__image reveal-item reveal-item--1" src="{{ "images/tide/tide-03.gif" | relURL }}" alt="Tide earpiece file-sync experience in motion">
+<section id="{{ .id }}" class="tide-project" aria-label="Tide">
+  {{/* This homepage is read upward. The scenes are therefore intentionally
+       in reverse DOM order so Project 2 plays as 01 → 06 while scrolling. */}}
+  <figure class="tide-motion-frame tide-motion-frame--future reveal-group">
+    <figcaption class="tide-scene-copy reveal-item reveal-item--1">
+      <span class="tide-scene-copy__step">06 · Future direction</span>
+      <span class="tide-scene-copy__tag">AI narration · concept</span>
+      <h3>From article to audio.</h3>
+      <p>A future Tide flow could turn a readable article into a narrated listen and add it to the same offline library.</p>
+    </figcaption>
+    <img class="tide-motion-frame__media reveal-item reveal-item--2" src="{{ "images/tide/tide-06-future.gif" | relURL }}" alt="Tide future exploration: an article is prepared as narration and added to the library">
   </figure>
 
-  <figure class="tide-motion-frame tide-motion-frame--02 reveal-group">
-    <img class="tide-motion-frame__image reveal-item reveal-item--1" src="{{ "images/tide/tide-02.gif" | relURL }}" alt="Tide video-to-audio conversion interface in motion">
+  <figure class="tide-motion-frame tide-motion-frame--sync reveal-group">
+    <figcaption class="tide-scene-copy reveal-item reveal-item--1">
+      <span class="tide-scene-copy__step">05 · Sync to device</span>
+      <h3>Take the library underwater.</h3>
+      <p>Selected audio moves from desktop to a connected waterproof device.</p>
+    </figcaption>
+    <img class="tide-motion-frame__media reveal-item reveal-item--2" src="{{ "images/tide/tide-05-sync.gif" | relURL }}" alt="Tide sync animation: media moves from the offline library to a connected waterproof device">
   </figure>
 
+  <figure class="tide-motion-frame tide-motion-frame--pair reveal-group">
+    <figcaption class="tide-scene-copy reveal-item reveal-item--1">
+      <span class="tide-scene-copy__step">04 · Pair a device</span>
+      <h3>Find the gear, then go.</h3>
+      <p>A calm connection flow makes device status clear before the swim.</p>
+    </figcaption>
+    <img class="tide-motion-frame__media reveal-item reveal-item--2" src="{{ "images/tide/tide-04-pair.gif" | relURL }}" alt="Tide pairing flow: a compatible sports earpiece is found and connected">
+  </figure>
+
+  <figure class="tide-motion-frame tide-motion-frame--library reveal-group">
+    <figcaption class="tide-scene-copy reveal-item reveal-item--1">
+      <span class="tide-scene-copy__step">03 · Shape the library</span>
+      <h3>Keep the next swim in view.</h3>
+      <p>Search, filter, reorder, and save a set before it reaches the device.</p>
+    </figcaption>
+    <img class="tide-motion-frame__media reveal-item reveal-item--2" src="{{ "images/tide/tide-03-library.gif" | relURL }}" alt="Tide library flow: media is searched, filtered, reordered, and saved as a collection">
+  </figure>
+
+  <figure class="tide-motion-frame tide-motion-frame--import reveal-group">
+    <figcaption class="tide-scene-copy reveal-item reveal-item--1">
+      <span class="tide-scene-copy__step">02 · Pull it in</span>
+      <h3>Start with what matters now.</h3>
+      <p>Add supported media and Tide prepares it for the offline library.</p>
+    </figcaption>
+    <img class="tide-motion-frame__media reveal-item reveal-item--2" src="{{ "images/tide/tide-02-import.gif" | relURL }}" alt="Tide import flow: a supported media link is prepared and added to the offline library">
+  </figure>
   <div class="tide-landing">
     <div class="tide-landing__media" aria-hidden="true">
-      <img
-        class="tide-landing__video"
-        src="{{ "images/tide/tide-01.gif" | relURL }}"
-        alt=""
+      <video
+        class="tide-landing__video tide-deferred-video"
+        muted
+        loop
+        playsinline
+        preload="none"
+        aria-hidden="true"
       >
+        <source data-src="{{ "images/tide/tide-01-launch.mp4" | relURL }}" type="video/mp4">
+      </video>
     </div>
 
     <div class="tide-landing__content reveal-group">
-      <h2 class="tide-landing__title reveal-item reveal-item--1" id="tide-title">Tide</h2>
+      <p class="tide-landing__eyebrow reveal-item reveal-item--1">Tide · Desktop workflow concept</p>
       <div class="tide-landing__concept reveal-item reveal-item--2">
-        <p>Tide is a desktop app designed for swimmers who want to take the videos on their Watch Later list into the water as audio.</p>
-        <p>Paste a video link to convert it into swim-ready audio and save it locally. When a compatible earpiece is connected, Tide seamlessly transitions into a dedicated sync experience, using flowing water, subtle motion, and intuitive folder interactions to make the transfer feel tangible and intuitive.</p>
-        <p>Designed as a cinematic product concept, Tide combines a clean, editorial interface with responsive water-based transitions, transforming a practical file management workflow into a calm, immersive pre-swim ritual.</p>
+        <div class="tide-landing__heading">
+          <h2 id="tide-title">Prepare media to take underwater.</h2>
+          <p class="tide-landing__flow"><span>Import</span><span>Organise</span><span>Sync</span><span>Swim</span></p>
+        </div>
+        <div class="tide-landing__body">
+          <p>Tide is a desktop companion for swimmers: pull in media, shape an offline library, then sync a compatible waterproof device before leaving for the pool.</p>
+          <p>Water becomes a quiet progress signal, carrying the experience from preparation to ready-to-swim.</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="tide-project-transition" aria-hidden="true">
-    <div class="tide-project-transition__water"></div>
-  </div>
+  <script src="{{ "js/tide-project.js" | relURL }}" defer></script>
 </section>

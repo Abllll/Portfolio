@@ -52,7 +52,7 @@
    reveal on hover/focus so the nav doesn't compete with page content. */
 .dot-nav__label {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   letter-spacing: 0.04em;
   white-space: nowrap;
   color: var(--color-text-muted);

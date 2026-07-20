@@ -1304,6 +1304,10 @@
    know how each slot looks, not which specific clip is in it. */
 .bs-mockup {
   position: relative;
+  box-sizing: border-box;
+  height: 100vh;
+  min-height: 100vh;
+  padding: clamp(0.75rem, 2vh, 1.5rem) 1.5rem;
   overflow: hidden;
   background: transparent;
 }
@@ -1314,7 +1318,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4rem;
+  justify-content: center;
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+  height: 100%;
   width: 100%;
 }
 
@@ -1338,7 +1344,7 @@
 .bs-mockup-carousel {
   position: relative;
   width: 100%;
-  height: 650px;
+  height: clamp(320px, 45vh, 410px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1357,9 +1363,8 @@
 
 .bs-mockup-card {
   position: absolute;
-  /* 50% larger than the previous 330px presentation. */
-  width: 495px;
-  height: 495px;
+  width: clamp(280px, 36vh, 350px);
+  height: clamp(280px, 36vh, 350px);
   /* transform/opacity/z-index below are all driven purely by data-slot --
      mockup-carousel.js only ever toggles that attribute, never touches
      style directly. */
@@ -1402,33 +1407,53 @@
    center" slot. Slot 0 is always front/active; 1 and 4 are the near
    flanks; 2 and 3 are the far flanks, smallest and dimmest. */
 .bs-mockup-card[data-slot="0"] {
-  transform: translateX(var(--bs-active-drag-x, 0px)) scale(1.55);
+  transform: translateX(var(--bs-active-drag-x, 0px)) scale(1.1);
   opacity: 1;
   z-index: 5;
 }
 
 .bs-mockup-card[data-slot="1"] {
-  transform: translateX(300px) scale(1);
+  transform: translateX(215px) scale(0.82);
   opacity: 0.55;
   z-index: 2;
 }
 
 .bs-mockup-card[data-slot="4"] {
-  transform: translateX(-300px) scale(1);
+  transform: translateX(-215px) scale(0.82);
   opacity: 0.55;
   z-index: 2;
 }
 
 .bs-mockup-card[data-slot="2"] {
-  transform: translateX(500px) scale(0.7);
+  transform: translateX(350px) scale(0.56);
   opacity: 0.3;
   z-index: 1;
 }
 
 .bs-mockup-card[data-slot="3"] {
-  transform: translateX(-500px) scale(0.7);
+  transform: translateX(-350px) scale(0.56);
   opacity: 0.3;
   z-index: 1;
+}
+
+@media (max-width: 720px) {
+  .bs-mockup-carousel {
+    height: min(42vh, 350px);
+  }
+
+  .bs-mockup-card {
+    width: min(76vw, 32vh);
+    height: min(76vw, 32vh);
+  }
+
+  .bs-mockup-card[data-slot="0"] {
+    transform: translateX(var(--bs-active-drag-x, 0px)) scale(1.08);
+  }
+
+  .bs-mockup-card[data-slot="1"] { transform: translateX(180px) scale(0.78); }
+  .bs-mockup-card[data-slot="4"] { transform: translateX(-180px) scale(0.78); }
+  .bs-mockup-card[data-slot="2"] { transform: translateX(285px) scale(0.52); }
+  .bs-mockup-card[data-slot="3"] { transform: translateX(-285px) scale(0.52); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -28,6 +28,71 @@
     });
   }
 
+  // Tide is a scrolling water deck: the nearest scene crests in front,
+  // the next scene approaches from above, and completed scenes recede.
+  var tideFrames = Array.prototype.slice.call(document.querySelectorAll(".tide-motion-frame"));
+  if (tideFrames.length) {
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      tideFrames.forEach(function (frame) {
+        frame.classList.add("is-active");
+      });
+    } else {
+      var tideTicking = false;
+
+      function updateTideFrames() {
+        tideTicking = false;
+        var crest = window.innerHeight * 0.52;
+        var activeIndex = 0;
+        var nearestDistance = Infinity;
+
+        tideFrames.forEach(function (frame, index) {
+          var rect = frame.getBoundingClientRect();
+          var distance = Math.abs(rect.top + rect.height * 0.5 - crest);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            activeIndex = index;
+          }
+        });
+
+        tideFrames.forEach(function (frame, index) {
+          var rect = frame.getBoundingClientRect();
+          var proximity = Math.max(0, 1 - Math.abs(rect.top + rect.height * 0.5 - crest) / (window.innerHeight * 0.9));
+          frame.style.setProperty("--tide-swell", proximity.toFixed(3));
+          frame.style.setProperty("--tide-backdrop-y", ((1 - proximity) * 6).toFixed(2) + "vh");
+          frame.style.setProperty("--tide-backdrop-scale", (0.94 + proximity * 0.08).toFixed(3));
+          frame.style.setProperty("--tide-swell-y", ((1 - proximity) * 18).toFixed(2) + "%");
+          frame.style.setProperty("--tide-swell-scale", (0.8 + proximity * 0.35).toFixed(3));
+          frame.style.setProperty("--tide-swell-opacity", (0.18 + proximity * 0.55).toFixed(3));
+          frame.classList.toggle("is-active", index === activeIndex);
+          frame.classList.toggle("is-upcoming", index < activeIndex);
+          frame.classList.toggle("is-past", index > activeIndex);
+        });
+      }
+
+      window.addEventListener("scroll", function () {
+        if (tideTicking) return;
+        tideTicking = true;
+        window.requestAnimationFrame(updateTideFrames);
+      }, { passive: true });
+      window.addEventListener("resize", updateTideFrames);
+      updateTideFrames();
+
+      tideFrames.forEach(function (frame) {
+        frame.addEventListener("pointermove", function (event) {
+          var rect = frame.getBoundingClientRect();
+          var x = (event.clientX - rect.left) / rect.width - 0.5;
+          var y = (event.clientY - rect.top) / rect.height - 0.5;
+          frame.style.setProperty("--tide-pointer-x", (x * 9).toFixed(2) + "px");
+          frame.style.setProperty("--tide-pointer-y", (y * 7).toFixed(2) + "px");
+        });
+        frame.addEventListener("pointerleave", function () {
+          frame.style.setProperty("--tide-pointer-x", "0px");
+          frame.style.setProperty("--tide-pointer-y", "0px");
+        });
+      });
+    }
+  }
+
   if (dots.length) {
     var sectionEls = dots
       .map(function (dot) {
