@@ -17,3 +17,6 @@
 Thumbs.db
 .superpowers/
 .worktrees/
+
+# Local-only scratch space for sensitive files/notes -- never committed
+/private/
