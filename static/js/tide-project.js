@@ -32,7 +32,14 @@
     if (!tideLanding) return;
     var rect = tideLanding.getBoundingClientRect();
     var progress = Math.max(0, Math.min(1, rect.bottom / window.innerHeight));
-    tideLanding.style.setProperty("--tide-arrival", progress.toFixed(4));
+    // Set on the root, not tideLanding itself -- the motion deck (a
+    // sibling, not a descendant) needs to read this too, to fade itself
+    // out as the landing fades in. A sticky-positioned deck frame has no
+    // natural exit fade of its own (see .tide-motion-deck__stage's own
+    // comment), so without this the last frame was still fully opaque
+    // when the landing's video/text faded in underneath it -- both
+    // visible at once, reading as overlapping/ghosted content.
+    document.documentElement.style.setProperty("--tide-arrival", progress.toFixed(4));
   }
 
   function updateTidalDeck() {
@@ -61,18 +68,24 @@
 
       if (delta < -0.45) {
         var stackDepth = Math.min(4, position - index);
-        transform = "translate3d(0," + (66 + stackDepth * 2.2) + "vh," + (-180 - stackDepth * 34) + "px) rotateX(-10deg) scale(" + (0.82 - stackDepth * 0.025) + ")";
-        opacity = Math.max(0.18, 0.58 - stackDepth * 0.1);
+        transform = "translate3d(0," + (34 + stackDepth * 2.4) + "vh," + (-130 - stackDepth * 34) + "px) rotateX(-9deg) scale(" + (0.84 - stackDepth * 0.025) + ")";
+        // Fully hidden, not just dimmed -- these desaturated, pushed-back
+        // stacked frames used to stay partially visible (opacity floor
+        // 0.3), which against the deck's pale gradient backdrop read as
+        // faint frosted/ghosted rectangles rather than a depth cue. Only
+        // the active frame and its immediate transitioning neighbor (the
+        // "else" branch below) should ever be on screen.
+        opacity = Math.max(0, 0.5 - stackDepth * 0.5);
         frame.style.zIndex = String(30 - index);
       } else if (delta > 0.45) {
         var behindDepth = Math.min(4, delta);
-        transform = "translate3d(0," + (-behindDepth * 1.6) + "vh," + (-behindDepth * 58) + "px) rotateX(" + (behindDepth * 1.4) + "deg) scale(" + (1 - behindDepth * 0.035) + ")";
-        opacity = Math.max(0.28, 0.78 - behindDepth * 0.12);
+        transform = "translate3d(0," + (-behindDepth * 7) + "vh," + (-behindDepth * 42) + "px) scale(" + (1 - behindDepth * 0.022) + ")";
+        opacity = Math.max(0, 0.5 - behindDepth * 0.5);
         frame.style.zIndex = String(70 - index);
       } else {
-        var activeY = delta < 0 ? -delta * 70 : -delta * 3;
-        var activeScale = 1 - Math.abs(delta) * 0.11;
-        transform = "translate3d(0," + activeY + "vh,0) rotateX(" + (Math.max(0, -delta) * -7) + "deg) scale(" + activeScale + ")";
+        var activeY = delta < 0 ? -delta * 58 : -delta * 7;
+        var activeScale = 1 - Math.abs(delta) * 0.08;
+        transform = "translate3d(0," + activeY + "vh,0) scale(" + activeScale + ")";
         opacity = 1;
         frame.style.zIndex = "100";
       }

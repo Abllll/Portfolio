@@ -59,11 +59,13 @@ html {
 }
 
 .tide-landing {
-  --tide-arrival: 1;
+  /* --tide-arrival is now set on the document root by tide-project.js
+     (see its own comment), not here -- the deck needs to read it too.
+     Every usage below therefore needs its own var() fallback for the
+     instant before JS's first rAF tick runs. */
   position: relative;
-  order: -1;
   display: block;
-  min-height: 138vh;
+  min-height: 100vh;
   padding: 0;
   overflow: hidden;
   background: #fbfcfc;
@@ -77,7 +79,7 @@ html {
   content: "";
   pointer-events: none;
   background: linear-gradient(to bottom, rgba(251, 245, 238, 0.72), rgba(245, 237, 248, 0.48));
-  opacity: calc(1 - var(--tide-arrival));
+  opacity: calc(1 - var(--tide-arrival, 1));
 }
 
 .tide-landing__media {
@@ -86,7 +88,7 @@ html {
   height: min(67vw, 76vh);
   overflow: hidden;
   pointer-events: none;
-  transform: translateY(calc((1 - var(--tide-arrival)) * -4vh)) scale(calc(1.07 - var(--tide-arrival) * 0.07));
+  transform: translateY(calc((1 - var(--tide-arrival, 1)) * -4vh)) scale(calc(1.07 - var(--tide-arrival, 1) * 0.07));
   transform-origin: 50% 100%;
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, rgba(0, 0, 0, 0.72) 79%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 0%, #000 68%, rgba(0, 0, 0, 0.72) 79%, transparent 100%);
@@ -106,9 +108,9 @@ html {
   z-index: 1;
   width: min(1120px, calc(100% - 3rem));
   margin: 0 auto;
-  padding: clamp(58vh, 61vw, 68vh) 0 clamp(12rem, 20vh, 17rem);
-  opacity: var(--tide-arrival);
-  transform: translateY(calc((1 - var(--tide-arrival)) * 5rem)) scale(calc(0.97 + var(--tide-arrival) * 0.03));
+  padding: clamp(34vh, 38vw, 42vh) 0 clamp(3rem, 6vh, 5rem);
+  opacity: var(--tide-arrival, 1);
+  transform: translateY(calc((1 - var(--tide-arrival, 1)) * 5rem)) scale(calc(0.97 + var(--tide-arrival, 1) * 0.03));
   transform-origin: 50% 100%;
 }
 
@@ -213,7 +215,7 @@ html {
 .tide-motion-deck {
   position: relative;
   height: 600vh;
-  background: linear-gradient(180deg, #e6f0f3 0%, #f3f8f8 52%, #fbfcfc 100%);
+  background: linear-gradient(180deg, #dcedf1 0%, #eef6f5 52%, #fbfcfc 100%);
 }
 
 .tide-motion-deck__stage {
@@ -223,6 +225,23 @@ html {
   overflow: hidden;
   perspective: 1500px;
   perspective-origin: 50% 42%;
+  background:
+    radial-gradient(ellipse 80% 55% at 22% 12%, rgba(154, 214, 200, 0.32), transparent 62%),
+    radial-gradient(ellipse 72% 48% at 50% 100%, rgba(103, 199, 218, 0.34), transparent 70%),
+    linear-gradient(180deg, #dcedf1 0%, #eef6f5 52%, #fbfcfc 100%);
+  /* The deck's last frame ("02 import") has no natural exit -- being
+     sticky, it physically can't scroll away on its own, so it just sat
+     pinned in place, fully opaque, right up until this stage mechanically
+     released (see tide-project.js's own --tide-arrival comment). Rather
+     than only fading it out in place (a flat cross-dissolve), it now
+     rides up and off the top of the screen over that same window the
+     landing fades in -- actual upward exit motion, mirroring the
+     landing's own translateY entrance below, so the handoff reads as one
+     thing moving up and out while the next moves up and in, not two
+     things dissolving into and out of the same spot. */
+  transform: translateY(calc(var(--tide-arrival, 0) * -14vh));
+  opacity: calc(1 - var(--tide-arrival, 0));
+  transition: opacity 120ms linear, transform 120ms linear;
 }
 
 .tide-motion-deck .tide-motion-frame {
@@ -234,6 +253,11 @@ html {
     transform 180ms cubic-bezier(0.22, 0.7, 0.28, 1),
     opacity 180ms ease,
     filter 300ms ease;
+  background: transparent;
+}
+
+.tide-motion-deck .tide-motion-frame::before {
+  display: none;
 }
 
 .tide-motion-deck .tide-motion-frame.is-tide-stacked {
@@ -264,17 +288,23 @@ html {
   z-index: 1;
   display: block;
   width: min(1240px, 88vw);
+  max-height: 72vh;
   height: auto;
-  border: 1px solid rgba(255, 255, 255, 0.68);
-  border-radius: clamp(1rem, 1.8vw, 1.6rem);
-  box-shadow: 0 1.8rem 4.8rem rgba(22, 59, 77, 0.18), 0 0.25rem 0.9rem rgba(22, 59, 77, 0.08);
+  object-fit: contain;
+  border: 0;
+  border-radius: 0;
+  /* Soft/ambient, not a hard drop shadow -- a wide, low-opacity spread
+     tinted toward the backdrop's own teal rather than flat dark navy, so
+     it reads as the image floating in the gradient rather than a card
+     cut out and dropped on top of it. */
+  box-shadow: 0 5rem 7rem -3rem rgba(103, 199, 218, 0.28), 0 2rem 3rem -1rem rgba(22, 59, 77, 0.1);
   transform: perspective(1400px) rotateX(2.4deg) rotateY(-0.8deg) translate3d(var(--tide-pointer-x), var(--tide-pointer-y), 0) scale(0.94);
   transform-origin: 50% 100%;
   transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 900ms ease, opacity 700ms ease, filter 700ms ease;
 }
 
 .tide-motion-frame.is-active .tide-motion-frame__media {
-  box-shadow: 0 3.5rem 7rem rgba(22, 59, 77, 0.25);
+  box-shadow: 0 6rem 8rem -3rem rgba(103, 199, 218, 0.34), 0 2.4rem 3.5rem -1rem rgba(22, 59, 77, 0.13);
   transform: perspective(1400px) rotateX(0.6deg) rotateY(-0.2deg) translate3d(var(--tide-pointer-x), var(--tide-pointer-y), 0) scale(1);
 }
 
@@ -294,6 +324,12 @@ html {
 .tide-motion-frame.is-past .tide-scene-copy {
   opacity: 1;
   transform: none;
+}
+
+.tide-motion-deck .tide-motion-frame.is-upcoming .tide-scene-copy,
+.tide-motion-deck .tide-motion-frame.is-past .tide-scene-copy {
+  opacity: 0;
+  transform: translateY(1rem);
 }
 
 .tide-scene-copy {
