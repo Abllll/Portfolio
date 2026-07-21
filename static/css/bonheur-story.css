@@ -53,6 +53,7 @@
 .bs-ache-ink,
 .bs-ache-text,
 .bs-turn-daylight,
+.bs-turn-glass-texture,
 .bs-turn-jar,
 .bs-turn-spark,
 .bs-turn-caption {
@@ -82,6 +83,7 @@
 #bs-ache.bs-ache--active .bs-ache-ink,
 #bs-ache.bs-ache--active .bs-ache-text,
 #bs-turn.bs-turn--active .bs-turn-daylight,
+#bs-turn.bs-turn--active .bs-turn-glass-texture,
 #bs-turn.bs-turn--active .bs-turn-jar,
 #bs-turn.bs-turn--active .bs-turn-spark,
 #bs-turn.bs-turn--active .bs-turn-caption {
@@ -126,7 +128,13 @@
   position: fixed;
   inset: 0;
   z-index: 5;
-  opacity: 0.05;
+  /* Fades out over Turn's own daylight-in window (see .bs-turn-daylight
+     and .bs-turn-glass-texture) -- crossfades into that glass-bubble
+     texture rather than continuing to dull it once Bonheur's ending
+     turns into the bridge toward Tide. Everywhere else on the page
+     --bs-turn-progress is unset, so the var() falls back to 0 and this
+     stays at its normal constant 0.05. */
+  opacity: calc(0.05 * (1 - clamp(0, calc((var(--bs-turn-progress, 0) - 0.62) / 0.3), 1)));
   mix-blend-mode: overlay;
   pointer-events: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
@@ -1051,16 +1059,32 @@
   inset: 0;
   z-index: 0;
   background: var(--bs-daylight-backdrop);
-  /* No exit fade here (unlike .bs-turn-jar/.bs-turn-caption below) --
-     the beat right after this one (the mockup-display "Jar" beat) uses
-     this exact same pastel gradient as its own background, so this
-     should stay fully lit all the way to the handoff rather than fading
-     back to dark first. The outer visibility toggle still hides this
-     cleanly once scroll actually passes Turn -- a hard cut is invisible
-     here since both beats show the identical color underneath it. */
   opacity: var(--bs-turn-daylight-in);
   pointer-events: none;
 }
+
+/* A glass-bubble-ish texture (soft overlapping highlights) that takes
+   over from .bs-grain's flat noise for this same bridge -- water/glass
+   themed, matching the gradient above, rather than the paper-grain
+   texture the rest of Bonheur uses. Same fade-in window as the daylight
+   backdrop it sits on top of. */
+.bs-turn-glass-texture {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: calc(clamp(0, calc((var(--bs-turn-progress, 0) - 0.62) / 0.3), 1) * 0.55);
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.22) 26%, transparent 52%),
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.15) 22%, transparent 46%),
+    radial-gradient(circle at 62% 68%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.12) 24%, transparent 50%),
+    radial-gradient(circle at 22% 78%, rgba(255, 255, 255, 0.4) 0%, transparent 42%),
+    radial-gradient(circle at 92% 62%, rgba(255, 255, 255, 0.35) 0%, transparent 38%),
+    radial-gradient(circle at 45% 42%, rgba(255, 255, 255, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 70% 90%, rgba(255, 255, 255, 0.3) 0%, transparent 36%);
+}
+
 
 /* Resting position + swivel angle are deliberately not arbitrary: with
    the spark's fixed anchor at (50%, 40vh) and a 190px-tall jar pivoting
@@ -1242,7 +1266,16 @@
 .bs-turn-spark {
   --bs-turn-spark-in-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.02) / 0.1), 1);
   --bs-turn-spark-in: calc(var(--bs-turn-spark-in-raw) * var(--bs-turn-spark-in-raw) * (3 - 2 * var(--bs-turn-spark-in-raw)));
-  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.56) / 0.06), 1);
+  /* Fades out across the SAME window the jar swivels in (0.44-0.56,
+     matching .bs-turn-jar's --bs-turn-swivel-in), not a separate window
+     starting only once the swivel finishes -- the old 0.56-0.62 window
+     meant the still fully-opaque spark and the newly-arrived lid sat
+     exactly on top of each other at 0.56 for an instant (both solved to
+     the same anchor point, see .bs-turn-jar's comment), reading as the
+     spark crashing into the lid rather than being caught. Finishing the
+     fade by the time the lid actually arrives means there's nothing
+     solid left to clash with it. */
+  --bs-turn-spark-out: clamp(0, calc((var(--bs-turn-progress, 0) - 0.44) / 0.12), 1);
   --bs-turn-settle-raw: clamp(0, calc((var(--bs-turn-progress, 0) - 0.5) / 0.06), 1);
   --bs-turn-settle: calc(var(--bs-turn-settle-raw) * var(--bs-turn-settle-raw) * (3 - 2 * var(--bs-turn-settle-raw)));
   position: fixed;
@@ -1344,7 +1377,7 @@
 .bs-mockup-carousel {
   position: relative;
   width: 100%;
-  height: clamp(320px, 45vh, 410px);
+  height: clamp(470px, 70vh, 650px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1363,8 +1396,8 @@
 
 .bs-mockup-card {
   position: absolute;
-  width: clamp(280px, 36vh, 350px);
-  height: clamp(280px, 36vh, 350px);
+  width: clamp(420px, 64.5vh, 600px);
+  height: clamp(420px, 64.5vh, 600px);
   /* transform/opacity/z-index below are all driven purely by data-slot --
      mockup-carousel.js only ever toggles that attribute, never touches
      style directly. */
@@ -1407,31 +1440,31 @@
    center" slot. Slot 0 is always front/active; 1 and 4 are the near
    flanks; 2 and 3 are the far flanks, smallest and dimmest. */
 .bs-mockup-card[data-slot="0"] {
-  transform: translateX(var(--bs-active-drag-x, 0px)) scale(1.1);
+  transform: translateX(var(--bs-active-drag-x, 0px)) scale(1.12);
   opacity: 1;
   z-index: 5;
 }
 
 .bs-mockup-card[data-slot="1"] {
-  transform: translateX(215px) scale(0.82);
+  transform: translateX(250px) scale(0.82);
   opacity: 0.55;
   z-index: 2;
 }
 
 .bs-mockup-card[data-slot="4"] {
-  transform: translateX(-215px) scale(0.82);
+  transform: translateX(-250px) scale(0.82);
   opacity: 0.55;
   z-index: 2;
 }
 
 .bs-mockup-card[data-slot="2"] {
-  transform: translateX(350px) scale(0.56);
+  transform: translateX(400px) scale(0.56);
   opacity: 0.3;
   z-index: 1;
 }
 
 .bs-mockup-card[data-slot="3"] {
-  transform: translateX(-350px) scale(0.56);
+  transform: translateX(-400px) scale(0.56);
   opacity: 0.3;
   z-index: 1;
 }
