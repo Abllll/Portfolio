@@ -20,6 +20,8 @@
       {{ partial "home/bonheur-section.html" $ }}
     {{ else if eq .kind "tide" }}
       {{ partial "home/tide-section.html" . }}
+    {{ else if eq .kind "berber" }}
+      {{ partial "home/berber-section.html" . }}
     {{ else if eq .kind "placeholder" }}
       {{ partial "home/project-placeholder.html" . }}
     {{ end }}

@@ -1,6 +1,6 @@
 - id: project-3
-  kind: placeholder
-  label: "Project 3"
+  kind: berber
+  label: "Berber Lab"
   number: 3
 - id: project-2
   kind: tide
