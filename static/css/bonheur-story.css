@@ -18,6 +18,28 @@
   background-size: 100vw 100vh;
 }
 
+/* Bonheur's half of the two-sided seam bridge with Tide (Tide's half is
+   .tide-project::after in home-sections.css -- see its comment for the
+   full story). Tide's wash ends on the fully opaque #e5def3 lavender at
+   its very last row; this overlay starts from that IDENTICAL opaque
+   color at its very first row and fades out downward, letting the fixed
+   daylight backdrop ease into view underneath. Because the boundary row
+   is the same solid color approached from both sides, there is no
+   compositing mismatch and therefore no visible breaker line -- the two
+   sections read as one continuous blue-to-purple gradient. If this hex
+   ever changes, change it in BOTH files or the line comes back. */
+.bs-page::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 30vh;
+  pointer-events: none;
+  background: linear-gradient(to bottom, #e5def3 0%, rgba(229, 222, 243, 0) 100%);
+}
+
 /* Keep body copy readable and prevent typographic orphans (a single word
    stranded on the final line) across every Bonheur story frame. Colors,
    positioning, and animation remain owned by each individual selector. */

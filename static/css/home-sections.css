@@ -58,6 +58,42 @@ html {
   background: #fbfcfc;
 }
 
+/* Bonheur sits immediately below .tide-landing in the document (the two
+   sections are DOM-adjacent -- see data/home_sections.yaml), and its own
+   backdrop is a fixed pink/purple radial gradient (--bs-daylight-backdrop
+   in bonheur-story.css) against Tide's flat #fbfcfc -- a hard color cut
+   right at the seam. This is Tide's half of a two-sided bridge (Bonheur's
+   half is .bs-page::before in bonheur-story.css): Tide's white eases
+   through its own pale blue into lavender, ending on the FULLY OPAQUE
+   --tide-bonheur-seam color at its last row. Bonheur's overlay starts
+   from that exact same opaque color and fades out downward, so the
+   boundary row is literally the same solid color approached from both
+   directions -- a blue-to-purple gradient with no seam.
+
+   Deliberately static: an earlier version breathed this wash with
+   --tide-arrival (element-level opacity + translateY), which multiplied
+   the boundary row's alpha and made an exact color match with Bonheur's
+   side impossible -- that mismatch WAS the visible breaker line. Keep
+   both edges opaque and unanimated; if motion is ever wanted here, put
+   it on interior gradient stops, never on the element or its end stop. */
+.tide-project::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34vh;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(220, 237, 241, 0) 0%,
+    rgba(199, 227, 240, 0.38) 45%,
+    rgba(213, 215, 242, 0.74) 78%,
+    var(--tide-bonheur-seam, #e5def3) 100%
+  );
+}
+
 .tide-landing {
   /* --tide-arrival is now set on the document root by tide-project.js
      (see its own comment), not here -- the deck needs to read it too.
@@ -90,8 +126,16 @@ html {
   pointer-events: none;
   transform: translateY(calc((1 - var(--tide-arrival, 1)) * -4vh)) scale(calc(1.07 - var(--tide-arrival, 1) * 0.07));
   transform-origin: 50% 100%;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, rgba(0, 0, 0, 0.72) 79%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 68%, rgba(0, 0, 0, 0.72) 79%, transparent 100%);
+  /* Fades out over the bottom half now, not the bottom third -- the
+     real page text below (.tide-landing__content) starts at roughly
+     34-42vh, but this box can be up to 76vh tall, so the old 68% start
+     point (~52vh) meant text was rendering on top of a still fully-
+     opaque video for a real stretch, not a masked/faded region. Starting
+     the fade at 42% (~32vh) and finishing by 68% (~52vh) clears the video
+     out of the way before the text arrives, whatever's actually playing
+     down there at any given loop moment. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0, 0, 0, 0.55) 55%, transparent 68%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0, 0, 0, 0.55) 55%, transparent 68%);
 }
 
 .tide-landing__video {
@@ -244,6 +288,28 @@ html {
   transition: opacity 120ms linear, transform 120ms linear;
 }
 
+/* The stage's backdrop puts a teal radial glow anchored at its very
+   bottom edge (ellipse at 50% 100% above), so when the deck's end
+   scrolls up and the stage's bottom edge comes on screen, that glow
+   used to stop dead against .tide-landing's flat #fbfcfc below -- a
+   hard horizontal breaker line at the deck/landing boundary. Wash the
+   last stretch of the backdrop into that same white so the edge is
+   white-meeting-white. z-index 1 keeps it above the stage's own
+   background paint but below every .tide-motion-frame (z-index 4+ from
+   classes, 30-100 inline from JS), so cards and their caption chips
+   ride over it untouched. */
+.tide-motion-deck__stage::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18vh;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(251, 252, 252, 0) 0%, #fbfcfc 100%);
+}
+
 .tide-motion-deck .tide-motion-frame {
   position: absolute;
   inset: 0;
@@ -260,12 +326,27 @@ html {
   display: none;
 }
 
+/* A deck video whose source hasn't lazy-loaded yet (tide-project.js only
+   attaches sources as frames approach) has no intrinsic size: the empty
+   element collapses to a wide ~150px strip that still paints its
+   box-shadow -- showing up as a stray grey/white bar floating in the
+   stack. Hide media until its source is attached; the frame itself (and
+   its caption) keeps its place in the choreography. */
+.tide-motion-deck .tide-motion-frame__media:not([data-tide-loaded="true"]) {
+  visibility: hidden;
+}
+
+/* Considerably darker than before (was brightness(0.96), barely dimmed)
+   -- these gifs are mostly pale/white UI mockups, so a near-1.0
+   brightness at partial opacity was what read as "frosted" white bars
+   rather than a receded card. Real darkening here is what makes the
+   stack read as depth instead of haze. */
 .tide-motion-deck .tide-motion-frame.is-tide-stacked {
-  filter: saturate(0.72) brightness(0.96);
+  filter: saturate(0.5) brightness(0.55) contrast(0.95);
 }
 
 .tide-motion-deck .tide-motion-frame.is-tide-behind {
-  filter: saturate(0.86) brightness(1.035);
+  filter: saturate(0.6) brightness(0.7) contrast(0.95);
 }
 
 .tide-motion-frame + .tide-motion-frame {
@@ -287,12 +368,24 @@ html {
   position: relative;
   z-index: 1;
   display: block;
-  width: min(1240px, 88vw);
-  max-height: 72vh;
+  /* One IDENTICAL width for every card, with the height cap folded into
+     the width formula (76vh * 1.75, the narrowest aspect in the set)
+     instead of a separate max-height. With a max-height, a card's box
+     stopped shrinking with its video: the wide 2.19:1 "06 future" clip
+     ended up with a WIDER box than the height-capped ~1.76:1 actives, so
+     the scaled-down background cards poked out past the active card's
+     sides -- the "white slabs flanking the demo". Equal widths + the
+     deck's scale-down transforms guarantee neighbors stay strictly
+     inside the active card's footprint at any viewport size. Don't
+     reintroduce max-height here for the same reason. */
+  width: min(1600px, 94vw, calc(76vh * 1.75));
   height: auto;
   object-fit: contain;
   border: 0;
-  border-radius: 0;
+  /* A soft rounded chamfer on the demo cards -- gentle enough to read
+     as a physical card edge, not a pill. Border-radius on a replaced
+     element clips the video/gif frame itself, no wrapper needed. */
+  border-radius: clamp(0.5rem, 0.9vw, 0.85rem);
   /* Soft/ambient, not a hard drop shadow -- a wide, low-opacity spread
      tinted toward the backdrop's own teal rather than flat dark navy, so
      it reads as the image floating in the gradient rather than a card

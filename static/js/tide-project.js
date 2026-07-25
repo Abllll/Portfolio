@@ -11,6 +11,13 @@
     source.src = source.dataset.src;
     source.removeAttribute("data-src");
     video.dataset.tideLoaded = "true";
+    // The markup ships preload="none" so nothing fetches before this
+    // point -- but left at "none", load() may not even pull metadata,
+    // and a video without known dimensions keeps its collapsed 300x150
+    // fallback box (the stray-bar problem all over again, just delayed).
+    // "metadata" fetches only the few-KB header: real dimensions, no
+    // frames, until playVideo() actually plays it.
+    video.preload = "metadata";
     video.load();
   }
 
@@ -31,7 +38,17 @@
   function updateTideArrival() {
     if (!tideLanding) return;
     var rect = tideLanding.getBoundingClientRect();
-    var progress = Math.max(0, Math.min(1, rect.bottom / window.innerHeight));
+    // Measured from the landing's TOP edge, not its bottom. The landing
+    // sits *below* the 600vh deck in the document, so while the deck is
+    // the thing on screen the landing's bottom is thousands of px down --
+    // a bottom-based ratio saturates at 1 for the deck's entire scroll
+    // range, and since .tide-motion-deck__stage is opacity:calc(1 - this),
+    // that pinned the whole stage at opacity 0 and the deck never painted
+    // at all. Top-based, the value is 0 while the landing is still below
+    // the fold (deck fully visible) and only ramps to 1 across the one
+    // viewport-height window in which the landing actually moves in --
+    // which is the handoff this was always meant to describe.
+    var progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / window.innerHeight));
     // Set on the root, not tideLanding itself -- the motion deck (a
     // sibling, not a descendant) needs to read this too, to fade itself
     // out as the landing fades in. A sticky-positioned deck frame has no
@@ -69,18 +86,18 @@
       if (delta < -0.45) {
         var stackDepth = Math.min(4, position - index);
         transform = "translate3d(0," + (34 + stackDepth * 2.4) + "vh," + (-130 - stackDepth * 34) + "px) rotateX(-9deg) scale(" + (0.84 - stackDepth * 0.025) + ")";
-        // Fully hidden, not just dimmed -- these desaturated, pushed-back
-        // stacked frames used to stay partially visible (opacity floor
-        // 0.3), which against the deck's pale gradient backdrop read as
-        // faint frosted/ghosted rectangles rather than a depth cue. Only
-        // the active frame and its immediate transitioning neighbor (the
-        // "else" branch below) should ever be on screen.
-        opacity = Math.max(0, 0.5 - stackDepth * 0.5);
+        // Visible again (was floored to 0 briefly -- that killed the
+        // whole card-stack depth effect, not just the washed-out look
+        // that was the actual complaint). The real fix for these mostly-
+        // white gif frames reading as frosted haze is the much stronger
+        // brightness/saturation drop on .is-tide-stacked itself (see
+        // home-sections.css) -- opacity alone was never the problem.
+        opacity = Math.max(0.28, 0.68 - stackDepth * 0.09);
         frame.style.zIndex = String(30 - index);
       } else if (delta > 0.45) {
         var behindDepth = Math.min(4, delta);
         transform = "translate3d(0," + (-behindDepth * 7) + "vh," + (-behindDepth * 42) + "px) scale(" + (1 - behindDepth * 0.022) + ")";
-        opacity = Math.max(0, 0.5 - behindDepth * 0.5);
+        opacity = Math.max(0.32, 0.8 - behindDepth * 0.1);
         frame.style.zIndex = String(70 - index);
       } else {
         var activeY = delta < 0 ? -delta * 58 : -delta * 7;
@@ -101,13 +118,29 @@
       return;
     }
 
+    // Attach every deck video's source the first time the deck is on
+    // screen -- not just active + approaching. CSS hides any deck media
+    // that hasn't loaded (see .tide-motion-frame__media:not([data-tide-
+    // loaded]) in home-sections.css, added because sourceless <video>
+    // elements collapse into stray grey bars), so background cards in
+    // the depth stack need their sources early or they'd simply be
+    // missing from the stack. Loading is metadata-light (preload="none"
+    // until play), and this runs once thanks to prepareVideo's own
+    // dataset guard.
+    deckFrames.forEach(function (frame) {
+      var frameVideo = frame.querySelector("video");
+      if (frameVideo) prepareVideo(frameVideo);
+    });
+
     if (nextActiveIndex !== activeDeckIndex) {
       activeDeckIndex = nextActiveIndex;
-      var activeVideo = deckFrames[activeDeckIndex].querySelector("video");
+      var activeFrame = deckFrames[activeDeckIndex];
+      var activeVideo = activeFrame.querySelector("video");
       if (activeVideo) {
         playVideo(activeVideo);
         activeVideo.currentTime = 0;
       }
+
       var approachingFrame = deckFrames[Math.min(deckFrames.length - 1, activeDeckIndex + 1)];
       var approachingVideo = approachingFrame ? approachingFrame.querySelector("video") : null;
       if (approachingVideo) prepareVideo(approachingVideo);
