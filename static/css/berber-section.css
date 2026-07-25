@@ -1,0 +1,170 @@
+/* static/css/berber-section.css
+   Project 03 — Berber Lab. Palette and faces are the project's own
+   (see berber.lab/static/css/main.css), scoped here so scrolling into
+   this section feels like arriving in the project's world. */
+.berber-project {
+  --berber-bg: #dfe7dc;
+  --berber-bg-alt: #d3ddd0;
+  --berber-ink: #1c1c1a;
+  --berber-muted: #6b6f66;
+  --berber-display: 'Cormorant Garamond', Georgia, serif;
+  --berber-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --berber-video-ratio: 16 / 9;
+
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  background: var(--berber-bg);
+  color: var(--berber-ink);
+}
+
+.berber-stage {
+  width: 100%;
+  /* Capped by the viewport's HEIGHT budget as well as by 1040px. The spec
+     calls this a full-viewport section, but a width-only cap makes the
+     16:9 frame 585px tall at max-width -- on a 1440x900 laptop that pushed
+     the section to 1050px and stranded the body copy below the fold.
+
+     Everything around the video (padding, head row, the two gaps, the
+     caption) measures a near-constant ~466px at every width, because the
+     caption is itself capped at 46ch and so never reflows taller. So the
+     budget is subtracted, not scaled: a plain vh FRACTION can't work --
+     48vh fits 900px but still overflows a 720px laptop, where the fixed
+     chrome eats proportionally far more of the screen. 30rem carries ~14px
+     of slack over the measured 466.
+
+     Capping the whole stage (not just the frame) keeps the wordmark row,
+     video and caption on one shared edge. Still a single knob: the ratio
+     var divides through the calc, so switching --berber-video-ratio to a
+     vertical cut re-derives this automatically. The max() floor keeps the
+     value sane below 480px of viewport height (landscape phones), where
+     the subtraction would otherwise go negative and void the property. */
+  max-width: min(1040px, max(320px, calc((100svh - 30rem) * var(--berber-video-ratio))));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.berber-stage__head {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.berber-stage__wordmark {
+  font-family: var(--berber-display);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-weight: 500;
+  color: var(--berber-ink);
+}
+
+.berber-stage__meta {
+  font-family: var(--berber-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--berber-muted);
+}
+
+.berber-stage__frame {
+  position: relative;
+  width: 100%;
+}
+
+.berber-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--berber-video-ratio);
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--berber-bg-alt);
+  box-shadow: 0 40px 80px -30px rgba(28, 28, 26, 0.28);
+}
+
+.berber-video--placeholder {
+  display: grid;
+  place-items: center;
+  font-family: var(--berber-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--berber-muted);
+}
+
+/* Sound pill — echoes the site's EXPERIENCE/GRID toggle: the one hard
+   shape on an otherwise soft field. Hidden once native controls appear
+   (Task 3 sets .is-playing-with-sound), so the two never compete. */
+.berber-sound {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--berber-ink);
+  color: #fff;
+  font-family: var(--berber-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.berber-sound__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.5;
+}
+
+.berber-sound[aria-pressed="true"] .berber-sound__dot { opacity: 1; }
+
+.berber-stage__frame.is-playing-with-sound .berber-sound { display: none; }
+
+.berber-stage__caption {
+  max-width: 46ch;
+  text-align: center;
+}
+
+.berber-stage__eyebrow {
+  margin: 0 0 0.75rem;
+  font-family: var(--berber-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--berber-muted);
+}
+
+.berber-stage__title {
+  margin: 0 0 0.75rem;
+  font-family: var(--berber-display);
+  font-weight: 500;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  line-height: 1.12;
+  color: var(--berber-ink);
+}
+
+.berber-stage__body {
+  margin: 0;
+  font-family: var(--berber-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--berber-muted);
+}
+
+@media (max-width: 640px) {
+  .berber-project { padding: 3rem 1.1rem; }
+  .berber-stage { gap: 1.75rem; }
+}

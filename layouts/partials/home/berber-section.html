@@ -1,3 +1,45 @@
+{{/* Project 03 — Berber Lab. Presented as one demo video on a sage
+     stage in the project's own palette/faces, not a chaptered narrative
+     like Tide. The video is produced separately; until the file lands at
+     static/images/berber/berber-demo.mp4 a same-sized placeholder tile
+     renders, so layout is verifiable before the video exists. The
+     fileExists check is the only switch -- dropping the file in changes
+     the section over with no template edit. Reveal animation is global
+     (home-sections.js observes .reveal-group). */}}
+{{ $video := "images/berber/berber-demo.mp4" }}
+{{ $hasVideo := fileExists (printf "static/%s" $video) }}
+{{ $poster := "images/berber/berber-demo-poster.jpg" }}
+{{ $hasPoster := fileExists (printf "static/%s" $poster) }}
 <section id="{{ .id }}" class="berber-project" aria-label="{{ .label }}">
-  <p>Berber Lab section — stub</p>
+  <div class="berber-stage reveal-group">
+    <div class="berber-stage__head reveal-item reveal-item--1">
+      <span class="berber-stage__wordmark">Berber Lab</span>
+      <span class="berber-stage__meta">Case Study {{ printf "%02d" .number }}</span>
+    </div>
+
+    <div class="berber-stage__frame reveal-item reveal-item--2">
+      {{ if $hasVideo }}
+      <video class="berber-video" muted loop playsinline preload="none"
+             aria-label="Berber Lab demo"
+             {{ if $hasPoster }}poster="{{ $poster | relURL }}"{{ end }}>
+        <source data-src="{{ $video | relURL }}" type="video/mp4">
+      </video>
+      <button type="button" class="berber-sound" aria-pressed="false">
+        <span class="berber-sound__dot" aria-hidden="true"></span>
+        <span class="berber-sound__label">Sound off</span>
+      </button>
+      {{ else }}
+      <div class="berber-video berber-video--placeholder" role="img"
+           aria-label="Berber Lab demo video — coming soon">
+        <span>Demo video</span>
+      </div>
+      {{ end }}
+    </div>
+
+    <div class="berber-stage__caption reveal-item reveal-item--3">
+      <p class="berber-stage__eyebrow">Berber Lab · Jewelry storefront concept</p>
+      <h2 class="berber-stage__title">Try the piece on before you buy it.</h2>
+      <p class="berber-stage__body">A mockup fine-jewelry store built around an exploration canvas instead of a product grid — and an AI try-on that puts the piece on you.</p>
+    </div>
+  </div>
 </section>
