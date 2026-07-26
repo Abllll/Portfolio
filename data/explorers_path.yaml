@@ -27,6 +27,24 @@ layers:
     file: foliage-b.webp
     weight: 38
     idle: sway
+  # Foreground occluders, painted AFTER girl so she always passes behind
+  # them rather than over the top. Weight 65 puts them nearer the camera
+  # than she is (50), so they travel further under mouse-look -- which is
+  # what sells them as the closest thing in the frame. Well inside the
+  # ~99px of slack .ep-layer-wrap's -8% oversize margin allows. They sit
+  # before dust/sparkle so those stay atmospheric overlays on top.
+  - id: front-bush
+    file: front-bush.webp
+    weight: 65
+    idle: sway
+  - id: front-hedge
+    file: front-hedge.webp
+    weight: 65
+    idle: sway
+  - id: front-frond
+    file: front-frond.webp
+    weight: 65
+    idle: sway
   - id: dust
     file: dust.webp
     weight: 30
