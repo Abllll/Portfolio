@@ -82,7 +82,12 @@
         if (illustrationEl) {
           var illustrationRect = illustrationEl.getBoundingClientRect();
           var illustrationActive = illustrationRect.top <= centerY && illustrationRect.bottom > centerY;
-          if (dotNav) dotNav.classList.toggle("is-visible", !illustrationActive);
+          if (dotNav) {
+            dotNav.classList.toggle(
+              "is-visible",
+              !illustrationActive || dotNav.classList.contains("is-handoff")
+            );
+          }
 
           // The illustration's own onboarding hint (#ep-controls-hint,
           // fixed-position) only dismisses itself on real wheel/touch/
@@ -93,9 +98,9 @@
           // whatever else is painted at that scroll position, hidden
           // behind it inconsistently by sheer z-index luck) on top of
           // whatever section the user actually landed on.
-          if (!illustrationActive) {
-            var hint = document.getElementById("ep-controls-hint");
-            if (hint) hint.classList.add("is-dismissed");
+          var hint = document.getElementById("ep-controls-hint");
+          if (hint && !hint.classList.contains("ep-controls-hint--pending")) {
+            hint.classList.toggle("is-dismissed", !illustrationActive);
           }
         }
       }
@@ -122,6 +127,9 @@
         }
         if (id === "project-2") {
           target = target.querySelector(".tide-landing") || target;
+        }
+        if (id === "project-3") {
+          target = target.querySelector("#berber-landing") || target;
         }
         event.preventDefault();
         target.scrollIntoView({

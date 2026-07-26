@@ -12,6 +12,9 @@
   width: 100vw;
   max-width: none;
   margin-left: calc(50% - 50vw);
+  /* Override the theme's .layout-page gutters and vertical padding. They
+     exposed the body color as a band between Bonheur and the forest. */
+  padding: 0;
   overflow: clip;
   background: var(--bs-daylight-backdrop);
   background-attachment: fixed;
@@ -578,6 +581,80 @@
   text-align: center;
   font-size: 0.8rem;
   opacity: 0.6;
+}
+
+/* CLEAN PROJECT OPENING
+   Replaces the former oversized bridge composition. Its bottom edge is the
+   Explorer forest's exact soft sage; scrolling upward lifts through it
+   into Bonheur's daylight palette before the Sparks story beat begins. */
+.bs-project-start {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 4rem 1.5rem;
+  text-align: center;
+  /* Transparent at the top so the exact fixed Bonheur daylight backdrop
+     continues into Sparks with no independently rendered boundary row. */
+  background: linear-gradient(
+    to top,
+    #718b75 0%,
+    #a7b9a8 4%,
+    rgba(226, 230, 223, 0.72) 13%,
+    transparent 34%
+  );
+}
+
+/* On the reverse trip, forest input moves the human backward rather than
+   changing document scroll. Use that same progress to carry the Bonheur
+   opening upward and dissolve it, revealing the illustration beneath. */
+html.ep-returning-from-project .bs-project-start {
+  --bs-return-away: clamp(0, calc((1 - var(--ep-walk-progress, 1)) * 2.6), 1);
+  transform: translateY(calc(var(--bs-return-away) * -100%));
+  opacity: calc(1 - var(--bs-return-away));
+  will-change: transform, opacity;
+}
+
+.bs-project-start__inner {
+  position: relative;
+  z-index: 2;
+  width: min(90vw, 42rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bs-project-start__eyebrow {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(50, 42, 62, 0.62);
+}
+
+.bs-project-start__logo {
+  width: min(72vw, 25rem);
+  height: auto;
+}
+
+.bs-project-start__tagline {
+  max-width: 43ch;
+  margin: 1.75rem 0 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+  line-height: 1.55;
+  color: rgba(50, 42, 62, 0.78);
+}
+
+.bs-project-start__cue {
+  margin-top: 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(50, 42, 62, 0.52);
 }
 
 /* BON/HEUR INTRO SEQUENCE

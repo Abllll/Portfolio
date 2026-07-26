@@ -1,11 +1,10 @@
 {{/* layouts/partials/home/bonheur-section.html
      Beats render in reverse (Hugo's `reverse`, not a reordering of the
-     underlying data file) and bs-intro sits last, not first -- the page
-     is now read bottom-up (see docs/superpowers/specs/
+     underlying data file). The page is read bottom-up (see docs/superpowers/specs/
      2026-07-16-explorers-path-reversed-landing-design.md), and Bonheur
-     sits between #intro (below it) and project-2 (above it), so
-     scrolling up must reach bs-intro first and the mockup display (the
-     story's current end) last. `index .Site.Data.bonheur_story.beats 0` below
+     sits between Explorer's Path (below it) and project-2 (above it), so
+     scrolling up reaches Sparks first and the mockup display (the story's
+     current end) last. `index .Site.Data.bonheur_story.beats 0` below
      deliberately still reads the *unreversed* first entry (spark,
      motif: drifting) -- that's .bs-motif's correct default the instant
      bs-intro finishes, regardless of render order. */}}
@@ -132,35 +131,15 @@
     {{ end }}
     {{ end }}
 
-    <section class="bs-intro" id="bs-intro">
-      <div class="bs-intro-stage">
-        <div class="bs-intro-sky" aria-hidden="true"></div>
-        <div class="bs-intro-sunshine" aria-hidden="true"></div>
-        <div class="bs-intro-mist bs-intro-mist--pink" aria-hidden="true"></div>
-        <div class="bs-intro-mist bs-intro-mist--purple" aria-hidden="true"></div>
-        <div class="bs-intro-mist bs-intro-mist--teal" aria-hidden="true"></div>
-        {{/* Continuation of Explorer's Path's own bridge/path and human,
-             carried into the very start of the intro so the two scenes
-             read as connected rather than a hard cut -- fades away early
-             (see --bs-bridge-out in bonheur-story.css) as the Bon/heur
-             reveal itself takes over. */}}
-        <div class="bs-intro-bridge" aria-hidden="true">
-          <img class="bs-intro-bridge-art" src="{{ "images/bonheur-story/intro-bridge.png" | relURL }}" alt="">
-          {{/* Same source asset used by the landing scene: one human,
-               carried across the bridge transition rather than a second
-               illustration of her. */}}
-          <img class="bs-intro-bridge-human" src="{{ "images/explorers-path/human.png" | relURL }}" alt="">
-        </div>
-        <div class="bs-scroll-cue" aria-hidden="true">
-          <span class="bs-scroll-cue-label">Scroll up</span>
-          <span class="bs-scroll-cue-icon"></span>
-        </div>
-        <span class="bs-intro-word bs-intro-word--bon" aria-hidden="true">Bon</span>
-        <span class="bs-intro-word bs-intro-word--heur" aria-hidden="true">heur</span>
-        <p class="bs-intro-tagline">A personal memory companion that helps people cultivate happiness by collecting meaningful everyday moments.</p>
-        <img class="bs-intro-logo" src="{{ "images/bonheur-story/logo.png" | relURL }}" alt="" aria-hidden="true">
+    <section class="bs-project-start" id="bs-project-start" aria-label="Bonheur project introduction">
+      <div class="bs-project-start__inner">
+        <p class="bs-project-start__eyebrow">Project 01 · Bonheur</p>
+        <img class="bs-project-start__logo" src="{{ "images/bonheur-story/logo.png" | relURL }}" alt="Bonheur">
+        <p class="bs-project-start__tagline">A personal memory companion for noticing, preserving, and rediscovering the moments that make a life feel meaningful.</p>
+        <span class="bs-project-start__cue" aria-hidden="true">Scroll up to begin</span>
       </div>
     </section>
+
   </section>
 
-  <script src="{{ "js/bonheur-story.js" | relURL }}" defer></script>
+  <script src="{{ "js/bonheur-story.js" | relURL }}?v=20260727-2" defer></script>

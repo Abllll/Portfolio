@@ -15,6 +15,25 @@ html {
    class is only added when .IsHome. */
 .ep-footer-top {
   order: -1;
+  /* The footer is the final destination in the homepage's reversed
+     journey and sits directly above Berber Lab, so both share one
+     uninterrupted sage field. */
+  background: #dfe7dc;
+}
+
+/* On the homepage the footer completes Berber's backdrop rather than
+   appearing as a separate glass card floating above it. Footer cards on
+   every other page retain the theme's border, radius, shadow and blur. */
+.ep-footer-top .footer-shell {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.ep-footer-top .footer-shell::before {
+  display: none;
 }
 
 .home-section {
@@ -56,6 +75,29 @@ html {
   isolation: isolate;
   overflow-x: clip;
   background: #fbfcfc;
+}
+
+/* Berber Lab meets the TOP of Tide's motion deck. The deck's radial
+   highlights tint its first painted row, so matching only the underlying
+   #dcedf1 base still leaves a faint horizontal hairline. This bridge
+   overlaps that edge by 2px, begins on the exact blue Berber ends with,
+   then gently releases into Tide's own layered backdrop. */
+.tide-project::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 28vh;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    #dcedf1 0%,
+    rgba(220, 237, 241, 0.92) 12%,
+    rgba(220, 237, 241, 0.5) 52%,
+    rgba(220, 237, 241, 0) 100%
+  );
 }
 
 /* Bonheur sits immediately below .tide-landing in the document (the two

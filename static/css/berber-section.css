@@ -15,59 +15,86 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 1.5rem;
-  background: var(--berber-bg);
+  padding-block: clamp(4rem, 8vw, 8rem);
+  /* Equal gutters keep the hero optically centred while reserving a clear
+     lane for the fixed dot navigation and its active label on the left. */
+  padding-inline: clamp(12rem, 14vw, 15rem);
+  /* Berber is visually between the footer and Tide in the homepage's
+     bottom-up reading order. Hold the sage world through the hero, then
+     blend into Tide's exact #dcedf1 deck-opening blue at the lower edge
+     so both sections paint the boundary row with the same color. */
+  background:
+    radial-gradient(
+      ellipse 62% 34% at 50% 45%,
+      rgba(166, 207, 226, 0.28) 0%,
+      rgba(190, 220, 229, 0.12) 48%,
+      rgba(220, 237, 241, 0) 72%
+    ),
+    linear-gradient(
+      to bottom,
+      var(--berber-bg) 0%,
+      var(--berber-bg) 65%,
+      #dce9e3 86%,
+      #dcedf1 100%
+    );
   color: var(--berber-ink);
 }
 
 .berber-stage {
   width: 100%;
-  /* Capped by the viewport's HEIGHT budget as well as by 1040px. The spec
-     calls this a full-viewport section, but a width-only cap makes the
-     16:9 frame 585px tall at max-width -- on a 1440x900 laptop that pushed
-     the section to 1050px and stranded the body copy below the fold.
-
-     Everything around the video (padding, head row, the two gaps, the
-     caption) measures a near-constant ~466px at every width, because the
-     caption is itself capped at 46ch and so never reflows taller. So the
-     budget is subtracted, not scaled: a plain vh FRACTION can't work --
-     48vh fits 900px but still overflows a 720px laptop, where the fixed
-     chrome eats proportionally far more of the screen. 30rem carries ~14px
-     of slack over the measured 466.
-
-     Capping the whole stage (not just the frame) keeps the wordmark row,
-     video and caption on one shared edge. Still a single knob: the ratio
-     var divides through the calc, so switching --berber-video-ratio to a
-     vertical cut re-derives this automatically. The max() floor keeps the
-     value sane below 480px of viewport height (landscape phones), where
-     the subtraction would otherwise go negative and void the property. */
-  max-width: min(1040px, max(320px, calc((100svh - 30rem) * var(--berber-video-ratio))));
+  /* Firefly and navigation links land here, leaving a composed strip of
+     breathing room above the identity rather than pinning it to the edge. */
+  scroll-margin-top: clamp(2.75rem, 6vh, 4.5rem);
+  /* The walkthrough is the case study's hero, so its width is governed by
+     the browser rather than squeezed into a one-screen height budget. */
+  max-width: 1080px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2.5rem;
+  gap: clamp(2rem, 4vw, 4rem);
 }
 
 .berber-stage__head {
   width: 100%;
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
 }
 
+.berber-stage__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.berber-stage__project-label {
+  margin: 0 0 0.5rem;
+  font-family: var(--berber-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--berber-muted);
+}
+
 .berber-stage__wordmark {
+  display: block;
   font-family: var(--berber-display);
   font-size: clamp(1.4rem, 2.4vw, 1.9rem);
   font-weight: 500;
+  line-height: 1;
   color: var(--berber-ink);
 }
 
-.berber-stage__meta {
+.berber-stage__descriptor {
+  margin: 0;
   font-family: var(--berber-body);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--berber-muted);
 }
@@ -91,24 +118,8 @@
   box-shadow: 0 40px 80px -30px rgba(28, 28, 26, 0.28);
 }
 
-.berber-stage__demo-label {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  padding: 0.5rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(28, 28, 26, 0.86);
-  color: #fff;
-  font-family: var(--berber-body);
-  font-size: 0.64rem;
-  font-weight: 500;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  pointer-events: none;
-}
-
 .berber-stage__caption {
-  max-width: 56ch;
+  max-width: 62ch;
   text-align: center;
 }
 
@@ -159,13 +170,15 @@
   color: var(--berber-muted);
 }
 
+@media (min-width: 641px) and (max-width: 1100px) {
+  .berber-project { padding-inline: 9rem; }
+}
+
 @media (max-width: 640px) {
-  .berber-project { padding: 3rem 1.1rem; }
-  .berber-stage { gap: 1.75rem; }
-  .berber-stage__demo-label {
-    right: 0.6rem;
-    bottom: 0.6rem;
-    font-size: 0.56rem;
+  .berber-project {
+    padding-block: 3.5rem;
+    padding-inline: 1rem;
   }
+  .berber-stage { gap: 1.75rem; }
   .berber-stage__journey { gap: 0.8rem; }
 }

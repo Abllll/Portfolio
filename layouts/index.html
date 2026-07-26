@@ -28,7 +28,8 @@
   {{ end }}
 
   {{ partial "explorers-path/scene.html" . }}
-  <script src="{{ "js/explorers-path.js" | relURL }}" defer></script>
+  <script src="{{ "js/explorers-path.js" | relURL }}?v=20260727-12" defer></script>
+  <script src="{{ "js/journey-guide.js" | relURL }}?v=20260727-8" defer></script>
 
   {{/* The illustration is the landing point, but it's not literally the
        last thing in the document (the site-wide footer, rendered in
@@ -107,5 +108,5 @@
   </script>
 
   {{ partial "home/dot-nav.html" . }}
-  <script src="{{ "js/home-sections.js" | relURL }}" defer></script>
+  <script src="{{ "js/home-sections.js" | relURL }}?v=20260727-3" defer></script>
 {{ end }}

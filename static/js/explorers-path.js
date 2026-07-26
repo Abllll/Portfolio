@@ -25,6 +25,12 @@
   var scrollCue = document.querySelector(".ep-scroll-cue");
   var startScreen = document.getElementById("ep-start-screen");
   var startButton = document.getElementById("ep-start-button");
+  var projectPortals = document.getElementById("ep-project-portals");
+  var projectPortalLinks = projectPortals
+    ? Array.prototype.slice.call(projectPortals.querySelectorAll("[data-project-target]"))
+    : [];
+  var portalsOpen = false;
+  var currentPortalIndex = 0;
 
   // Gates WASD/jump (see the keydown handler and tick()'s WASD block
   // below) until the start screen is dismissed -- teaching controls
@@ -197,6 +203,7 @@
   // perpendicular to the path so A/D still does something without ever
   // sending her off the drawn trail.
   var MAX_PROGRESS_SPEED = 0.09; // PATH indices per frame
+  var SCROLL_PROGRESS_FACTOR = 0.006;
   var PROGRESS_ACCEL = 0.09; // fraction of max speed gained per frame while held
   var PROGRESS_FRICTION = 0.85;
   var MAX_LATERAL_SPEED = 0.05;
@@ -209,6 +216,42 @@
   var progressVel = 0;
   var lateral = 0; // -1..1
   var lateralVel = 0;
+  var scrollMotionUntil = 0;
+  var handoffTriggered = false;
+  var lastGirlViewportX = window.innerWidth * 0.5;
+  var lastGirlViewportY = window.innerHeight * 0.5;
+  var HANDOFF_THRESHOLD = PATH.length - 1 - 0.04;
+
+  function triggerBonheurHandoff() {
+    if (handoffTriggered || !started) return;
+    var bonheurOpening = document.getElementById("bs-project-start");
+    if (!bonheurOpening) return;
+
+    handoffTriggered = true;
+    document.documentElement.classList.remove("ep-returning-from-project");
+    spacer.classList.add("ep-human--handoff");
+    window.dispatchEvent(new CustomEvent("explorer:handoff", {
+      detail: {
+        x: lastGirlViewportX,
+        y: lastGirlViewportY
+      }
+    }));
+    keys.forward = keys.backward = keys.left = keys.right = false;
+    progressVel = 0;
+    lateralVel = 0;
+    walking = false;
+    stopFootstep();
+
+    /* The homepage reads upward, so Bonheur's title screen begins at its
+       bottom edge. Align that edge with the viewport after leaving the
+       illustration; block:start would jump past the intended opening. */
+    var reduceMotion = window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    bonheurOpening.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "end",
+    });
+  }
 
   // Mouse look (fine, continuous, background only)
   var mouseTarget = { x: 0, y: 0 };
@@ -290,6 +333,17 @@
     progressVel *= PROGRESS_FRICTION;
     progressVel = Math.max(-MAX_PROGRESS_SPEED, Math.min(MAX_PROGRESS_SPEED, progressVel));
     progress = Math.max(0, Math.min(PATH.length - 1, progress + progressVel));
+    updateProjectPortalAvailability();
+    /* Being parked at the endpoint is not itself a handoff request. This
+       distinction matters when returning down from Bonheur: she must be
+       allowed to stand there until backward input arrives, rather than
+       getting bounced straight back into the project on the next frame. */
+    if (
+      progress >= HANDOFF_THRESHOLD &&
+      (keys.forward || progressVel > 0.002)
+    ) {
+      triggerBonheurHandoff();
+    }
 
     var wantLateral = 0;
     if (keys.left) wantLateral -= 1;
@@ -299,7 +353,9 @@
     lateralVel = Math.max(-MAX_LATERAL_SPEED, Math.min(MAX_LATERAL_SPEED, lateralVel));
     lateral = Math.max(-1, Math.min(1, lateral + lateralVel));
 
-    var isMoving = Math.abs(progressVel) > 0.002 || Math.abs(lateralVel) > 0.002;
+    var isMoving = Math.abs(progressVel) > 0.002 ||
+      Math.abs(lateralVel) > 0.002 ||
+      performance.now() < scrollMotionUntil;
     var bob = 0;
     if (isMoving) {
       walkPhase += WALK_BOB_SPEED;
@@ -335,6 +391,7 @@
     // (nearest the viewer) grows her back up.
     var depthFrac = (progress - START_PROGRESS) / (PATH.length - 1);
     var scale = 1 - depthFrac * FORWARD_SCALE_BOOST;
+    document.documentElement.style.setProperty("--ep-walk-progress", depthFrac.toFixed(4));
 
     var totalX = pathOffsetX + lookDx;
     var totalY = pathOffsetY + lookDy + bob + jump;
@@ -367,6 +424,8 @@
     // the bottom edge first.
     var headOffsetPx = (HEAD_OFFSET_PCT / 100) * rect.height * scale;
     var trueHeadScreenY = trueGirlScreenY - headOffsetPx;
+    lastGirlViewportX = girlScreenX + rect.left;
+    lastGirlViewportY = trueHeadScreenY + headOffsetPx * 0.5;
     var viewportHeight = window.innerHeight;
     var topBound = viewportHeight * FOLLOW_MARGIN_TOP;
     var bottomBound = viewportHeight * FOLLOW_MARGIN_BOTTOM;
@@ -433,7 +492,6 @@
 
   function dismissControlsHint() {
     if (!started) return;
-    if (controlsHint) controlsHint.classList.add("is-dismissed");
     if (scrollCue) scrollCue.classList.add("is-dismissed");
   }
 
@@ -449,6 +507,72 @@
   window.addEventListener("wheel", dismissControlsHint, { passive: true });
   window.addEventListener("touchmove", dismissControlsHint, { passive: true });
 
+  function setProjectPortals(open) {
+    if (!projectPortals) return;
+    portalsOpen = open;
+    projectPortals.classList.toggle("is-open", open);
+    projectPortals.setAttribute("aria-hidden", open ? "false" : "true");
+    if (open) {
+      keys.forward = keys.backward = keys.left = keys.right = false;
+      walking = false;
+      stopFootstep();
+    } else {
+      if (document.activeElement && document.activeElement.closest(".ep-project-portal")) {
+        viewport.focus({ preventScroll: true });
+      }
+    }
+  }
+
+  function updateProjectPortalAvailability() {
+    var nextIndex = progress < 10 ? 0 : (progress < 21 ? 1 : 2);
+    currentPortalIndex = nextIndex;
+    projectPortalLinks.forEach(function (link, index) {
+      var isCurrent = index === currentPortalIndex;
+      link.classList.toggle("is-current", isCurrent);
+      link.setAttribute("aria-hidden", isCurrent ? "false" : "true");
+      link.tabIndex = isCurrent ? 0 : -1;
+    });
+  }
+
+  updateProjectPortalAvailability();
+
+  projectPortalLinks.forEach(function (link) {
+    link.addEventListener("click", function (event) {
+      if (!link.classList.contains("is-current")) {
+        event.preventDefault();
+        return;
+      }
+      var id = link.getAttribute("data-project-target");
+      var target = document.getElementById(id);
+      if (id === "bonheur") target = document.getElementById("bs-project-start");
+      if (id === "project-2" && target) target = target.querySelector(".tide-landing") || target;
+      if (id === "project-3" && target) target = target.querySelector("#berber-landing") || target;
+      if (!target) return;
+      event.preventDefault();
+      setProjectPortals(false);
+      target.scrollIntoView({
+        behavior: window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: id === "bonheur" ? "end" : "start",
+      });
+    });
+  });
+
+  /* The whole portfolio reads upward, so wheel-up must mean "forward"
+     here too. Consume wheel movement while the illustration owns the
+     viewport and map it directly to the same PATH progress WASD uses;
+     once the endpoint is reached, triggerBonheurHandoff releases the
+     viewer into Project 1. */
+  viewport.addEventListener("wheel", function (event) {
+    if (!started || handoffTriggered || portalsOpen || (panel && !panel.hidden)) return;
+    event.preventDefault();
+    progress -= event.deltaY * SCROLL_PROGRESS_FACTOR;
+    progress = Math.max(0, Math.min(PATH.length - 1, progress));
+    progressVel = 0;
+    scrollMotionUntil = performance.now() + 140;
+    if (progress >= HANDOFF_THRESHOLD) triggerBonheurHandoff();
+  }, { passive: false });
+
   document.addEventListener("keydown", function (event) {
     if (!started) {
       var scrollKeys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " ", "Spacebar"];
@@ -459,6 +583,7 @@
     }
     if (event.target.closest && event.target.closest(".ep-hotspot")) return;
     if (panel && !panel.hidden) return;
+    if (portalsOpen && event.key !== "Escape" && event.key !== " " && event.key !== "Spacebar") return;
 
     var walkDir = WALK_KEYS[event.key];
     if (walkDir) {
@@ -473,12 +598,16 @@
     }
     if (event.key === " " || event.key === "Spacebar") {
       event.preventDefault();
-      jumpStart = performance.now();
+      if (!portalsOpen) setProjectPortals(true);
       dismissControlsHint();
     }
   });
 
   document.addEventListener("keyup", function (event) {
+    if (event.key === " " || event.key === "Spacebar") {
+      if (portalsOpen) setProjectPortals(false);
+      return;
+    }
     var walkDir = WALK_KEYS[event.key];
     if (walkDir) {
       keys[walkDir] = false;
@@ -548,6 +677,10 @@
     if (panel && !panel.hidden && event.key === "Escape") {
       closePanel();
     }
+    if (portalsOpen && event.key === "Escape") {
+      event.preventDefault();
+      setProjectPortals(false);
+    }
   });
 
   // Reversed-landing pan: .ep-viewport is a sticky 100vh crop window over
@@ -570,17 +703,30 @@
     var spacerRect = spacer.getBoundingClientRect();
     canvasHeightPx = spacerRect.height;
     var viewportHeightPx = window.innerHeight;
+    var illustrationOwnsViewport =
+      spacerRect.top <= 1 && spacerRect.bottom >= viewportHeightPx - 1;
+    if (controlsHint && started) {
+      controlsHint.classList.toggle("is-offstage", !illustrationOwnsViewport);
+    }
+    if (handoffTriggered && illustrationOwnsViewport) {
+      /* Returning downward from Bonheur re-arms the path. The human keeps
+         her endpoint progress; the next wheel-down gesture moves her back. */
+      handoffTriggered = false;
+      document.documentElement.classList.add("ep-returning-from-project");
+      spacer.classList.remove("ep-human--handoff");
+    }
     var scrollableDistance = canvasHeightPx - viewportHeightPx;
-    var progress = scrollableDistance > 0 ? (0 - spacerRect.top) / scrollableDistance : 1;
-    progress = Math.max(0, Math.min(1, progress));
-    document.documentElement.style.setProperty("--ep-scroll-progress", progress.toFixed(4));
+    var scrollProgress = scrollableDistance > 0 ? (0 - spacerRect.top) / scrollableDistance : 1;
+    scrollProgress = Math.max(0, Math.min(1, scrollProgress));
+    document.documentElement.style.setProperty("--ep-scroll-progress", scrollProgress.toFixed(4));
 
     // Fraction of the canvas one screen covers -- live, not hardcoded,
     // since it depends on the current viewport height vs. the canvas's
     // actual rendered height.
     var viewportFraction = viewportHeightPx / canvasHeightPx;
-    var frameTopPct = (1 - viewportFraction) * 100 * (1 - progress);
+    var frameTopPct = (1 - viewportFraction) * 100 * (1 - scrollProgress);
     scrollPanY = -(frameTopPct / 100) * canvasHeightPx;
+
   }
 
   function onScrollPanTrigger() {

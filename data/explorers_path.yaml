@@ -19,20 +19,13 @@ layers:
     file: glow.webp
     weight: 4
     idle: none
-  - id: girl
-    file: human.png
-    weight: 50
-    idle: none
   - id: foliage-b
     file: foliage-b.webp
     weight: 38
     idle: sway
-  # Foreground occluders, painted AFTER girl so she always passes behind
-  # them rather than over the top. Weight 65 puts them nearer the camera
-  # than she is (50), so they travel further under mouse-look -- which is
-  # what sells them as the closest thing in the frame. Well inside the
-  # ~99px of slack .ep-layer-wrap's -8% oversize margin allows. They sit
-  # before dust/sparkle so those stay atmospheric overlays on top.
+  # Added foliage layers sit behind the human in paint order. They retain
+  # their stronger parallax weight so they still feel close to the camera,
+  # while the figure remains clearly visible as she follows the path.
   - id: front-bush
     file: front-bush.webp
     weight: 65
@@ -43,6 +36,38 @@ layers:
     idle: sway
   - id: front-frond
     file: front-frond.webp
+    weight: 65
+    idle: sway
+  # Updated forest base is painted immediately beneath the human. All
+  # files share the scene's 1242x1660 registration canvas.
+  - id: forest-base-mapping
+    file: forest-base-mapping.webp
+    weight: 38
+    idle: none
+  - id: girl
+    file: human.png
+    weight: 50
+    idle: none
+  # Updated top mappings are painted after the human so their leaves and
+  # branches occlude her naturally as she walks behind them.
+  - id: top-mapping
+    file: top-mapping.webp
+    weight: 65
+    idle: sway
+  - id: top-mapping-6627
+    file: top-mapping-6627.webp
+    weight: 65
+    idle: sway
+  - id: top-mapping-6628
+    file: top-mapping-6628.webp
+    weight: 65
+    idle: sway
+  - id: top-mapping-6629
+    file: top-mapping-6629.webp
+    weight: 65
+    idle: sway
+  - id: top-mapping-6634
+    file: top-mapping-6634.webp
     weight: 65
     idle: sway
   - id: dust

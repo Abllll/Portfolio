@@ -46,6 +46,21 @@ html.ep-start-locked body {
   background: var(--color-surface);
 }
 
+/* At the path endpoint, wash the illustrated forest into the same deep
+   sage that begins Bonheur's title screen. Because this reads the human's
+   actual path progress, it also reverses naturally when she walks back. */
+.ep-viewport::after {
+  content: "";
+  position: absolute;
+  z-index: 9;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(143, 169, 145, 0.52), transparent 68%),
+    #718b75;
+  opacity: calc(clamp(0, calc((var(--ep-walk-progress, 0) - 0.88) / 0.12), 1) * 0.68);
+}
+
 .ep-scene {
   position: absolute;
   top: 0;
@@ -96,6 +111,7 @@ html.ep-start-locked body {
    destination off-screen. Her layer needs the full, uncropped canvas. */
 #ep-layer-girl {
   inset: 0;
+  transition: opacity 0.28s ease;
 }
 
 /* At the Explorer's Path → Bonheur handoff, the same human asset is
@@ -103,6 +119,22 @@ html.ep-start-locked body {
    never appears twice on the screen. */
 #ep-spacer.ep-human--handoff #ep-layer-girl {
   opacity: 0;
+}
+
+/* The endpoint color wash sits above the registered artwork. During the
+   reverse walk, lift the traveler above it so the user can immediately
+   see her returning; the designated foreground mappings remain one level
+   higher so leaves still pass naturally in front of her. */
+html.ep-returning-from-project #ep-layer-girl {
+  z-index: 10;
+}
+
+html.ep-returning-from-project #ep-layer-top-mapping,
+html.ep-returning-from-project #ep-layer-top-mapping-6627,
+html.ep-returning-from-project #ep-layer-top-mapping-6628,
+html.ep-returning-from-project #ep-layer-top-mapping-6629,
+html.ep-returning-from-project #ep-layer-top-mapping-6634 {
+  z-index: 11;
 }
 
 .ep-idle-sway img {
@@ -114,7 +146,21 @@ html.ep-start-locked body {
 }
 
 .ep-idle-sparkle img {
-  animation: ep-twinkle 3.6s ease-in-out infinite;
+  /* The illustration's ambient dots stay white. Portfolio red is reserved
+     exclusively for the three interactive project fireflies below. */
+  --ep-ambient-dot-filter: brightness(0) invert(1);
+  /* A slow, wandering field rather than a mechanical up/down twinkle.
+     The small uneven direction changes read as fireflies hovering in
+     still forest air without pulling the registered artwork out of place. */
+  animation: ep-firefly-drift 13s ease-in-out infinite;
+  transform-origin: 50% 50%;
+  /* Keep the lights in the forest. This mask removes a generous corridor
+     around the artwork's real winding path while preserving both foliage
+     fields on either side. Coordinates use the shared 1242×1660 canvas. */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1242 1660'%3E%3Crect width='1242' height='1660' fill='white'/%3E%3Cpath d='M521 1656 C560 1515 690 1400 668 1245 C640 1115 490 1065 505 975 C525 850 735 770 930 590 C1080 450 1185 365 1230 344' fill='none' stroke='black' stroke-width='150' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1242 1660'%3E%3Crect width='1242' height='1660' fill='white'/%3E%3Cpath d='M521 1656 C560 1515 690 1400 668 1245 C640 1115 490 1065 505 975 C525 850 735 770 930 590 C1080 450 1185 365 1230 344' fill='none' stroke='black' stroke-width='150' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
 }
 
 @keyframes ep-sway {
@@ -127,9 +173,40 @@ html.ep-start-locked body {
   50% { transform: translate(3px, 5px); }
 }
 
-@keyframes ep-twinkle {
-  0%, 100% { opacity: 0.78; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(-5px); }
+@keyframes ep-firefly-drift {
+  0%, 100% {
+    opacity: 0.68;
+    filter: var(--ep-ambient-dot-filter);
+    transform: translate(0, 0) rotate(0deg);
+  }
+  18% {
+    opacity: 0.9;
+    filter: var(--ep-ambient-dot-filter);
+    transform: translate(3px, -4px) rotate(0.05deg);
+  }
+  37% {
+    opacity: 0.74;
+    filter: var(--ep-ambient-dot-filter);
+    transform: translate(-2px, -7px) rotate(-0.04deg);
+  }
+  61% {
+    opacity: 1;
+    filter: var(--ep-ambient-dot-filter);
+    transform: translate(-5px, -3px) rotate(0.06deg);
+  }
+  80% {
+    opacity: 0.8;
+    filter: var(--ep-ambient-dot-filter);
+    transform: translate(2px, 2px) rotate(-0.03deg);
+  }
+}
+
+/* Color ownership is intentionally strict: this full-canvas artwork is
+   ambient white forest light, never the red interactive state. Keep this
+   ID-level override after the animation so cached/animated filter values
+   cannot recolor the many dots. Only .ep-project-portal__firefly is red. */
+#ep-layer-sparkle img {
+  filter: brightness(0) invert(1) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -193,18 +270,19 @@ html.ep-start-locked body {
      and this should stay centered on-screen regardless of which slice of
      the (much taller) canvas is currently panned into view. */
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: auto;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  transform: none;
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.55rem 0.9rem;
+  gap: 0.28rem;
+  padding: 0.42rem 0.7rem;
   border-radius: 2rem;
-  background: rgba(20, 18, 14, 0.55);
+  background: color-mix(in srgb, var(--color-accent) 70%, transparent);
   color: rgba(255, 255, 255, 0.85);
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   letter-spacing: 0.02em;
   pointer-events: none;
   transition: opacity 0.6s ease;
@@ -222,6 +300,11 @@ html.ep-start-locked body {
   animation: none;
 }
 
+.ep-controls-hint.is-offstage {
+  opacity: 0;
+  animation: none;
+}
+
 /* Not shown at all until the start screen is dismissed -- teaching
    controls that don't work yet (WASD/Space are inert pre-start) would
    be confusing. Overrides the flicker-in from the base rule; JS removes
@@ -235,15 +318,15 @@ html.ep-start-locked body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.4rem;
-  padding: 0.15rem 0.4rem;
+  min-width: 1.15rem;
+  padding: 0.12rem 0.3rem;
   border-radius: 0.3rem;
   background: rgba(255, 255, 255, 0.15);
   font-weight: 700;
 }
 
 .ep-key-wide {
-  min-width: 3.2rem;
+  min-width: 2.7rem;
   margin-left: 0.2rem;
 }
 
@@ -267,8 +350,9 @@ html.ep-start-locked body {
   /* fixed for the same reason as .ep-controls-hint above. */
   position: fixed;
   left: 50%;
-  bottom: 5.5rem;
-  transform: translateX(-50%);
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -280,6 +364,7 @@ html.ep-start-locked body {
 
 .ep-scroll-cue.is-dismissed {
   opacity: 0;
+  animation: none;
 }
 
 /* Same reasoning as .ep-controls-hint--pending above -- hidden until
@@ -290,28 +375,34 @@ html.ep-start-locked body {
 
 .ep-scroll-cue-label {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 400;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.45;
+  -webkit-text-stroke: 0.25px currentColor;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-  animation: ep-flicker 2.2s ease-in-out infinite;
+  color: color-mix(in srgb, var(--color-accent) 94%, white);
+  text-shadow:
+    0 0 5px color-mix(in srgb, var(--color-accent) 72%, white),
+    0 0 13px color-mix(in srgb, var(--color-accent) 82%, transparent),
+    0 0 24px color-mix(in srgb, var(--color-accent) 50%, transparent);
+  animation: ep-flicker 1.65s ease-in-out infinite;
 }
 
 .ep-scroll-cue-icon {
   display: block;
-  width: 16px;
-  height: 16px;
-  border-right: 2px solid rgba(255, 255, 255, 0.85);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  width: 24px;
+  height: 24px;
+  border-right: 3px solid color-mix(in srgb, var(--color-accent) 94%, white);
+  border-bottom: 3px solid color-mix(in srgb, var(--color-accent) 94%, white);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
   /* 225deg, not 45deg -- points the chevron up instead of down. The
      illustration is now the page's landing point (last in the
      document), so "more page" (intro, Bonheur, projects) is reached by
      scrolling up, not down. */
   transform: rotate(225deg);
-  animation: ep-flicker 2.2s ease-in-out infinite;
+  animation: ep-flicker 1.65s ease-in-out infinite;
 }
 
 @keyframes ep-flicker {
@@ -322,6 +413,189 @@ html.ep-start-locked body {
 @media (prefers-reduced-motion: reduce) {
   .ep-scroll-cue-label,
   .ep-scroll-cue-icon {
+    animation: none;
+  }
+}
+
+/* PROJECT FIREFLY PORTALS -------------------------------------------------
+   Three circles sit on selected black dots in the registered illustration
+   canvas. Space must stay held: the windows bloom while the key is down
+   and collapse back into those exact points on release. */
+.ep-project-portals {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.ep-project-portals.is-open {
+  pointer-events: none;
+}
+
+.ep-project-portal {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+  transform: translate(-50%, -50%);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+  transition:
+    width 1.25s cubic-bezier(0.16, 1, 0.3, 1),
+    height 1.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.7s ease,
+    box-shadow 0.9s ease;
+}
+
+.ep-project-portal--bonheur { left: 18%; top: 73.4%; }
+.ep-project-portal--tide { left: 86%; top: 45%; }
+.ep-project-portal--berber { left: 60%; top: 23%; }
+
+.ep-project-portals.is-open .ep-project-portal.is-current {
+  width: clamp(180px, 19vw, 290px);
+  height: clamp(180px, 19vw, 290px);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 86%, white);
+  background: color-mix(in srgb, var(--color-accent) 30%, #120807);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--color-accent) 18%, transparent),
+    0 0 24px color-mix(in srgb, var(--color-accent) 68%, transparent),
+    0 18px 55px rgba(5, 15, 8, 0.46);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ep-project-portals.is-open .ep-project-portal.is-current:hover,
+.ep-project-portals.is-open .ep-project-portal.is-current:focus-visible {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent),
+    0 0 32px color-mix(in srgb, var(--color-accent) 78%, transparent),
+    0 20px 62px rgba(5, 15, 8, 0.5);
+}
+
+.ep-project-portal:not(.is-current) {
+  opacity: 0.28;
+}
+
+.ep-project-portal__firefly {
+  position: absolute;
+  z-index: 3;
+  inset: 50% auto auto 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow:
+    0 0 7px color-mix(in srgb, var(--color-accent) 78%, white),
+    0 0 17px color-mix(in srgb, var(--color-accent) 92%, transparent),
+    0 0 34px color-mix(in srgb, var(--color-accent) 68%, transparent);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease 0.45s;
+  animation: ep-portal-firefly 4.8s ease-in-out infinite;
+}
+
+.ep-project-portal.is-current .ep-project-portal__firefly {
+  width: 12px;
+  height: 12px;
+  animation-duration: 3.4s;
+}
+
+.ep-project-portals.is-open .ep-project-portal.is-current .ep-project-portal__firefly {
+  opacity: 0;
+}
+
+@keyframes ep-portal-firefly {
+  0%, 100% { opacity: 0.72; transform: translate(-50%, -50%); }
+  28% { opacity: 1; transform: translate(calc(-50% + 4px), calc(-50% - 5px)); }
+  57% { opacity: 0.82; transform: translate(calc(-50% - 3px), calc(-50% - 2px)); }
+  78% { opacity: 1; transform: translate(calc(-50% + 2px), calc(-50% + 3px)); }
+}
+
+.ep-project-portal img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.16);
+  filter: saturate(0.86) brightness(0.78);
+  transition: opacity 0.65s ease 0.48s, transform 1.15s ease 0.2s, filter 0.35s ease;
+}
+
+.ep-project-portal--bonheur img { object-position: 50% 30%; }
+
+.ep-project-portals.is-open .ep-project-portal.is-current img {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ep-project-portals.is-open .ep-project-portal--tide.is-current img {
+  transform: scale(1.32);
+}
+
+.ep-project-portal:hover img,
+.ep-project-portal:focus-visible img {
+  filter: saturate(1) brightness(0.96);
+  transform: scale(1.035);
+}
+
+.ep-project-portals.is-open .ep-project-portal--tide.is-current:hover img,
+.ep-project-portals.is-open .ep-project-portal--tide.is-current:focus-visible img {
+  transform: scale(1.4);
+}
+
+.ep-project-portal__copy {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 3rem 1rem 1.2rem;
+  background: linear-gradient(to bottom, transparent, rgba(7, 13, 8, 0.82));
+  opacity: 0;
+  transform: translateY(8px);
+  text-align: center;
+  transition: opacity 0.4s ease 0.78s, transform 0.4s ease 0.78s;
+}
+
+.ep-project-portals.is-open .ep-project-portal.is-current .ep-project-portal__copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ep-project-portal__copy small {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.76;
+}
+
+.ep-project-portal__copy strong {
+  font-family: var(--font-serif);
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  font-weight: 500;
+}
+
+@media (max-width: 700px) {
+  .ep-project-portals.is-open .ep-project-portal.is-current {
+    width: clamp(120px, 29vw, 170px);
+    height: clamp(120px, 29vw, 170px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-project-portal,
+  .ep-project-portal img,
+  .ep-project-portal__firefly,
+  .ep-project-portal__copy {
+    transition: none;
+  }
+  .ep-project-portal__firefly {
     animation: none;
   }
 }
@@ -393,16 +667,17 @@ html.ep-start-locked body {
 
 .ep-start-button {
   font-family: var(--font-sans);
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #fff;
-  background: var(--color-accent);
-  border: none;
-  border-radius: 0.6rem;
-  padding: 1rem 3rem;
+  background: color-mix(in srgb, var(--color-accent) 88%, transparent);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.72rem 1.8rem;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.22);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
@@ -410,7 +685,7 @@ html.ep-start-locked body {
 .ep-start-button:focus-visible {
   filter: brightness(1.1);
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 7px 22px rgba(0, 0, 0, 0.28);
 }
 
 .ep-start-button:active {

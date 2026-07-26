@@ -11,4 +11,13 @@
     <span class="dot-nav__label" aria-hidden="true">{{ with .number }}{{ printf "%02d" . }} · {{ end }}{{ .label }}</span>
   </a>
   {{ end }}
+  {{/* The traveler doubles as the active-position indicator once the
+       viewer leaves the illustration. */}}
+  <div class="journey-guide" id="journey-guide" aria-hidden="true">
+    <span class="journey-guide__firefly"></span>
+    <img class="journey-guide__human"
+         src="{{ "images/explorers-path/journey-human.webp" | relURL }}"
+         alt="" width="96" height="190">
+    <span class="journey-guide__tag" id="journey-guide-tag"></span>
+  </div>
 </nav>

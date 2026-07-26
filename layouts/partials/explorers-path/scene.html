@@ -25,6 +25,26 @@
       </button>
       {{- end }}
     </div>
+    {{/* Three project windows anchored to prominent black dots in the
+         lower forest. Holding Space blooms them from the artwork itself;
+         releasing Space closes them back into those same points. */}}
+    <div class="ep-project-portals" id="ep-project-portals" data-factor="46" aria-hidden="true">
+      <a class="ep-project-portal ep-project-portal--bonheur" href="#bonheur" data-project-target="bonheur" aria-label="Open Bonheur">
+        <span class="ep-project-portal__firefly" aria-hidden="true"></span>
+        <img src="{{ "images/explorers-path/portal-bonheur.jpg" | relURL }}" alt="" width="640" height="1392" loading="lazy">
+        <span class="ep-project-portal__copy"><small>Project 01</small><strong>Bonheur</strong></span>
+      </a>
+      <a class="ep-project-portal ep-project-portal--tide" href="#project-2" data-project-target="project-2" aria-label="Open Tide">
+        <span class="ep-project-portal__firefly" aria-hidden="true"></span>
+        <img src="{{ "images/explorers-path/portal-tide.jpg" | relURL }}" alt="" width="640" height="364" loading="lazy">
+        <span class="ep-project-portal__copy"><small>Project 02</small><strong>Tide</strong></span>
+      </a>
+      <a class="ep-project-portal ep-project-portal--berber" href="#project-3" data-project-target="project-3" aria-label="Open Berber Lab">
+        <span class="ep-project-portal__firefly" aria-hidden="true"></span>
+        <img src="{{ "images/explorers-path/portal-berber.jpg" | relURL }}" alt="" width="960" height="514" loading="lazy">
+        <span class="ep-project-portal__copy"><small>Project 03</small><strong>Berber Lab</strong></span>
+      </a>
+    </div>
   </div>
   <div class="ep-controls-hint ep-controls-hint--pending" id="ep-controls-hint" aria-hidden="true">
     <span class="ep-key">W</span><span class="ep-key">A</span><span class="ep-key">S</span><span class="ep-key">D</span>
@@ -34,7 +54,7 @@
     <span>to explore</span>
   </div>
   <div class="ep-scroll-cue ep-scroll-cue--pending" aria-hidden="true">
-    <span class="ep-scroll-cue-label">Scroll up</span>
+    <span class="ep-scroll-cue-label">Scroll up<br>and<br>find the firefly in the forest</span>
     <span class="ep-scroll-cue-icon"></span>
   </div>
   <div class="ep-start-screen" id="ep-start-screen">

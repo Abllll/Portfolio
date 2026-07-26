@@ -95,7 +95,7 @@ theme = "hugo-minimal-black"
 
   [[menu.main]]
     name = "Resume"
-    url = "/about/#resume"
+    url = "/resume/Amber_Li_Design_Engineer.pdf"
     weight = 4
     identifier = "resume"
 
