@@ -20,6 +20,41 @@ html.ep-start-locked body {
   overscroll-behavior: none;
 }
 
+.ep-ambient-toggle__icon {
+  font-size: 0.78rem;
+  color: #fff;
+}
+
+.ep-ambient-dock .ep-ambient-toggle {
+  border: 0 !important;
+  outline: 0;
+  background: color-mix(in srgb, var(--color-accent) 70%, transparent);
+  color: #fff;
+  box-shadow:
+    0 7px 22px rgba(103, 31, 27, 0.18),
+    0 0 16px rgba(181, 55, 48, 0.2);
+}
+
+.ep-ambient-dock .ep-ambient-toggle:hover,
+.ep-ambient-dock .ep-ambient-toggle:focus,
+.ep-ambient-dock .ep-ambient-toggle:focus-visible {
+  border: 0 !important;
+  outline: 0;
+}
+
+.ep-ambient-toggle.is-playing .ep-ambient-toggle__icon {
+  color: #fff;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.65));
+}
+
+.ep-ambient-toggle.is-muted {
+  opacity: 1;
+}
+
+.ep-ambient-toggle.is-muted .ep-ambient-toggle__icon {
+  opacity: 0.82;
+}
+
 /* .ep-spacer (normal flow, full canvas height via aspect-ratio) is what
    actually reserves the scroll distance; .ep-viewport (inside it) is a
    sticky 100vh crop window pinned for that whole distance -- same

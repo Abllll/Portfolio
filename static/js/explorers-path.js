@@ -21,6 +21,11 @@
   var panelClose = document.getElementById("ep-panel-close");
   var discoveryAudio = document.getElementById("ep-audio-discovery");
   var footstepAudio = document.getElementById("ep-audio-footstep");
+  var ambientAudio = document.getElementById("ep-audio-ambient");
+  var ambientToggle = document.getElementById("ep-ambient-toggle");
+  var ambientToggleIcon = document.getElementById("ep-ambient-toggle-icon");
+  var ambientEnabled = true;
+  var AMBIENT_VOLUME = 0.42;
   var controlsHint = document.getElementById("ep-controls-hint");
   var scrollCue = document.querySelector(".ep-scroll-cue");
   var startScreen = document.getElementById("ep-start-screen");
@@ -31,6 +36,32 @@
     : [];
   var portalsOpen = false;
   var currentPortalIndex = 0;
+
+  function illustrationVisibility() {
+    var rect = viewport.getBoundingClientRect();
+    var visible = Math.max(
+      0,
+      Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0)
+    );
+    return Math.max(0, Math.min(1, visible / window.innerHeight));
+  }
+
+  function updateAmbientMix() {
+    if (!ambientAudio || !started || !ambientEnabled) {
+      if (ambientAudio && !ambientAudio.paused) ambientAudio.pause();
+      if (ambientToggle) ambientToggle.classList.remove("is-playing");
+      return;
+    }
+    var visibility = illustrationVisibility();
+    ambientAudio.volume = AMBIENT_VOLUME * visibility;
+    if (visibility > 0.01) {
+      if (ambientAudio.paused) ambientAudio.play().catch(function () {});
+      if (ambientToggle) ambientToggle.classList.add("is-playing");
+    } else {
+      ambientAudio.pause();
+      if (ambientToggle) ambientToggle.classList.remove("is-playing");
+    }
+  }
 
   // Gates WASD/jump (see the keydown handler and tick()'s WASD block
   // below) until the start screen is dismissed -- teaching controls
@@ -99,8 +130,34 @@
       startScreen.classList.add("is-dismissed");
       if (controlsHint) controlsHint.classList.remove("ep-controls-hint--pending");
       if (scrollCue) scrollCue.classList.remove("ep-scroll-cue--pending");
+      updateAmbientMix();
     });
   }
+
+  if (ambientToggle && ambientAudio) {
+    ambientToggle.addEventListener("click", function () {
+      ambientEnabled = !ambientEnabled;
+      ambientToggle.classList.toggle("is-muted", !ambientEnabled);
+      ambientToggle.classList.toggle("is-playing", ambientEnabled);
+      ambientToggle.setAttribute("aria-pressed", ambientEnabled ? "true" : "false");
+      ambientToggle.setAttribute(
+        "aria-label",
+        ambientEnabled ? "Mute forest ambience" : "Play forest ambience"
+      );
+      if (ambientToggleIcon) {
+        ambientToggleIcon.classList.toggle("fa-volume-high", ambientEnabled);
+        ambientToggleIcon.classList.toggle("fa-volume-xmark", !ambientEnabled);
+      }
+      if (ambientEnabled) {
+        updateAmbientMix();
+      } else {
+        ambientAudio.pause();
+      }
+    });
+  }
+
+  window.addEventListener("scroll", updateAmbientMix, { passive: true });
+  window.addEventListener("resize", updateAmbientMix);
 
   // The landing screen is a real entry gate: the illustrated journey and
   // upward project scroll begin only after Start is chosen. Prevent native
@@ -220,6 +277,7 @@
   var handoffTriggered = false;
   var lastGirlViewportX = window.innerWidth * 0.5;
   var lastGirlViewportY = window.innerHeight * 0.5;
+  var lastGirlViewportSize = 72;
   var HANDOFF_THRESHOLD = PATH.length - 1 - 0.04;
 
   function triggerBonheurHandoff() {
@@ -229,13 +287,19 @@
 
     handoffTriggered = true;
     document.documentElement.classList.remove("ep-returning-from-project");
-    spacer.classList.add("ep-human--handoff");
     window.dispatchEvent(new CustomEvent("explorer:handoff", {
       detail: {
         x: lastGirlViewportX,
-        y: lastGirlViewportY
+        y: lastGirlViewportY,
+        size: lastGirlViewportSize
       }
     }));
+    /* Let the fixed navigation copy paint at the exact same position
+       before fading the registered canvas copy. This one-frame overlap
+       makes the traveler read as a single continuous layer. */
+    window.setTimeout(function () {
+      spacer.classList.add("ep-human--handoff");
+    }, 80);
     keys.forward = keys.backward = keys.left = keys.right = false;
     progressVel = 0;
     lateralVel = 0;
@@ -426,6 +490,7 @@
     var trueHeadScreenY = trueGirlScreenY - headOffsetPx;
     lastGirlViewportX = girlScreenX + rect.left;
     lastGirlViewportY = trueHeadScreenY + headOffsetPx * 0.5;
+    lastGirlViewportSize = Math.max(48, Math.min(130, rect.width * (96 / 1242) * scale));
     var viewportHeight = window.innerHeight;
     var topBound = viewportHeight * FOLLOW_MARGIN_TOP;
     var bottomBound = viewportHeight * FOLLOW_MARGIN_BOTTOM;
@@ -489,6 +554,52 @@
     a: "left", A: "left", ArrowLeft: "left",
     d: "right", D: "right", ArrowRight: "right",
   };
+  var projectReadKeys = { forward: false, backward: false };
+  var projectReadFrame = null;
+  var projectReadLastTime = null;
+  var projectReadVelocity = 0;
+  var PROJECT_READ_SPEED = 300;
+  var PROJECT_READ_ACCEL = 1150;
+  var PROJECT_READ_DECEL = 1450;
+
+  function tickProjectReading(time) {
+    var direction =
+      (projectReadKeys.backward ? 1 : 0) -
+      (projectReadKeys.forward ? 1 : 0);
+    var deltaSeconds = projectReadLastTime === null
+      ? 0
+      : Math.min(0.032, (time - projectReadLastTime) / 1000);
+    projectReadLastTime = time;
+    var targetVelocity = direction * PROJECT_READ_SPEED;
+    var acceleration = direction ? PROJECT_READ_ACCEL : PROJECT_READ_DECEL;
+    var velocityDelta = targetVelocity - projectReadVelocity;
+    var maxVelocityDelta = acceleration * deltaSeconds;
+    if (Math.abs(velocityDelta) <= maxVelocityDelta) {
+      projectReadVelocity = targetVelocity;
+    } else {
+      projectReadVelocity += Math.sign(velocityDelta) * maxVelocityDelta;
+    }
+
+    if (!direction && Math.abs(projectReadVelocity) < 1) {
+      projectReadVelocity = 0;
+      projectReadFrame = null;
+      projectReadLastTime = null;
+      return;
+    }
+    /* Avoid queueing the site's global smooth-scroll animation on every
+       frame. This RAF loop supplies one continuous ease instead. */
+    window.scrollBy({
+      top: projectReadVelocity * deltaSeconds,
+      left: 0,
+      behavior: "instant"
+    });
+    projectReadFrame = window.requestAnimationFrame(tickProjectReading);
+  }
+
+  function startProjectReading() {
+    if (projectReadFrame !== null) return;
+    projectReadFrame = window.requestAnimationFrame(tickProjectReading);
+  }
 
   function dismissControlsHint() {
     if (!started) return;
@@ -587,6 +698,23 @@
 
     var walkDir = WALK_KEYS[event.key];
     if (walkDir) {
+      var viewportRect = viewport.getBoundingClientRect();
+      var illustrationOwnsViewport =
+        viewportRect.top <= 1 && viewportRect.bottom >= window.innerHeight - 1;
+      if (!illustrationOwnsViewport) {
+        if (event.target.matches && event.target.matches("input, textarea, select, [contenteditable='true']")) return;
+        event.preventDefault();
+        /* W/D continue the reversed site's forward/upward reading;
+           S/A retrace it. The forest retains true four-direction walking. */
+        var forwardProjectKey =
+          event.key === "w" || event.key === "W" ||
+          event.key === "d" || event.key === "D" ||
+          event.key === "ArrowUp" || event.key === "ArrowRight";
+        projectReadKeys.forward = forwardProjectKey;
+        projectReadKeys.backward = !forwardProjectKey;
+        startProjectReading();
+        return;
+      }
       event.preventDefault();
       keys[walkDir] = true;
       if (!walking) {
@@ -610,6 +738,15 @@
     }
     var walkDir = WALK_KEYS[event.key];
     if (walkDir) {
+      var forwardProjectKey =
+        event.key === "w" || event.key === "W" ||
+        event.key === "d" || event.key === "D" ||
+        event.key === "ArrowUp" || event.key === "ArrowRight";
+      if (forwardProjectKey) projectReadKeys.forward = false;
+      else projectReadKeys.backward = false;
+      if (projectReadFrame === null && Math.abs(projectReadVelocity) >= 1) {
+        startProjectReading();
+      }
       keys[walkDir] = false;
       if (!keys.forward && !keys.backward && !keys.left && !keys.right) {
         walking = false;

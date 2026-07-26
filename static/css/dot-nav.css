@@ -7,7 +7,7 @@
   top: 50%;
   transform: translateY(-50%);
   width: min(10rem, 26vw);
-  height: min(72vh, 680px);
+  height: min(52vh, 480px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -34,6 +34,7 @@
 }
 
 .journey-guide {
+  --journey-human-width: 32px;
   position: absolute;
   z-index: 2;
   top: 0;
@@ -44,7 +45,7 @@
   visibility: hidden;
   pointer-events: none;
   transform: translate(var(--journey-nav-x, 0px), var(--journey-nav-y, 0px));
-  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, visibility 0s linear 0.3s;
+  transition: transform 0.12s linear, opacity 0.3s ease, visibility 0s linear 0.3s;
 }
 
 .journey-guide.is-handoff {
@@ -61,22 +62,23 @@
   position: absolute;
   z-index: 5;
   display: block;
-  width: 32px;
+  width: var(--journey-human-width);
+  max-width: none;
   height: auto;
   opacity: 1 !important;
   visibility: visible !important;
-  transform: translate(38%, -50%);
+  transform: translate(-115%, -50%);
   filter: drop-shadow(0 3px 5px rgba(24, 33, 25, 0.24));
 }
 
 .journey-guide__firefly {
   position: absolute;
-  z-index: 3;
+  z-index: 6;
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--color-accent);
-  transform: translate(72%, -115%);
+  transform: translate(-235%, -250%);
   box-shadow:
     0 0 5px color-mix(in srgb, var(--color-accent) 70%, white),
     0 0 13px color-mix(in srgb, var(--color-accent) 88%, transparent),
@@ -87,30 +89,40 @@
 @keyframes journey-firefly-glow {
   0%, 100% {
     opacity: 0.72;
+    transform: translate(-235%, -250%);
     box-shadow:
       0 0 4px color-mix(in srgb, var(--color-accent) 68%, white),
       0 0 11px color-mix(in srgb, var(--color-accent) 82%, transparent);
   }
+  30% {
+    opacity: 0.92;
+    transform: translate(calc(-235% + 3px), calc(-250% - 3px));
+  }
   50% {
     opacity: 1;
+    transform: translate(calc(-235% - 2px), calc(-250% - 1px));
     box-shadow:
       0 0 7px color-mix(in srgb, var(--color-accent) 78%, white),
       0 0 18px color-mix(in srgb, var(--color-accent) 94%, transparent),
       0 0 30px color-mix(in srgb, var(--color-accent) 62%, transparent);
+  }
+  76% {
+    opacity: 0.86;
+    transform: translate(calc(-235% + 1px), calc(-250% + 3px));
   }
 }
 
 .journey-guide__tag {
   position: absolute;
   left: auto;
-  right: 1.35rem;
+  right: 3.25rem;
   top: 0;
   transform: translateY(-50%);
-  padding: 0.3rem 0.55rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-surface) 78%, transparent);
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--color-accent);
-  box-shadow: 0 4px 14px rgba(24, 33, 25, 0.1);
+  box-shadow: none;
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.04em;
@@ -124,6 +136,23 @@
 @keyframes journey-nav-step {
   from { margin-top: 0; rotate: -1deg; }
   to { margin-top: -3px; rotate: 1deg; }
+}
+
+/* The full-canvas traveler hands off to this cropped copy at her exact
+   live size and position, then naturally settles beside the route dot. */
+.journey-guide.is-handoff.is-walking .journey-guide__human {
+  animation: journey-human-handoff 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes journey-human-handoff {
+  from {
+    width: var(--journey-handoff-size, 72px);
+    transform: translate(-50%, -50%);
+  }
+  to {
+    width: var(--journey-human-width);
+    transform: translate(-115%, -50%);
+  }
 }
 
 .dot-nav.is-visible {
@@ -197,7 +226,7 @@
     left: auto;
     right: 0.75rem;
     width: min(8.5rem, 35vw);
-    height: min(66vh, 520px);
+    height: min(48vh, 390px);
   }
 
   .dot-nav__marker {
@@ -212,13 +241,13 @@
   }
 
   .journey-guide__human {
-    width: 26px;
-    transform: translate(34%, -50%);
+    width: var(--journey-human-width);
+    transform: translate(-115%, -50%);
   }
 
   .journey-guide__tag {
     left: auto;
-    right: 1.1rem;
+    right: 2.7rem;
     font-size: 0.56rem;
   }
 }
@@ -230,6 +259,7 @@
     transition: none;
   }
   .journey-guide {
+    --journey-human-width: 26px;
     transition: none;
   }
   .journey-guide.is-walking .journey-guide__human {
