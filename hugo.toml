@@ -49,7 +49,7 @@ theme = "hugo-minimal-black"
 
     [params.hero.secondary]
       label = "More about how I think"
-      href = "/about/"
+      href = "/"
 
   [params.icons]
     useFontAwesome = true
@@ -88,8 +88,7 @@ theme = "hugo-minimal-black"
 
   [[menu.main]]
     name = "About"
-    pageRef = "about"
-    url = "/about/"
+    url = "/"
     weight = 3
     identifier = "about"
 
