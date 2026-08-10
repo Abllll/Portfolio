@@ -42,9 +42,15 @@
              recordings) drives how long it stays the front/active card
              before the carousel advances -- see mockup-carousel.js. */}}
         <div class="bs-mockup-carousel" data-durations="8100,13550,16820,8750,9700" data-pause="3500" aria-hidden="true">
-          {{ range $i, $gif := slice "mockup-2.gif" "mockup-3.gif" "mockup-3.5.gif" "mockup-4.gif" "mockup-5.gif" }}
+          {{/* MP4 rather than GIF: these are five clips animating at once,
+               and GIF decodes every frame on the main thread -- which made
+               the carousel stutter and starved the landing illustration's
+               parallax of the same thread. As H.264 the set is ~1MB
+               instead of ~15MB and decodes on the GPU. */}}
+          {{ range $i, $clip := slice "mockup-2" "mockup-3" "mockup-3.5" "mockup-4" "mockup-5" }}
           <div class="bs-mockup-card" data-index="{{ $i }}">
-            <img class="bs-mockup-screen" src="{{ printf "images/bonheur-mockup/%s" $gif | relURL }}" alt="" loading="lazy" draggable="false">
+            <video class="bs-mockup-screen" src="{{ printf "images/bonheur-mockup/%s.mp4" $clip | relURL }}"
+                   autoplay muted loop playsinline preload="metadata" aria-hidden="true" draggable="false"></video>
             <img class="bs-mockup-frame" src="{{ "images/bonheur-mockup/iphone-frame-transparent.png" | relURL }}" alt="" loading="lazy" draggable="false">
           </div>
           {{ end }}
