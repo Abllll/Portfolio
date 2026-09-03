@@ -1,6 +1,6 @@
 baseURL = 'https://abllll.github.io/Portfolio/'
 languageCode = 'en-us'
-title = 'Amber Li — Design Engineering'
+title = 'Amber Li — Product Designer'
 theme = "hugo-minimal-black"
 
 [outputs]
@@ -15,7 +15,7 @@ theme = "hugo-minimal-black"
 
 [params]
   brand = "Amber Li"
-  description = "Design engineering portfolio of Amber Li — systems thinking across engineering, spatial design, and AI."
+  description = "Product design portfolio of Amber Li — systems thinking across engineering, spatial design, and AI."
 
   favicon = "icons/favicon.svg"
   appleTouchIcon = "apple-touch-icon.png"
@@ -39,9 +39,9 @@ theme = "hugo-minimal-black"
 
   [params.hero]
     title = "Amber Li"
-    badge = "Design Engineer"
-    tagline = "Design driven by curiosity, balanced by engineering."
-    summary = "I believe the best products emerge from thoughtful decisions—where design engages people and shapes clarity, and engineering enables possibility. Every detail sparks delight."
+    badge = "Product Designer"
+    tagline = "Design driven by curiosity, guided by thoughtful decisions."
+    summary = "I believe the best products emerge from understanding what people need, questioning what could be better, and knowing what matters. Every detail is an opportunity to create clarity, usefulness, and delight."
 
     [params.hero.primary]
       label = "See the work"
