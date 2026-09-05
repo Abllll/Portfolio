@@ -5,10 +5,23 @@
   {{/* .ep-scene starts dimmed (grayscale, see explorers-path.css) --
        removed by JS on start-button click, not present by default via
        CSS alone, so there's no flash of full color before JS runs. */}}
-  <div class="ep-scene ep-scene--dimmed" id="ep-scene">
+  <div class="ep-scene ep-scene--dimmed ep-scene--loading" id="ep-scene" aria-busy="true">
+    {{/* This preview lives inside the real scene so both states share the
+         exact same canvas transform, crop, and viewport edges. */}}
+    <div class="ep-loading-preview" id="ep-loading-preview" aria-hidden="true">
+      <img class="ep-loading-preview__registered ep-loading-preview__back"
+           src="{{ "images/explorers-path/forest-loading-back.png" | relURL }}?v=20260905-9"
+           alt="" width="1242" height="1660" decoding="async" fetchpriority="high">
+      <img class="ep-loading-preview__human"
+           src="{{ "images/explorers-path/human.png" | relURL }}?v=20260905-6"
+           alt="" width="1242" height="1660" decoding="async" fetchpriority="high">
+      <img class="ep-loading-preview__registered ep-loading-preview__front"
+           src="{{ "images/explorers-path/forest-loading-front.png" | relURL }}?v=20260905-6"
+           alt="" width="1242" height="1660" decoding="async" fetchpriority="high">
+    </div>
     {{- range $data.layers }}
     <div class="ep-layer-wrap{{ if ne .idle "none" }} ep-idle-{{ .idle }}{{ end }}" id="ep-layer-{{ .id }}" data-factor="{{ .weight }}">
-      <img src="{{ printf "images/explorers-path/%s" .file | relURL }}" alt="" aria-hidden="true">
+      <img src="{{ printf "images/explorers-path/%s" .file | relURL }}" alt="" aria-hidden="true" decoding="async">
     </div>
     {{- end }}
     <div class="ep-layer-wrap" id="ep-hotspot-layer" data-factor="4">
@@ -63,7 +76,11 @@
       <h1 class="ep-start-screen-title">{{ default "Amber Li" $hero.title }}</h1>
       {{ with $hero.tagline }}<p class="ep-start-screen-tagline">{{ . }}</p>{{ end }}
       {{ with $hero.summary }}<p class="ep-start-screen-summary">{{ . }}</p>{{ end }}
-      <button type="button" class="ep-start-button" id="ep-start-button">Start</button>
+      <div class="ep-loading-status" id="ep-loading-status" role="status" aria-live="polite">
+        <span class="ep-loading-firefly" aria-hidden="true"></span>
+        <span class="ep-loading-label">Preparing the forest…</span>
+      </div>
+      <button type="button" class="ep-start-button" id="ep-start-button" disabled>Start</button>
     </div>
   </div>
 </section>
@@ -89,6 +106,6 @@
   </div>
 </div>
 
-<audio id="ep-audio-footstep" src="{{ "audio/explorers-path/forest-steps.mp3" | relURL }}?v=20260727-1" preload="auto" loop></audio>
-<audio id="ep-audio-ambient" src="{{ "audio/explorers-path/forest-birds.mp3" | relURL }}?v=20260727-1" preload="auto" loop></audio>
-<audio id="ep-audio-discovery" src="{{ "audio/explorers-path/discovery.wav" | relURL }}" preload="auto"></audio>
+<audio id="ep-audio-footstep" data-src="{{ "audio/explorers-path/forest-steps.mp3" | relURL }}?v=20260727-1" preload="none" loop></audio>
+<audio id="ep-audio-ambient" data-src="{{ "audio/explorers-path/forest-birds.mp3" | relURL }}?v=20260727-1" preload="none" loop></audio>
+<audio id="ep-audio-discovery" data-src="{{ "audio/explorers-path/discovery.wav" | relURL }}" preload="none"></audio>

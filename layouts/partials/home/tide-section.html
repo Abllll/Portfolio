@@ -64,8 +64,9 @@
     <div class="tide-landing__media" aria-hidden="true">
       {{/* MP4, not the 17MB GIF this used to be -- same clip at 0.3MB,
            decoded on the GPU like the deck's other five clips. */}}
-      <video class="tide-landing__video" src="{{ "images/tide/tide-01-launch.mp4" | relURL }}"
-             autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+      <video class="tide-landing__video tide-deferred-video" muted loop playsinline preload="none" aria-hidden="true">
+        <source data-src="{{ "images/tide/tide-01-launch.mp4" | relURL }}" type="video/mp4">
+      </video>
     </div>
 
     <div class="tide-landing__content reveal-group">

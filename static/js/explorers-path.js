@@ -4,6 +4,7 @@
   var viewport = document.getElementById("ep-viewport");
   var girlLayer = document.getElementById("ep-layer-girl");
   var scene = document.getElementById("ep-scene");
+  var loadingPreview = document.getElementById("ep-loading-preview");
   var spacer = document.getElementById("ep-spacer");
   if (!viewport || !girlLayer || !scene || !spacer) return;
 
@@ -24,18 +25,67 @@
   var ambientAudio = document.getElementById("ep-audio-ambient");
   var ambientToggle = document.getElementById("ep-ambient-toggle");
   var ambientToggleIcon = document.getElementById("ep-ambient-toggle-icon");
+  var ambientDock = document.getElementById("ep-ambient-dock");
   var ambientEnabled = true;
   var AMBIENT_VOLUME = 0.42;
   var controlsHint = document.getElementById("ep-controls-hint");
   var scrollCue = document.querySelector(".ep-scroll-cue");
   var startScreen = document.getElementById("ep-start-screen");
   var startButton = document.getElementById("ep-start-button");
+  var loadingStatus = document.getElementById("ep-loading-status");
+  var loadingFirefly = document.querySelector(".ep-loading-firefly");
   var projectPortals = document.getElementById("ep-project-portals");
   var projectPortalLinks = projectPortals
     ? Array.prototype.slice.call(projectPortals.querySelectorAll("[data-project-target]"))
     : [];
   var portalsOpen = false;
   var currentPortalIndex = 0;
+
+  function waitForImage(image) {
+    var loaded = image.complete
+      ? Promise.resolve()
+      : new Promise(function (resolve) {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        });
+
+    return loaded.then(function () {
+      if (!image.decode) return;
+      return image.decode().catch(function () {});
+    });
+  }
+
+  function revealLoadedScene() {
+    scene.setAttribute("aria-busy", "false");
+    if (startScreen) startScreen.classList.add("is-ready");
+    if (loadingStatus) loadingStatus.setAttribute("aria-label", "Forest ready");
+    if (startButton) startButton.disabled = false;
+  }
+
+  var forestImages = Array.prototype.slice.call(scene.querySelectorAll(".ep-layer-wrap > img, .ep-loading-preview img"));
+  Promise.all(forestImages.map(waitForImage)).then(function () {
+    window.requestAnimationFrame(revealLoadedScene);
+  });
+
+  function revealLandingCopy() {
+    if (startScreen) startScreen.classList.add("is-copy-visible");
+  }
+
+  if (loadingFirefly && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    loadingFirefly.addEventListener("animationend", revealLandingCopy, { once: true });
+    window.setTimeout(revealLandingCopy, 2600);
+  } else {
+    revealLandingCopy();
+  }
+
+  function attachAudioSources() {
+    [footstepAudio, ambientAudio, discoveryAudio].forEach(function (audioElement) {
+      if (!audioElement || audioElement.src || !audioElement.dataset.src) return;
+      audioElement.src = audioElement.dataset.src;
+      audioElement.removeAttribute("data-src");
+      audioElement.load();
+    });
+  }
 
   function illustrationVisibility() {
     var rect = viewport.getBoundingClientRect();
@@ -125,8 +175,13 @@
   if (startButton) {
     startButton.addEventListener("click", function () {
       started = true;
+      attachAudioSources();
+      if (ambientDock) ambientDock.hidden = false;
       unlockLandingScroll();
+      scene.classList.remove("ep-scene--loading");
       scene.classList.remove("ep-scene--dimmed");
+      scene.classList.add("ep-scene--interactive");
+      if (loadingPreview) loadingPreview.classList.add("is-dismissed");
       startScreen.classList.add("is-dismissed");
       if (controlsHint) controlsHint.classList.remove("ep-controls-hint--pending");
       if (scrollCue) scrollCue.classList.remove("ep-scroll-cue--pending");

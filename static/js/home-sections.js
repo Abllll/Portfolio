@@ -3,6 +3,35 @@
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  var deferredProjectVideos = Array.prototype.slice.call(document.querySelectorAll(".project-deferred-video[data-src]"));
+
+  function loadDeferredProjectVideo(video) {
+    if (!video.dataset.src) return;
+    video.src = video.dataset.src;
+    video.removeAttribute("data-src");
+    video.preload = "metadata";
+    video.load();
+    var playback = video.play();
+    if (playback && playback.catch) playback.catch(function () {});
+  }
+
+  if (deferredProjectVideos.length) {
+    if (!("IntersectionObserver" in window)) {
+      deferredProjectVideos.forEach(loadDeferredProjectVideo);
+    } else {
+      var projectMediaObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          loadDeferredProjectVideo(entry.target);
+          projectMediaObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: "150% 0px", threshold: 0 });
+      deferredProjectVideos.forEach(function (video) {
+        projectMediaObserver.observe(video);
+      });
+    }
+  }
+
   var revealGroups = Array.prototype.slice.call(document.querySelectorAll(".reveal-group"));
   var dotNav = document.getElementById("dot-nav");
   var dots = dotNav ? Array.prototype.slice.call(dotNav.querySelectorAll(".dot-nav__dot")) : [];

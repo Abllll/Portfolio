@@ -28,7 +28,7 @@
   {{ end }}
 
   {{ partial "explorers-path/scene.html" . }}
-  <script src="{{ "js/explorers-path.js" | relURL }}?v=20260727-18" defer></script>
+  <script src="{{ "js/explorers-path.js" | relURL }}?v=20260905-7" defer></script>
   <script src="{{ "js/journey-guide.js" | relURL }}?v=20260727-13" defer></script>
 
   {{/* The illustration is the landing point, but it's not literally the
@@ -52,10 +52,8 @@
         return;
       }
 
-      // +2px, not the exact boundary -- a small buffer against any
-      // sub-pixel overlap with whatever immediately precedes the
-      // illustration (Bonheur's bs-intro) registering as still
-      // "intersecting" and prematurely revealing the dot-nav at load.
+      // Align the illustration boundary exactly. Even a small buffer here
+      // creates a visible preview-to-live jump when the Start lock releases.
       function scrollToIllustration() {
         // home-sections.css sets html{scroll-behavior:smooth} sitewide,
         // which a plain window.scrollTo() silently inherits -- without
@@ -67,7 +65,7 @@
         var htmlEl = document.documentElement;
         var previousScrollBehavior = htmlEl.style.scrollBehavior;
         htmlEl.style.scrollBehavior = "auto";
-        window.scrollTo(0, spacer.getBoundingClientRect().top + window.scrollY + 2);
+        window.scrollTo(0, spacer.getBoundingClientRect().top + window.scrollY);
         htmlEl.style.scrollBehavior = previousScrollBehavior;
       }
 
@@ -108,5 +106,5 @@
   </script>
 
   {{ partial "home/dot-nav.html" . }}
-  <script src="{{ "js/home-sections.js" | relURL }}?v=20260727-3" defer></script>
+  <script src="{{ "js/home-sections.js" | relURL }}?v=20260905-1" defer></script>
 {{ end }}

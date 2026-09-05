@@ -49,8 +49,8 @@
                instead of ~15MB and decodes on the GPU. */}}
           {{ range $i, $clip := slice "mockup-2" "mockup-3" "mockup-3.5" "mockup-4" "mockup-5" }}
           <div class="bs-mockup-card" data-index="{{ $i }}">
-            <video class="bs-mockup-screen" src="{{ printf "images/bonheur-mockup/%s.mp4" $clip | relURL }}"
-                   autoplay muted loop playsinline preload="metadata" aria-hidden="true" draggable="false"></video>
+            <video class="bs-mockup-screen project-deferred-video" data-src="{{ printf "images/bonheur-mockup/%s.mp4" $clip | relURL }}"
+                   muted loop playsinline preload="none" aria-hidden="true" draggable="false"></video>
             <img class="bs-mockup-frame" src="{{ "images/bonheur-mockup/iphone-frame-transparent.png" | relURL }}" alt="" loading="lazy" draggable="false">
           </div>
           {{ end }}
