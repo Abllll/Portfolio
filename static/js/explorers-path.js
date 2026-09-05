@@ -130,13 +130,26 @@
 
   function restoreLandingScroll() {
     if (started || restoringLandingScroll) return;
-    if (window.scrollY === lockedScrollY) return;
+    // The fixed body supplies the offset; the window itself stays at zero.
+    if (window.scrollY === 0) return;
     restoringLandingScroll = true;
     var previousBehavior = document.documentElement.style.scrollBehavior;
     document.documentElement.style.scrollBehavior = "auto";
-    window.scrollTo(0, lockedScrollY);
+    window.scrollTo(0, 0);
     document.documentElement.style.scrollBehavior = previousBehavior;
     restoringLandingScroll = false;
+  }
+
+  function alignLockedLanding() {
+    if (started) return;
+    // Images and fonts above the forest can change its document position
+    // on a cold load. Anchor to the live spacer, not the initial scrollY.
+    var offset = spacer.getBoundingClientRect().top - document.body.getBoundingClientRect().top;
+    if (offset !== lockedScrollY) {
+      lockedScrollY = offset;
+      document.body.style.top = -lockedScrollY + "px";
+    }
+    restoreLandingScroll();
   }
 
   function lockLandingScroll() {
@@ -148,6 +161,7 @@
     document.body.style.position = "fixed";
     document.body.style.top = -lockedScrollY + "px";
     document.body.style.width = "100%";
+    alignLockedLanding();
   }
 
   function unlockLandingScroll() {
@@ -155,6 +169,10 @@
     document.body.style.position = previousBodyPosition;
     document.body.style.top = previousBodyTop;
     document.body.style.width = previousBodyWidth;
+
+    // Restoring normal flow may itself reflow the page. Use its current
+    // position so Start preserves the same opening frame.
+    lockedScrollY = spacer.getBoundingClientRect().top + window.scrollY;
 
     /* Sitewide smooth scrolling must not animate this restoration—the
        screen should remain on the exact same illustration frame as the
@@ -427,6 +445,10 @@
   }
 
   function tick() {
+    if (!started) {
+      alignLockedLanding();
+      updateScrollPan();
+    }
     // .ep-scene here too -- see the comment in hotspotPosition() above.
     var rect = scene.getBoundingClientRect();
 
